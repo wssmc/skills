@@ -1,6 +1,6 @@
 # Scheduling Research Skill Chain
 
-本压缩包包含三个互相衔接的 Skill：
+本仓库包含三个互相衔接的 Skill：
 
 ```text
 problem-decomposition-skill
