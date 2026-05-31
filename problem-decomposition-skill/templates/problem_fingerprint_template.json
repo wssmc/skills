@@ -1,0 +1,45 @@
+{
+  "problem_type": "HFSP",
+  "shop_type_aliases": [
+    "hybrid flow shop",
+    "hybrid flowshop",
+    "flexible flow shop",
+    "HFFS"
+  ],
+  "objective": [
+    "TWET",
+    "total weighted earliness and tardiness"
+  ],
+  "entities": {
+    "jobs": true,
+    "stages": true,
+    "parallel_machines_per_stage": true,
+    "operations": "implicit_by_job_stage"
+  },
+  "constraints": {
+    "stage_precedence": true,
+    "machine_capacity": true,
+    "release_times": "optional",
+    "due_windows": "to_confirm",
+    "priority_jobs": "to_confirm",
+    "shared_windows": "to_confirm",
+    "MUPs": "to_confirm",
+    "setup_times": "optional",
+    "transport_resources": "optional",
+    "worker_resources": "optional"
+  },
+  "data_format": {
+    "main_data": "txt",
+    "index": "index.json",
+    "processing_times": "JobID x Stage table"
+  },
+  "solver_preference": "CPLEX/docplex",
+  "expected_outputs": [
+    "literature matrix",
+    "MIP",
+    "decoder",
+    "baseline",
+    "proposed algorithm",
+    "gantt"
+  ]
+}

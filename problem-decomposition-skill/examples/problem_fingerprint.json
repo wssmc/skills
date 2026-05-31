@@ -1,0 +1,24 @@
+{
+  "problem_type": "HFSP",
+  "objective": [
+    "TWET",
+    "total weighted earliness and tardiness"
+  ],
+  "constraints": {
+    "due_windows": true,
+    "priority_jobs": true,
+    "shared_windows": true,
+    "MUPs": true,
+    "transport_resources": "future_extension",
+    "worker_resources": "future_extension"
+  },
+  "data_format": {
+    "processing_times": "JobID x Stage txt table",
+    "main_data": "txt",
+    "index": "index.json"
+  },
+  "downstream": {
+    "literature_skill": true,
+    "mip_skill": true
+  }
+}

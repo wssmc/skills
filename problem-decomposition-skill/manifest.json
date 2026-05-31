@@ -1,0 +1,27 @@
+{
+  "name": "problem-decomposition-skill",
+  "version": "1.0.0",
+  "description": "通过连续提问与结构化整理，将初始研究想法精炼为可检索、可建模、可实现的问题描述。",
+  "language": "zh-CN",
+  "domain": [
+    "operations research",
+    "scheduling",
+    "MIP",
+    "metaheuristics",
+    "literature review"
+  ],
+  "outputs": [
+    "refined_problem_description.md",
+    "problem_fingerprint.json",
+    "modeling_elements.md",
+    "assumption_log.md",
+    "open_questions.md",
+    "data_requirement.md",
+    "handoff_to_literature_skill.md",
+    "handoff_to_mip_skill.md"
+  ],
+  "downstream_skills": [
+    "literature-matrix-review-skill",
+    "mip-hfsp-project-generator-skill"
+  ]
+}

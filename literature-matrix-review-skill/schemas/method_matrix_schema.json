@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Method Matrix Schema",
+  "type": "object",
+  "properties": {
+    "method_components": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Main framework",
+          "Encoding",
+          "Decoding",
+          "Initialization",
+          "Destruction / reconstruction",
+          "Neighborhood",
+          "Local search",
+          "Repair mechanism",
+          "Constraint handling",
+          "Acceptance rule",
+          "Stopping criterion",
+          "Objective evaluation",
+          "Benchmark instances",
+          "Compared baselines",
+          "Strength",
+          "Weakness",
+          "Reusable idea"
+        ]
+      }
+    },
+    "papers": {"type": "array", "items": {"type": "string"}}
+  }
+}

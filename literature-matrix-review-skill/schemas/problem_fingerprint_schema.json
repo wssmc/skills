@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Problem Fingerprint Schema",
+  "type": "object",
+  "required": ["problem_type", "objective_keywords", "constraint_keywords", "method_keywords"],
+  "properties": {
+    "problem_type": {"type": "string"},
+    "shop_keywords": {"type": "array", "items": {"type": "string"}},
+    "objective_keywords": {"type": "array", "items": {"type": "string"}},
+    "constraint_keywords": {"type": "array", "items": {"type": "string"}},
+    "method_keywords": {"type": "array", "items": {"type": "string"}},
+    "seed_papers": {"type": "array", "items": {"type": "string"}},
+    "time_range": {"type": "string"},
+    "notes": {"type": "string"}
+  }
+}

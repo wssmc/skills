@@ -1,0 +1,8 @@
+{
+  "solver": "cplex",
+  "interface": "docplex",
+  "time_limit": 300,
+  "mip_gap": 0.001,
+  "threads": 8,
+  "log_output": true
+}
