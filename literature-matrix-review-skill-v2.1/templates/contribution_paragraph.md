@@ -1,0 +1,13 @@
+# Contribution Paragraph Template
+
+本文的主要贡献如下。
+
+第一，问题定义方面，本文……
+
+第二，模型构建方面，本文……
+
+第三，求解方法方面，本文……
+
+第四，实验设计方面，本文……
+
+> Check: each contribution must map to a later section. Do not claim an algorithmic contribution if the method is not implemented.

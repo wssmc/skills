@@ -4,7 +4,7 @@
 
 ```text
 problem-decomposition-skill
-→ literature-matrix-review-skill
+→ literature-matrix-review-skill-v2.1
 → mip-hfsp-project-generator-skill
 ```
 
@@ -12,7 +12,7 @@ problem-decomposition-skill
 
 把用户的一段初始想法，通过提问和结构化整理，转成高质量问题描述和 `problem_fingerprint.json`。
 
-## 2. literature-matrix-review-skill
+## 2. literature-matrix-review-skill-v2.1
 
 基于高质量问题描述检索相似文献，输出问题特征表、方法矩阵表、研究缺口、baseline 建议和方法设计提示。
 
