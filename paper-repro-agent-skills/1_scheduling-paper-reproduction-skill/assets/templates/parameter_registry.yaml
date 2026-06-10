@@ -1,0 +1,11 @@
+parameters:
+  - name: ""
+    value: null
+    category: "algorithm / experiment_protocol / data_generation / implementation_guard"
+    source_priority: "experimental section / parameter table / ablation / pseudocode / method / assumed"
+    paper_location: ""
+    used_in: ""
+    code_variable: ""
+    status: "explicit / partial / assumed / conflicting"
+    risk: "low / medium / high"
+    notes: ""

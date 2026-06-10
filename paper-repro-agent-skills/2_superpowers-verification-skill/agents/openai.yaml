@@ -1,0 +1,5 @@
+interface:
+  display_name: "Superpowers 核验"
+  short_description: "用 TDD、双阶段 review 和四层测试验证 baseline"
+policy:
+  allow_implicit_invocation: false

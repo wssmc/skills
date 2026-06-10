@@ -1,0 +1,9 @@
+assumptions:
+  - item: ""
+    status: "missing / partially specified / conflicting"
+    used_in: ""
+    chosen_default: ""
+    reason: ""
+    risk: "low / medium / high"
+    evidence_location: ""
+    impact_on_results: ""

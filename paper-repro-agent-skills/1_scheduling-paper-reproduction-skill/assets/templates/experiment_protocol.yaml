@@ -1,0 +1,29 @@
+experiment_protocol:
+  benchmark:
+    source: ""
+    version_or_url: ""
+    instance_sets: []
+  data_generation:
+    used: false
+    evidence_location: ""
+    generator_config_file: ""
+  runs:
+    independent_runs: null
+    seed_policy: "paper-specified / fixed-by-reproduction / not-specified"
+  stopping_condition:
+    type: "time_limit / max_iter / max_evaluations / no_improvement / temperature_threshold"
+    value: null
+    evidence_location: ""
+  metrics:
+    - "best"
+    - "avg"
+    - "std"
+    - "RPD"
+  hardware:
+    paper_hardware: ""
+    reproduction_hardware: ""
+    risk: "low / medium / high"
+  language:
+    paper_language: ""
+    reproduction_language: ""
+    risk: "low / medium / high"

@@ -1,0 +1,6 @@
+interface:
+  display_name: "算法流程重构"
+  short_description: "先还原论文算法循环、组件与创新点，再进入实现"
+  default_prompt: "请先重构算法流程，不要开始写代码。"
+policy:
+  allow_implicit_invocation: true

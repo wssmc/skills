@@ -1,0 +1,27 @@
+tests/
+├── unit/
+│   ├── test_data_reader.py
+│   ├── test_problem.py
+│   ├── test_solution.py
+│   ├── test_decoder.py
+│   ├── test_objective.py
+│   └── test_operators.py
+├── feasibility/
+│   ├── test_machine_capacity.py
+│   ├── test_operation_precedence.py
+│   ├── test_missing_operations.py
+│   ├── test_machine_eligibility.py
+│   ├── test_batch_lot_constraints.py
+│   └── test_objective_recompute.py
+├── consistency/
+│   ├── test_main_loop_matches_pseudocode.py
+│   ├── test_initialization_matches_paper.py
+│   ├── test_operator_set_matches_paper.py
+│   ├── test_acceptance_matches_paper.py
+│   ├── test_stopping_condition_matches_protocol.py
+│   ├── test_parameters_match_registry.py
+│   └── test_ablation_switches.py
+└── regression/
+    ├── test_small_known_instance.py
+    ├── test_seed_reproducibility.py
+    └── test_reported_table_values.py

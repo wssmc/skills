@@ -1,0 +1,9 @@
+failing_cases:
+  - case_id: ""
+    layer: "unit / feasibility / consistency / regression"
+    test_file: ""
+    failure_summary: ""
+    related_component: ""
+    paper_evidence: ""
+    impact: "low / medium / high / blocking"
+    fix_status: "open / fixed / deferred"
