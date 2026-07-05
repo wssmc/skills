@@ -1,5 +1,6 @@
-docplex
-pandas
-numpy
-matplotlib
-pytest
+gurobipy>=11.0
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+scipy>=1.10
+pytest>=7.4

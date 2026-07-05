@@ -4,14 +4,14 @@
 
 | 项目 | 是否提供 | 说明 |
 |---|---|---|
-| 问题类型 |  | HFSP / FJSP / JSP / General MIP |
-| Job 数量 |  |  |
-| Stage / Operation 数量 |  |  |
+| 问题类型 |  | HFSP / FJSP / JSP / Parallel Machine / General MIP |
+| Job 数量 |  | |
+| Stage / Operation 数量 |  | |
 | 加工时间 |  | HFSP 推荐 JobID × Stage 表 |
 | 机器 / 资源信息 |  | HFSP 推荐 stage_machines.txt |
 | 顺序约束 |  | Job 内 Stage 顺序 |
 | 机器冲突约束 |  | 同机不重叠 |
-| 目标函数 |  | makespan / tardiness / cost |
+| 目标函数 |  | makespan / tardiness / cost / weighted |
 
 ## 推荐信息
 
@@ -25,7 +25,9 @@
 | machine maintenance |  | 默认不考虑 |
 | 是否允许等待 |  | 默认允许 |
 | 是否允许抢占 |  | 默认不允许 |
-| CPLEX 参数 |  | 默认 time_limit=300, mip_gap=0.001 |
+| Gurobi 参数 |  | 默认 time_limit=3600(正式)/60(测试), MIPGap=0.001 |
+| 数据规模 |  | demo/small/large 三级 |
+| 对比算法 |  | 默认 SA, MA, IG, GA, TS |
 
 ## 不足时的提示语
 
@@ -44,4 +46,6 @@ Stage 数量：
 加工时间表：
 目标函数：
 特殊约束：
+数据规模：
+希望对比的算法：
 ```

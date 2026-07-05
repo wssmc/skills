@@ -19,8 +19,12 @@
     "mip": true,
     "decoder": true,
     "baselines": true,
-    "proposed_algorithm": true,
+    "metaheuristics": true,
+    "ablation": true,
     "experiments": true,
-    "visualization": true
-  }
+    "visualization": true,
+    "latex": true
+  },
+  "solver": "gurobi",
+  "default_algorithms": ["sa_basic", "ma_basic", "ig_basic", "ga_basic", "ts_basic"]
 }

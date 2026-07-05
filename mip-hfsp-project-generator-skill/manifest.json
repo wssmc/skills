@@ -1,11 +1,13 @@
 {
   "name": "mip-hfsp-project-generator-skill",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "created_at": "2026-05-31T02:26:42.234080Z",
-  "description": "Skill package for generating MIP/CPLEX-based HFSP scheduling research projects with txt data, index.json, modular src, baselines and proposed algorithms.",
-  "default_solver": "CPLEX/docplex",
+  "updated_at": "2026-07-05T00:00:00.000000Z",
+  "description": "Skill package for generating Gurobi-based HFSP scheduling research projects with txt data, index.json, modular src (metaheuristics/math_models), 5 default algorithms (SA/MA/IG/GA/TS), three-layer scripts (single/bench/batch), ablation/DOE/statistics, and LaTeX paper writing structure.",
+  "default_solver": "Gurobi/gurobipy",
   "default_data_policy": "txt主体数据 + index.json串联",
   "main_file": "SKILL.md",
+  "structure_spec": "项目通用结构总结.md",
   "upstream_skills": [
     "problem-decomposition-skill",
     "literature-matrix-review-skill"

@@ -1,6 +1,6 @@
 # 问题描述模板
 
-请按以下模板补充你的调度问题。若暂时不确定，可以填写“不确定”，Skill 会给出默认假设。
+请按以下模板补充你的调度问题。若暂时不确定，可以填写"不确定"，Skill 会给出默认假设。
 
 ## 1. 问题类型
 
@@ -73,20 +73,22 @@ objective = alpha * makespan + beta * total_tardiness + ...
 
 ## 7. 数据规模
 
-- demo_data：
-- data_small：
-- data_large：
+- demo（展示用，小规模）：
+- small（小规模基准）：
+- large（大规模基准）：
 
 ## 8. 算法需求
 
 需要生成：
 
-- [ ] CPLEX MIP
-- [ ] 编码 / 解码
-- [ ] baseline
-- [ ] 本文算法框架
-- [ ] 消融实验
-- [ ] 参数敏感性实验
+- [ ] Gurobi MIP 模型
+- [ ] 编码 / 解码（含 eval_cache, feasibility_checker）
+- [ ] 5 个 basic 元启发式（SA, MA, IG, GA, TS）
+- [ ] 论文对比算法 (baselines)
+- [ ] 消融实验（quick_test_config + 记录文档）
+- [ ] DOE 参数校核
+- [ ] 统计检验（Friedman, Wilcoxon）
 - [ ] 甘特图
 - [ ] 收敛曲线
-- [ ] 统计检验
+- [ ] 三层脚本（single / bench / batch）
+- [ ] LaTeX 论文目录

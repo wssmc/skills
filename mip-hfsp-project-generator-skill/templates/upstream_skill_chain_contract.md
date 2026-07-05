@@ -52,7 +52,10 @@ Use these files to define:
 
 ## Rules
 
-- Do not ignore `assumption_log.md`; assumptions should appear in README and config files.
+- Do not ignore `assumption_log.md`; assumptions should appear in README and `configs/` docs.
 - If `problem_feature_table.md` marks a feature as central to this study, implement it or create a clearly named extension stub.
-- If `recommended_baselines.md` is present, create corresponding files under `src/algorithms/baselines/`.
-- If `method_design_hints.md` is present, create corresponding modules under `src/algorithms/proposed/`.
+- If `recommended_baselines.md` is present, create corresponding files under `src/metaheuristics/baselines/`.
+- If `method_design_hints.md` is present, create corresponding modules under the appropriate `src/metaheuristics/{algo}/` directory.
+- Default solver is **Gurobi** (`gurobipy`), not CPLEX/docplex.
+- All algorithms must be registered to `scripts/run_baselines.py` (5-step registration).
+- Algorithm naming follows basic → study → branch three-tier convention.

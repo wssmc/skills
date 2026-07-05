@@ -1,0 +1,23 @@
+{
+  "name": "code-reading-assistant-skill",
+  "version": "1.0.0",
+  "created_at": "2026-07-05T00:00:00.000000Z",
+  "description": "轻量级代码阅读助手 Skill，用于帮助用户理解陌生代码库。通过建立临时阅读地图、推测用户意图、追踪结构/调用链/数据流，并给出下一步阅读建议，将模糊问题转化为清晰问题或结论。",
+  "language": "zh-CN",
+  "main_file": "SKILL.md",
+  "domain": [
+    "code reading",
+    "codebase understanding",
+    "onboarding",
+    "software engineering"
+  ],
+  "upstream_skills": [],
+  "downstream_skills": [],
+  "outputs": [
+    "临时阅读地图",
+    "代码解释（L1–L5 分层）",
+    "调用链 / 数据流追踪",
+    "模糊问题改写建议",
+    "下一步阅读路线"
+  ]
+}

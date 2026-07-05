@@ -3,15 +3,27 @@
 ## 1. 推荐目录
 
 ```text
-data/demo_data/
-├── processing_times.txt
-├── stage_machines.txt
-├── due_dates.txt
-├── release_times.txt
-├── setup_times.txt
-├── transport_times.txt
-├── worker_requirements.txt
-└── index.json
+data/
+├── generate.py             # 数据生成入口
+├── loader.py               # 数据读取（load_instance）
+├── demo/                   # 展示用算例
+│   └── demo_01_10_5/       # 命名: demo_0x_n_m
+│       ├── processing_times.txt
+│       ├── stage_machines.txt
+│       ├── due_dates.txt
+│       ├── release_times.txt
+│       ├── index.json
+│       └── *.png / *.pdf   # 可视化图（demo 专属）
+├── small/                  # 小规模基准算例
+│   └── inst_001_10_5_01/   # 命名: inst_xxx_n_m_yy
+├── large/                  # 大规模基准算例
+└── batch_seeds/            # 统一种子文件
+    ├── small/
+    │   ├── seed_table.json
+    │   └── round{r}.json
+    └── large/
+        ├── seed_table.json
+        └── round{r}.json
 ```
 
 ## 2. processing_times.txt
@@ -72,7 +84,7 @@ JobID	ReleaseTime
 2	1.0
 ```
 
-## 6. transport_times.txt，可选
+## 6. transport_times.txt（可选）
 
 ```text
 FromStage	ToStage	TransportTime
@@ -80,7 +92,7 @@ Stage_0	Stage_1	0.2
 Stage_1	Stage_2	0.3
 ```
 
-## 7. worker_requirements.txt，可选
+## 7. worker_requirements.txt（可选）
 
 ```text
 StageID	WorkerType	RequiredWorkers
@@ -94,17 +106,27 @@ Stage_1	worker_B	2
 {
   "problem_type": "HFSP",
   "data_format": "txt",
+  "instance_name": "demo_01_10_5",
   "files": {
-    "processing_times": "processing_times.txt",
-    "stage_machines": "stage_machines.txt",
-    "due_dates": "due_dates.txt",
-    "release_times": "release_times.txt"
+    "processing_times.txt": "processing_times.txt",
+    "stage_machines.txt": "stage_machines.txt",
+    "due_dates.txt": "due_dates.txt",
+    "release_times.txt": "release_times.txt"
   },
   "objective": {
     "primary": "makespan",
-    "secondary": "total_tardiness",
-    "alpha": 1.0,
-    "beta": 0.0
+    "secondary": "total_tardiness"
   }
 }
 ```
+
+> **注意**：index.json 不记录 seed。种子管理统一由 `data/batch_seeds/` 种子文件控制。
+
+## 9. 种子文件
+
+```text
+data/batch_seeds/{scale}/seed_table.json   # 种子主表（算例名 → seed）
+data/batch_seeds/{scale}/round{r}.json     # 每轮种子映射
+```
+
+种子源：`random.Random(20260616 + sum(ord(c) for c in scale))`

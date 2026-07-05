@@ -14,16 +14,20 @@ problem-decomposition-skill
 → mip-hfsp-project-generator-skill
 ```
 
+---
+
 ## 2. 触发场景
 
 用户出现以下需求时，应使用本 Skill：
 
-- “帮我整理这个问题描述”
-- “我这个问题应该怎么描述”
-- “帮我把业务问题转成优化问题”
-- “根据我说的一段话，追问我，最后整理成高质量问题描述”
-- “为后续文献检索 / MIP 建模 / 算法实现准备问题描述”
-- “我还不确定约束、目标、数据字段，请帮我拆解”
+- "帮我整理这个问题描述"
+- "我这个问题应该怎么描述"
+- "帮我把业务问题转成优化问题"
+- "根据我说的一段话，追问我，最后整理成高质量问题描述"
+- "为后续文献检索 / MIP 建模 / 算法实现准备问题描述"
+- "我还不确定约束、目标、数据字段，请帮我拆解"
+
+---
 
 ## 3. 总体流程
 
@@ -41,6 +45,8 @@ problem-decomposition-skill
 10. 输出结构化 problem fingerprint；
 11. 输出给文献检索 Skill 和 MIP 实现 Skill 的交接文件。
 
+---
+
 ## 4. 问题描述质量标准
 
 最终问题描述至少要说清楚：
@@ -56,6 +62,8 @@ problem-decomposition-skill
 9. 数据以什么形式给出；
 10. 计划使用什么模型或算法；
 11. 后续需要输出哪些内容。
+
+---
 
 ## 5. 提问策略
 
@@ -97,6 +105,8 @@ problem-decomposition-skill
 - 贡献点想落在哪些方面；
 - 本文方法的大致方向。
 
+---
+
 ## 6. 信息完整度评分
 
 对用户输入进行 0 到 5 分评分：
@@ -111,6 +121,8 @@ problem-decomposition-skill
 如果评分小于 3，先追问，不直接输出最终问题描述。
 如果评分为 3 或 4，可以输出带假设的问题描述。
 如果评分为 5，可以直接输出交接文件。
+
+---
 
 ## 7. 输出格式
 
@@ -150,13 +162,24 @@ Assumption ID | Content | Reason | Impact | Need user confirmation
 
 列出仍需确认的问题。
 
-### 7.6 handoff_to_literature_skill.md
+### 7.6 data_requirement.md
+
+列出所需数据文件、字段含义和格式建议，包括：
+
+- 必需数据文件，如 `processing_times.txt`、`stage_machines.txt`、`index.json`；
+- 可选数据文件，如 `release_times.txt`、`due_windows.txt`、`setup_times.txt` 等；
+- 每个文件的字段说明和示例；
+- 主体数据使用 txt 保存、JSON 仅作为索引或配置文件的规则说明。
+
+### 7.7 handoff_to_literature_skill.md
 
 把问题转成检索可用的关键词、同义词、检索式种子和筛选标准。
 
-### 7.7 handoff_to_mip_skill.md
+### 7.8 handoff_to_mip_skill.md
 
 把问题转成建模实现可用的约束清单、数据字段、模块要求和输出要求。
+
+---
 
 ## 8. 特别规则
 
