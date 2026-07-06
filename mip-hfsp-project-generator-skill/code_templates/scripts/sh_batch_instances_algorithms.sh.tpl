@@ -36,8 +36,11 @@ else
     SCALES=("$SCALE")
 fi
 
-# 默认算法
-ALGOS=("sa_basic" "ma_basic" "ig_basic" "ga_basic" "ts_basic")
+# 默认算法：所有已注册且可运行的算法
+ALGOS=($(python -c "
+from metaheuristics.registry import get_runnable_algorithms
+print(' '.join(get_runnable_algorithms()))
+" 2>/dev/null || echo "sa_basic ma_basic ig_basic ga_basic ts_basic"))
 
 echo "=========================================="
 echo "Batch Experiment"

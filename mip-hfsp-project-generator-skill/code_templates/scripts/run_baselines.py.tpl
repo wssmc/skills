@@ -73,28 +73,15 @@ ALGO_DEFAULTS = {
 # 4. solver 函数映射
 # ============================================================
 def _get_solver(algo: str):
-    if algo == ALGO_SA_BASIC:
-        from metaheuristics.sa.sa_basic import solve_sa_basic
-        return solve_sa_basic
-    elif algo == ALGO_MA_BASIC:
-        from metaheuristics.ma.ma_basic import solve_ma_basic
-        return solve_ma_basic
-    elif algo == ALGO_IG_BASIC:
-        from metaheuristics.ig.ig_basic import solve_ig_basic
-        return solve_ig_basic
-    elif algo == ALGO_GA_BASIC:
-        from metaheuristics.ga.ga_basic import solve_ga_basic
-        return solve_ga_basic
-    elif algo == ALGO_TS_BASIC:
-        from metaheuristics.ts.ts_basic import solve_ts_basic
-        return solve_ts_basic
-    else:
-        raise ValueError(f"Unknown algorithm: {algo}")
+    """从注册表获取算法函数。"""
+    from metaheuristics.registry import get_algorithm
+    return get_algorithm(algo)
 
 # ============================================================
-# 5. 分支条件
+# 5. 可运行算法列表（从注册表获取）
 # ============================================================
-SUPPORTED_ALGOS = (ALGO_SA_BASIC, ALGO_MA_BASIC, ALGO_IG_BASIC, ALGO_GA_BASIC, ALGO_TS_BASIC)
+from metaheuristics.registry import get_runnable_algorithms, get_algorithm_status
+SUPPORTED_ALGOS = tuple(get_runnable_algorithms())
 
 
 def run_single(instance_dir: str, algo: str, time_limit: float = 30.0,
