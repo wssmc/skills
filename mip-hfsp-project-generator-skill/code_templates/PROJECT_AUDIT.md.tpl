@@ -45,6 +45,23 @@
 | Pytest | PASS | {passed} passed, {failed} failed |
 | Output isolation | PASS | All outputs in outputs/ |
 
+## Convention Persistence Check
+
+| Check | Result | Notes |
+|---|---|---|
+| `configs/conventions.md` | PASS | User interaction conventions recorded |
+| `configs/problem_statement.md` | PASS | Problem statement recorded |
+| `configs/constraints_spec.md` | PASS | Constraints recorded |
+| `configs/algorithm_requirements.md` | PASS | Algorithm requirements recorded |
+| `configs/experiment_plan.md` | PASS | Experiment plan recorded |
+| `configs/problem_fingerprint.json` | PASS | Problem fingerprint generated |
+| `docs/YYYY-M-D_problem_description.md` | PASS | Problem description with clarifications |
+| `docs/YYYY-M-D_modeling_assumptions.md` | PASS | Modeling decisions recorded |
+| `docs/YYYY-M-D_instance_design.md` | PASS | Instance design rationale recorded |
+| `docs/YYYY-M-D_algorithm_design.md` | PASS | Algorithm design conventions recorded |
+| `docs/YYYY-M-D_experiment_plan.md` | PASS | Experiment plan rationale recorded |
+| All dialog conventions persisted | PASS | No conventions left in context only |
+
 ## Summary
 
 - Legacy directories: 0

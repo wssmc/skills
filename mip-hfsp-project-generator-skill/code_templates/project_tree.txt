@@ -141,13 +141,24 @@ project_name/
 │   ├── statistics/
 │   └── lower_bounds_all/
 ├── latex/                      # 论文写作
-│   ├── els-cas-templates/      # Elsevier CAS 模板
-│   └── {project_name}_bundle/  # 当前论文工作目录
-│       ├── {project_name}.tex
-│       ├── {project_name}_refs.bib
-│       ├── figures/
-│       ├── tables/
-│       └── notes/
+│   ├── paper/
+│   │   ├── main.tex             # 正式论文入口
+│   │   ├── sections/
+│   │   │   ├── 01_introduction.tex
+│   │   │   ├── 02_related_work.tex
+│   │   │   ├── 03_problem_formulation.tex
+│   │   │   ├── 04_solution_approaches.tex
+│   │   │   ├── 05_computational_experiments.tex
+│   │   │   └── 06_conclusion.tex
+│   │   ├── figures/            # 甘特图、网络图、算法框架图
+│   │   ├── tables/             # 实验结果表、参数表
+│   │   ├── algorithms/         # 伪代码（GA, SA, IG, 本文算法等）
+│   │   ├── bib/
+│   │   │   └── references.bib
+│   │   └── appendices/         # MIP 模型、补充实验、参数表
+│   ├── templates/
+│   │   └── els-cas-templates/  # 期刊模板原文件（不混入正文工程）
+│   └── README.md
 ├── requirements.txt
 ├── AGENTS.md                   # 项目记忆索引
 └── README.md

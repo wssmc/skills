@@ -55,6 +55,7 @@
 20. **生成项目后必须自检**：生成 `PROJECT_AUDIT.md` 和 `IMPLEMENTATION_STATUS.md`
 21. **最终交付必须给出测试、审计和实现状态摘要**
 22. 如果问题描述不完整，应先给出"缺失信息清单"和"默认假设"
+23. **对话约定必须持久化**：生成过程中所有自然语言约定（澄清、决策、假设、额外要求）必须写入项目内的 `docs/` 或 `configs/`，避免上下文丢失后无法追溯
 
 ---
 
@@ -101,6 +102,28 @@
 ```
 
 > 此结构化定义驱动数据生成、Instance 字段、decoder、feasibility checker、MIP 模型、baseline、邻域算子等所有后续组件。特殊约束部分**根据问题描述智能提取**，不预设固定清单。
+
+### 4.4 约定持久化（重要）
+
+> **在使用 Skill 生成项目的整个对话过程中，所有自然语言描述的约定必须持久化到项目内**，避免上下文丢失后无法追溯。
+
+**需要持久化的约定包括**：
+
+| 类型 | 举例 | 存放位置 |
+|------|------|---------|
+| 问题澄清对话 | 用户回答的补充信息、默认假设的确认 | `docs/YYYY-M-D_problem_description.md` |
+| 建模决策 | 为什么选择 makespan 而非加权目标、为什么使用某种编码 | `docs/YYYY-M-D_modeling_assumptions.md` |
+| 算例设计 | demo/small/large 的规模选择依据、参数范围来源 | `docs/YYYY-M-D_instance_design.md` |
+| 算法设计约定 | 邻域选择理由、初始化策略选择理由 | `docs/YYYY-M-D_algorithm_design.md` |
+| 实验设计 | 为什么 7 轮、为什么 factor=0.05 等 | `docs/YYYY-M-D_experiment_plan.md` |
+| 命名与结构约定 | 特定于本项目的命名规则、目录结构调整 | `AGENTS.md` |
+| 交互过程约定 | 用户额外要求（如"不使用 CPLEX"、"输出保留 4 位小数"） | `configs/conventions.md`（新增） |
+| 问题特征 | 结构化问题定义 + fingerprint | `configs/problem_fingerprint.json` + `configs/problem_statement.md` |
+
+**持久化时机**：
+- 每次用户提出新的约定/澄清 → 立即写入对应文件
+- 生成项目结束前 → 检查所有对话约定都已持久化
+- 交付前 → 在 `PROJECT_AUDIT.md` 中列出所有约定文件
 
 ---
 
@@ -193,3 +216,4 @@
 15. **不要让 README 替代 docs/ 中的问题描述文档**
 16. **不要在循环内频繁打印日志**，每行至少间隔 N 次迭代
 17. **不要在 skill 中写死问题特定内容**（如 re-entry、人工资源等），应根据问题描述智能生成
+18. **不要让对话约定停留在上下文中**：任何澄清、决策、默认假设、用户额外要求都必须持久化到 `docs/` 或 `configs/`

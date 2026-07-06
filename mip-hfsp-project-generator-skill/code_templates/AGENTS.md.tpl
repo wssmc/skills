@@ -69,6 +69,14 @@ src/problems/  src/constraints/  src/resources/  src/utils/
 - 生成 zip 前必须运行 `PROJECT_AUDIT.md` 审计
 - 交付时必须给出审计摘要（测试、占位、可运行算法、旧版目录）
 
+## 约定持久化
+- **所有对话中产生的自然语言约定必须写入项目文件**，不得停留在对话上下文
+- 用户澄清与建模决策：`docs/YYYY-M-D_*.md`
+- 用户交互约定（求解器偏好、输出格式、命名调整等）：`configs/conventions.md`
+- 问题特征结构化：`configs/problem_fingerprint.json` + `configs/problem_statement.md`
+- 每次新约定 → 立即写入；生成结束前 → 汇总检查
+- 详见 `modules/quality.md` §3
+
 ## 维护规则
 - 新增约定时同步更新本文件
 - 删除过时条目

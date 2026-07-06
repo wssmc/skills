@@ -74,18 +74,26 @@ def run(*args, **kwargs):
 
 ## 3. 问题描述文档要求
 
-`docs/` 必须包含问题定义文档，作为项目**问题定义源**。
+`docs/` 和 `configs/` 必须包含问题定义文档和**所有对话约定**，作为项目**问题定义源**与**决策记录**。
 
 ### 3.1 最低文档集合
 
 ```text
 docs/
-├── YYYY-M-D_problem_description.md
-├── YYYY-M-D_modeling_assumptions.md
-├── YYYY-M-D_instance_design.md
-├── YYYY-M-D_algorithm_design.md
-├── YYYY-M-D_experiment_plan.md
-└── YYYY-M-D_project_audit.md
+├── YYYY-M-D_problem_description.md      # 问题定义源（含用户澄清对话）
+├── YYYY-M-D_modeling_assumptions.md     # 建模决策理由
+├── YYYY-M-D_instance_design.md          # 算例设计依据
+├── YYYY-M-D_algorithm_design.md         # 算法设计约定
+├── YYYY-M-D_experiment_plan.md          # 实验参数选择依据
+└── YYYY-M-D_project_audit.md            # 审计报告
+
+configs/
+├── problem_statement.md                 # 问题描述（正式版）
+├── constraints_spec.md                  # 约束规范
+├── algorithm_requirements.md            # 算法要求
+├── experiment_plan.md                   # 实验计划
+├── conventions.md                       # 用户交互过程的额外约定
+└── problem_fingerprint.json             # 问题特征（根据描述生成）
 ```
 
 ### 3.2 问题描述文档
@@ -101,8 +109,71 @@ docs/
 7. 优化目标
 8. 与相关问题的区别
 9. 本项目默认假设
+10. **对话澄清记录**：用户在生成过程中提供的额外说明、修正、约束
 
 > 具体包含哪些条目取决于问题描述。如果问题没有某种特征（如无 re-entry、无人工资源），则不生成对应条目。
+
+### 3.3 约定持久化规则
+
+> **核心原则**：任何对话中产生的自然语言约定都必须写入项目文件，不得停留在对话上下文。
+
+| 约定类型 | 举例 | 持久化位置 |
+|---------|------|-----------|
+| 问题澄清 | "作业数为 20-100"、"允许等待但不允许抢占" | `docs/YYYY-M-D_problem_description.md` |
+| 建模决策 | "选择 makespan 目标"、"使用 seq+machine 编码" | `docs/YYYY-M-D_modeling_assumptions.md` |
+| 算例设计 | "small 取 n=10,20,30；large 取 n=50,100,200" | `docs/YYYY-M-D_instance_design.md` |
+| 算法约定 | "IG 破坏大小 d=n/10"、"SA 冷却率 0.995" | `docs/YYYY-M-D_algorithm_design.md` |
+| 实验设计 | "7 轮 batch，factor=0.1" | `docs/YYYY-M-D_experiment_plan.md` |
+| 用户额外要求 | "输出保留 4 位小数"、"甘特图使用配色 X"、"不使用 CPLEX" | `configs/conventions.md` |
+| 命名与结构 | 项目特定的命名调整、目录结构变体 | `AGENTS.md` |
+
+### 3.4 `configs/conventions.md` 模板
+
+新增此文件专门记录用户交互过程中的额外约定：
+
+```markdown
+# 项目交互约定记录
+
+> 本文件记录使用 Skill 生成项目过程中，用户提出的额外约定与偏好。
+> 每次新约定都追加到此文件，作为项目决策的持久化记录。
+
+## 生成日期
+YYYY-MM-DD
+
+## 用户明确要求
+
+### 求解器与依赖
+- [约定内容]
+
+### 输出格式
+- [约定内容]
+
+### 可视化偏好
+- [约定内容]
+
+### 命名与结构调整
+- [约定内容]
+
+### 其他
+- [约定内容]
+
+## 约定变更历史
+
+| 日期 | 变更 | 原因 |
+|------|------|------|
+| YYYY-MM-DD | 初始版本 | 项目生成 |
+```
+
+### 3.5 持久化检查点
+
+在项目生成流程的以下时点，必须检查约定持久化状态：
+
+| 时点 | 检查内容 |
+|------|---------|
+| 用户提出新约定/澄清时 | 立即写入对应文件，不要等到生成结束 |
+| 每个阶段结束时 | 检查本阶段的对话约定是否已完整记录 |
+| 生成项目结束前 | 汇总所有约定，确保没有遗漏 |
+| 交付前 | 在 `PROJECT_AUDIT.md` 中列出所有约定文件并标注状态 |
 
 ---
 
@@ -175,6 +246,10 @@ Audit summary:
 - Runnable MVP algorithms: N
 - Complete algorithms: N
 - Registered runnable algorithms: N
+- Convention persistence: PASS/FAIL
+  - configs/conventions.md: exists
+  - docs/*_problem_description.md: exists
+  - Total dialog conventions recorded: N
 ```
 
 ---

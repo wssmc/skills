@@ -180,7 +180,10 @@ src/metaheuristics/
 | `constraints_spec.md` | 约束规范 |
 | `algorithm_requirements.md` | 算法要求 |
 | `experiment_plan.md` | 实验计划 |
+| `conventions.md` | **用户交互过程的约定记录**（求解器偏好、输出格式、命名调整等） |
 | `problem_fingerprint.json` | 问题特征（根据问题描述生成） |
+
+> `conventions.md` 是**关键文件**：使用 Skill 生成项目过程中，用户提出的所有额外约定都必须写入此文件，避免对话上下文丢失后无法追溯。详见 `modules/quality.md` §3。
 
 ---
 
@@ -216,27 +219,49 @@ outputs/
 
 ```
 latex/
-├── els-cas-templates/
-├── {project_name}_bundle/
-│   ├── {project_name}.tex
-│   ├── {project_name}_refs.bib
-│   ├── figures/
-│   ├── tables/
-│   └── notes/
-└── 论文写作参考.pdf
+├── paper/
+│   ├── main.tex                          # 正式论文入口
+│   ├── sections/
+│   │   ├── 01_introduction.tex           # 引言
+│   │   ├── 02_related_work.tex           # 相关工作
+│   │   ├── 03_problem_formulation.tex    # 问题建模
+│   │   ├── 04_solution_approaches.tex    # 求解方法
+│   │   ├── 05_computational_experiments.tex # 实验分析
+│   │   └── 06_conclusion.tex             # 结论
+│   ├── figures/                          # 甘特图、网络图、算法框架图
+│   ├── tables/                           # 实验结果表、参数表
+│   ├── algorithms/                       # 伪代码（GA, SA, IG, 本文算法等）
+│   ├── bib/
+│   │   └── references.bib                # 参考文献
+│   └── appendices/                       # MIP 模型、补充实验、参数表
+├── templates/
+│   └── els-cas-templates/                # 期刊模板原文件（不混入正文工程）
+└── README.md
 ```
 
-### 写作 Skill 调用
+### 7.1 各文件职责
 
-论文写作应调用项目中的写作 Skill（位于 `thirdPartSkills.md`）来完成初稿：
+| 文件 | 内容 |
+|------|------|
+| `main.tex` | 论文入口，引用所有 sections |
+| `01_introduction.tex` | 工业背景、问题动机、研究贡献 |
+| `02_related_work.tex` | 文献综述，按主题组织 |
+| `03_problem_formulation.tex` | 数学符号、约束、目标函数 |
+| `04_solution_approaches.tex` | 算法设计（编码/解码/邻域/元启发式） |
+| `05_computational_experiments.tex` | 实验设置、结果表、消融分析、统计检验 |
+| `06_conclusion.tex` | 总结、未来工作 |
 
-| 章节 | 写作 Skill | 说明 |
-|------|-----------|------|
-| 引言 | 调用 `thirdPartSkills.md` 中的写作 skill | 基于问题描述和文献矩阵 |
-| 相关工作 | 调用 `thirdPartSkills.md` 中的写作 skill | 基于文献矩阵 |
-| 问题描述 | 调用 `thirdPartSkills.md` 中的写作 skill | 基于 `configs/` 文档 |
+### 7.2 写作 Skill 调用
 
-### 文献矩阵要求
+论文写作应调用项目中的写作 Skill（位于 `thirdPartSkills.md`）来生成初稿：
+
+| 章节 | 撰写方式 |
+|------|---------|
+| 引言 | 调用写作 Skill，基于问题描述和文献矩阵生成 |
+| 相关工作 | 调用写作 Skill，基于文献矩阵组织综述 |
+| 问题建模 | 调用写作 Skill，基于 `configs/` 文档生成 |
+
+### 7.3 文献矩阵要求
 
 使用 `literature-matrix-review-skill-v2.1`，生成**两类文献矩阵**：
 

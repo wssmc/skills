@@ -51,8 +51,24 @@ project_name/
 ├── tests/                      # 单元测试
 ├── outputs/                    # 所有实验输出
 ├── latex/                      # 论文写作
-│   ├── els-cas-templates/      # Elsevier CAS 模板
-│   └── {project_name}_bundle/  # 当前论文工作目录
+│   ├── paper/
+│   │   ├── main.tex
+│   │   ├── sections/
+│   │   │   ├── 01_introduction.tex
+│   │   │   ├── 02_related_work.tex
+│   │   │   ├── 03_problem_formulation.tex
+│   │   │   ├── 04_solution_approaches.tex
+│   │   │   ├── 05_computational_experiments.tex
+│   │   │   └── 06_conclusion.tex
+│   │   ├── figures/
+│   │   ├── tables/
+│   │   ├── algorithms/
+│   │   ├── bib/
+│   │   │   └── references.bib
+│   │   └── appendices/
+│   ├── templates/
+│   │   └── els-cas-templates/  # 期刊模板原文件（不混入正文工程）
+│   └── README.md
 ├── requirements.txt
 ├── AGENTS.md                   # 项目记忆索引
 └── README.md
