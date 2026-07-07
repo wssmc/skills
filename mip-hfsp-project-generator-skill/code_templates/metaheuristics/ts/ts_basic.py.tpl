@@ -15,6 +15,7 @@ from core.domain import Instance, Schedule
 from metaheuristics.initial.random_init import init_random, init_random_machine_assignment
 from metaheuristics.decoding.list_decoder import decode
 from metaheuristics.decoding.metrics import evaluate_schedule
+from metaheuristics.decoding.eval_cache import EvalCache
 from metaheuristics.neighborhood.operators import swap_move
 
 
@@ -32,6 +33,19 @@ def solve_ts_basic(instance: Instance, time_limit: float = 30.0,
     """
     rng = random.Random(seed)
     t0 = time.time()
+
+    # 计算缓存（FIFO，上限 500）
+    cache = EvalCache(max_size=500)
+
+    def evaluate(seq):
+        key = tuple(seq)
+        cached = cache.get(key)
+        if cached is not None:
+            return cached
+        sched = decode(seq, machine_assign, instance)
+        evaluate_schedule(instance, sched)
+        cache.put(key, sched.objective)
+        return sched.objective
 
     # 初始化
     job_seq = init_random(instance, seed)

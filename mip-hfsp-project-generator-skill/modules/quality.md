@@ -83,7 +83,7 @@ docs/
 ├── YYYY-M-D_problem_description.md      # 问题定义源（含用户澄清对话）
 ├── YYYY-M-D_modeling_assumptions.md     # 建模决策理由
 ├── YYYY-M-D_instance_design.md          # 算例设计依据
-├── YYYY-M-D_algorithm_design.md         # 算法设计约定
+├── YYYY-M-D_algorithm_design.md         # 算法设计约定（**必须记录 EvalCache 强制约定**）
 ├── YYYY-M-D_experiment_plan.md          # 实验参数选择依据
 └── YYYY-M-D_project_audit.md            # 审计报告
 
@@ -122,7 +122,7 @@ configs/
 | 问题澄清 | "作业数为 20-100"、"允许等待但不允许抢占" | `docs/YYYY-M-D_problem_description.md` |
 | 建模决策 | "选择 makespan 目标"、"使用 seq+machine 编码" | `docs/YYYY-M-D_modeling_assumptions.md` |
 | 算例设计 | "small 取 n=10,20,30；large 取 n=50,100,200" | `docs/YYYY-M-D_instance_design.md` |
-| 算法约定 | "IG 破坏大小 d=n/10"、"SA 冷却率 0.995" | `docs/YYYY-M-D_algorithm_design.md` |
+| 算法约定 | "IG 破坏大小 d=n/10"、"SA 冷却率 0.995"、**"所有算法使用 EvalCache，上限 500，FIFO"** | `docs/YYYY-M-D_algorithm_design.md` |
 | 实验设计 | "7 轮 batch，factor=0.1" | `docs/YYYY-M-D_experiment_plan.md` |
 | 用户额外要求 | "输出保留 4 位小数"、"甘特图使用配色 X"、"不使用 CPLEX" | `configs/conventions.md` |
 | 命名与结构 | 项目特定的命名调整、目录结构变体 | `AGENTS.md` |

@@ -38,7 +38,7 @@
 3. **分层清晰**：数据层、求解层、评估层、输出层、分析层各自独立
 4. **面向论文**：所有实验设计围绕论文需求（对比、消融、DOE、统计检验）
 5. **禁止随意生成脚本**：优先复用核心脚本（single / bench / batch / analysis）
-6. **加速评估**：增量评估 + 计算缓存（FIFO 队列，大小限制 500）
+6. **加速评估**：所有元启发式算法**必须**使用 `EvalCache`（编码序列 → 目标值缓存），上限 500，FIFO 弹出最旧策略。缓存键为编码序列的哈希（如 `tuple(job_sequence)`），评估时先查缓存未命中再解码。此约定必须写入生成项目的 `docs/YYYY-M-D_algorithm_design.md`
 7. **改进必须消融**：每次算法组件改进都必须消融，撰写完整消融记录文档
 8. **输出隔离**：所有实验输出仅限项目内 `outputs/` 目录
 9. **执行安全**：预估耗时超过 1 小时的任务必须后台运行
@@ -180,7 +180,7 @@
 8.5. `tests/smoke_test.py` 冒烟测试（生成后立即运行）
 9. `src/metaheuristics/initial/` 初始化方法
 10. `src/metaheuristics/neighborhood/` 邻域算子
-11. 5 个 basic 算法（SA, MA, IG, GA, TS）
+11. 5 个 basic 算法（SA, MA, IG, GA, TS）——**每个算法必须使用 EvalCache(max_size=500, FIFO)**
 12. `src/math_models/gurobi_model.py` + `lower_bound.py`
 13. `src/visualization/` 可视化
 14. `src/metaheuristics/registry.py` 算法注册表
@@ -189,6 +189,7 @@
 17. `scripts/ablation/quick_test_config.py`
 18. `tests/` 单元测试
 19. `AGENTS.md`
+19.5. `docs/YYYY-M-D_algorithm_design.md`（**必须记录 EvalCache 强制约定**）
 20. `IMPLEMENTATION_STATUS.md`
 21. `PROJECT_AUDIT.md`
 22. `README.md`

@@ -1,7 +1,14 @@
 """计算缓存 — src/metaheuristics/decoding/eval_cache.py
 
-FIFO 队列保存编码→目标值映射，队列大小限制 500。
-在评估时优先查缓存命中，未命中再解码计算。
+对**编码序列 → 目标值**的映射进行缓存，以节省重复解码计算的时间。
+使用 FIFO 队列，缓存上限 500，超出时**弹出最旧的条目**。
+
+强制约定（写入项目 docs）：
+  - 所有元启发式算法必须使用 EvalCache
+  - 缓存上限固定为 500（MAX_SIZE = 500）
+  - 弹出策略为 FIFO（先入先出，最旧条目最先被弹出）
+  - 缓存键为编码序列的哈希（如 tuple(job_sequence)）
+  - 评估时先查缓存，未命中再解码 + 存入缓存
 """
 from __future__ import annotations
 

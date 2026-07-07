@@ -29,9 +29,13 @@ def solve_baseline_template(instance: Instance, time_limit: float = 30.0,
     rng = random.Random(seed)
     t0 = time.time()
 
+    # 计算缓存（FIFO，上限 500）— 所有元启发式必须使用
+    cache = EvalCache(max_size=500)
+
     from metaheuristics.initial.random_init import init_random, init_random_machine_assignment
     from metaheuristics.decoding.list_decoder import decode
     from metaheuristics.decoding.metrics import evaluate_schedule
+from metaheuristics.decoding.eval_cache import EvalCache
 
     trace = []
 

@@ -31,6 +31,10 @@
 - [ ] `check_feasibility(instance, schedule) -> violations` 存在
 - [ ] `metrics.py` 计算 makespan / total_tardiness / average_flow_time
 - [ ] `eval_cache.py` FIFO 队列大小限制 500
+- [ ] **所有元启发式算法（SA/MA/IG/GA/TS）都 import 并使用 EvalCache**
+- [ ] **EvalCache 上限固定为 500，弹出策略为 FIFO**
+- [ ] **算法内部通过 `evaluate(seq)` 函数统一调用缓存**，而非直接 decode+evaluate_schedule
+- [ ] **`docs/YYYY-M-D_algorithm_design.md` 明确记录 EvalCache 强制约定**
 - [ ] `result_reproducer.py` 能从 txt 的 best_seq 复现目标值
 - [ ] `incremental_eval.py` 增量评估存在
 - [ ] 输出统一 Schedule 格式

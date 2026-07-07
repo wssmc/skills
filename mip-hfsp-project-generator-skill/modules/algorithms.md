@@ -69,6 +69,53 @@ Instance → Encoding → Decoder → Schedule → Feasibility Checker → Metri
 
 算法签名：`solve_xxx(instance, time_limit, seed, **kwargs) -> (Schedule, trace, best_seq)`
 
+### 2.0 强制要求：计算缓存 EvalCache
+
+> **所有元启发式算法（包括 baselines 中需要重复评估的算法）必须使用 `EvalCache`**。
+
+**约定**：
+
+| 项 | 值 |
+|---|---|
+| 缓存对象 | 编码序列 → 目标值 的映射 |
+| 缓存上限 | `MAX_SIZE = 500`（固定，不得修改） |
+| 弹出策略 | **FIFO**（先入先出，最旧条目最先被弹出，超过上限时自动弹出） |
+| 缓存键 | 编码序列的哈希，如 `tuple(job_sequence)` 或 `(tuple(seq), frozenset(machine_assign.items()))` |
+| 评估流程 | 先查缓存 → 命中则直接返回 → 未命中则解码 + 计算 + 存入缓存 |
+| 位置 | `src/metaheuristics/decoding/eval_cache.py` |
+| 引入 | `from metaheuristics.decoding.eval_cache import EvalCache` |
+
+**标准使用范式**（每个算法必须实现）：
+
+```python
+from metaheuristics.decoding.eval_cache import EvalCache
+from metaheuristics.decoding.list_decoder import decode
+from metaheuristics.decoding.metrics import evaluate_schedule
+
+def solve_xxx(instance, time_limit, seed=None, **kwargs):
+    cache = EvalCache(max_size=500)  # 上限 500，FIFO
+
+    def evaluate(seq):
+        """带缓存的目标值评估。"""
+        key = tuple(seq)
+        cached = cache.get(key)
+        if cached is not None:
+            return cached
+        sched = decode(seq, machine_assign, instance)
+        evaluate_schedule(instance, sched)
+        cache.put(key, sched.objective)
+        return sched.objective
+
+    # ... 算法主循环，调用 evaluate(seq) 而非直接 decode+evaluate_schedule
+```
+
+**为什么强制**：
+- 元启发式在邻域搜索、种群迭代中会**大量重复评估相同编码**（尤其是 GA/MA 种群、SA 拒绝后回退、IG 修复过程）
+- 无缓存时，重复解码成本极高，大规模算例可能占 80% 以上运行时间
+- 上限 500 与 FIFO 弹出策略是内存与命中率的平衡点，实证有效
+
+**在项目 `docs/YYYY-M-D_algorithm_design.md` 中必须明确写入此约定**。
+
 ### 2.1 GA 模板
 
 ```text

@@ -14,6 +14,7 @@ from core.domain import Instance, Schedule
 from metaheuristics.initial.random_init import init_random, init_random_machine_assignment
 from metaheuristics.decoding.list_decoder import decode
 from metaheuristics.decoding.metrics import evaluate_schedule
+from metaheuristics.decoding.eval_cache import EvalCache
 from metaheuristics.neighborhood.operators import random_swap
 
 
@@ -31,6 +32,19 @@ def solve_ma_basic(instance: Instance, time_limit: float = 30.0,
     """
     rng = random.Random(seed)
     t0 = time.time()
+
+    # 计算缓存（FIFO，上限 500，MA 种群评估会有大量重复编码）
+    cache = EvalCache(max_size=500)
+
+    def evaluate_seq(seq, assign):
+        key = tuple(seq)
+        cached = cache.get(key)
+        if cached is not None:
+            return cached
+        sched = decode(seq, assign, instance)
+        evaluate_schedule(instance, sched)
+        cache.put(key, sched.objective)
+        return sched.objective
 
     pop_size = 20
     mutation_rate = 0.1

@@ -33,6 +33,8 @@
 | Runnable algorithms registered | PASS | {count} algorithms in registry |
 | Placeholder algorithms not registered | PASS | Placeholder algorithms excluded |
 | Algorithm status documented | PASS | ALGORITHM_STATUS populated |
+| **EvalCache used in all metaheuristics** | PASS | All 5 basic algorithms + baselines use EvalCache(max_size=500, FIFO) |
+| **EvalCache convention documented** | PASS | docs/YYYY-M-D_algorithm_design.md §1 |
 
 ## Runtime Check
 
