@@ -311,6 +311,196 @@ outputs/ablation/{algo}/{ablation_name}/
 根据问题类型定义变量，HFSP 示例：
 
 ```text
+S[j, k]        开始时间
+C[j, k]        完工时间
+x[j, k, l]     机器分配（二值）
+y[i, j, k, l]  排序（二值）
+Cmax           最大完工时间
+```
+
+### 7.2 默认约束
+
+1. 资源分配约束（每个操作必须分配资源）
+2. 完工时间定义
+3. 顺序约束（前序关系）
+4. 资源非重叠约束
+5. 释放时间
+6. makespan 定义
+
+### 7.3 目标函数
+
+默认 `minimize Cmax`，可扩展为加权多目标。
+
+### 7.4 Gurobi 要求
+
+- 输出 LB 和最优可行解
+- 默认时限 3600 秒（正式）/ 60s（测试）
+- 结果经过 `check_feasibility` 校核
+- 无 Gurobi 环境时测试应跳过：`pytest.importorskip("gurobipy")`
+
+---
+
+## 8. 算法适配（Algorithm Adaptation）
+
+> 当指令是"算法适配项目"时，遵循以下强制流程。
+
+### 8.1 初始化拆解为单解 / 种群两类
+
+> **强制**：初始化方法必须按用途区分为两类，分别放在两个子目录：
+
+```text
+src/metaheuristics/initial/
+├── single/                       # 单解生成器（供 SA/IG/TS 及 baselines 使用）
+│   ├── dispatching.py            # SPT / LPT / EDD 等调度规则
+│   ├── neh.py                    # NEH 启发式
+│   ├── random_init.py            # 单个随机排列
+│   └── {author_year}.py          # 适配的文献单解初始化
+└── population/                   # 种群生成器（供 GA/MA 使用）
+    ├── random_pop.py             # 生成 pop_size 个不同的随机排列
+    ├── neh_pop.py                # NEH + 扰动策略生成多样化种群
+    └── {author_year}_pop.py      # 适配的文献种群初始化
+```
+
+### 8.2 用途约束（强制）
+
+| 生成器类型 | 函数签名返回 | 允许用于 | **严禁用于** |
+|-----------|-------------|---------|-------------|
+| **单解生成器** `initial/single/` | `list[int]` — 单个作业排列 | SA / IG / TS / baselines | GA / MA 的种群初始化 |
+| **种群生成器** `initial/population/` | `list[list[int]]` — pop_size 个排列 | GA / MA 的种群初始化 | 单解算法的起点 |
+
+**为什么强制区分**：
+- **单解生成器直接用于种群会失败**：
+  - 确定性生成器（NEH、SPT）会产生 pop_size 个**相同**个体，种群丧失多样性
+  - 循环调用随机生成器不保证个体互不相同
+- **种群生成器返回 list[list[int]]，语义不同**：不能直接用于单解算法（会浪费计算）
+
+### 8.3 命名与文件约定
+
+**单解生成器**：
+- 文件命名：`src/metaheuristics/initial/single/{方法名}.py`
+- 函数签名：`init_xxx(instance, **kwargs) -> list[int]`
+- 顶部注释必须声明：`⚠ 用途约定：仅用于单解元启发式（SA / IG / TS）`
+
+**种群生成器**：
+- 文件命名：`src/metaheuristics/initial/population/{方法名}_pop.py`（后缀 `_pop` 明示种群）
+- 函数签名：`generate_xxx_population(instance, pop_size, seed=None, **kwargs) -> list[list[int]]`
+- 顶部注释必须声明：`⚠ 用途约定：仅用于种群元启发式（GA / MA）`
+- **保证多样性**：内部实现应确保 pop_size 个个体互不相同（`ensure_diversity=True`），无法保证时（如 pop_size 接近 n!）应有 fallback 逻辑
+
+### 8.4 从文献适配算法时
+
+1. 识别文献算法中的初始化是**单解**还是**种群**类型
+2. 单解 → 提取到 `initial/single/{author_year}.py`
+3. 种群 → 提取到 `initial/population/{author_year}_pop.py`
+4. 原算法主文件通过 import 调用对应模块
+
+**示例**：
+
+```python
+# src/metaheuristics/ig/ig_ruiz2007.py（单解算法，用 single/）
+from metaheuristics.initial.single.neh_ruiz2003 import init_neh_ruiz2003
+
+def solve_ig_ruiz2007(instance, time_limit, seed=None, **kwargs):
+    cache = kwargs.get("cache") or EvalCache(max_size=500)
+    initial_seq = init_neh_ruiz2003(instance)
+    ...
+
+# src/metaheuristics/ga/ga_liu2018.py（种群算法，用 population/）
+from metaheuristics.initial.population.neh_pop import generate_neh_population
+
+def solve_ga_liu2018(instance, time_limit, seed=None, **kwargs):
+    cache = kwargs.get("cache") or EvalCache(max_size=500)
+    pop_size = 30
+    initial_pop = generate_neh_population(instance, pop_size, seed=seed, strategy="mixed")
+    ...
+```
+
+---
+
+## 9. 批量对比一致性
+
+### 9.1 强制交互提示
+
+`sh_batch_instances_algorithms.sh` 在启动时必须提示用户选择或接受两个开关：
+
+```bash
+bash scripts/sh_batch_instances_algorithms.sh all 0.1
+# 若未指定开关，脚本交互式提示:
+#   Use unified initialization for all algorithms? [y/n] (default: y):
+#   Use unified EvalCache across algorithms? [y/n] (default: y):
+```
+
+支持命令行开关：
+
+```bash
+bash scripts/sh_batch_instances_algorithms.sh all 0.1 \
+    --unified-init y --unified-cache y
+```
+
+### 9.2 两个开关的行为
+
+| 开关 | y（统一，默认） | n（独立） |
+|------|---------------|----------|
+| `--unified-init` | **按算法类型分派**：单解算法用同一个 `initial/single/xxx` 生成器（默认 `neh`）；种群算法用同一个 `initial/population/xxx_pop` 生成器（默认 `neh_pop`） | 各算法用注册时指定的初始化 |
+| `--unified-cache` | 传入**同一个 EvalCache 实例**给所有算法（跨算法共享编码→目标值） | 各算法内部各自 `EvalCache(500)` |
+
+> **重要**：`--unified-init` 不会把单解生成器强加给种群算法（反之亦然）。统一是指**同类内统一**：所有单解算法共用一个单解生成器，所有种群算法共用一个种群生成器。
+
+### 9.3 CLI 参数
+
+```bash
+bash scripts/sh_batch_instances_algorithms.sh all 0.1 \
+    --unified-init y \
+    --init-method-single neh \
+    --init-method-pop neh_pop \
+    --unified-cache y
+```
+
+- `--init-method-single NAME`：单解算法使用的初始化方法（默认 `neh`）
+- `--init-method-pop NAME`：种群算法使用的种群生成器（默认 `neh_pop`）
+
+### 9.4 默认策略
+
+- **默认**：`--unified-init y --unified-cache y`
+- 原因：批量对比目的是评估算法**搜索能力**，应控制初始化和缓存变量
+- 使用非默认选项需在 `configs/conventions.md` 中记录理由
+
+### 9.5 实现要点
+
+`run_baselines.py` 需支持接收外部注入的 `init_fn` 和 `cache`：
+
+```python
+def run_single(instance_dir, algo, time_limit, seed=None,
+               shared_cache=None, shared_init_fn=None, ...):
+    solver = get_algorithm(algo)
+    if shared_cache is not None and shared_init_fn is not None:
+        # 统一模式
+        schedule, trace, best_seq = solver(
+            instance, time_limit, seed,
+            cache=shared_cache, init_fn=shared_init_fn,
+        )
+    else:
+        # 独立模式
+        schedule, trace, best_seq = solver(instance, time_limit, seed)
+```
+
+算法函数签名支持可选参数：
+
+```python
+def solve_xxx(instance, time_limit, seed=None, cache=None, init_fn=None, **kwargs):
+    if cache is None:
+        cache = EvalCache(max_size=500)
+    if init_fn is None:
+        init_fn = default_init_for_this_algo
+    initial_seq = init_fn(instance)
+    ...
+```
+
+### 7.1 默认变量
+
+根据问题类型定义变量，HFSP 示例：
+
+```text
 S[j, s]        开始时间
 C[j, s]        完工时间
 x[j, s, m]     机器分配（二值）

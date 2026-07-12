@@ -34,7 +34,14 @@
 - [ ] **所有元启发式算法（SA/MA/IG/GA/TS）都 import 并使用 EvalCache**
 - [ ] **EvalCache 上限固定为 500，弹出策略为 FIFO**
 - [ ] **算法内部通过 `evaluate(seq)` 函数统一调用缓存**，而非直接 decode+evaluate_schedule
-- [ ] **`docs/YYYY-M-D_algorithm_design.md` 明确记录 EvalCache 强制约定**
+- [ ] **算法适配（如有）：原算法的初始化已按用途提取——单解算法用 `src/metaheuristics/initial/single/`，种群算法用 `src/metaheuristics/initial/population/`**
+- [ ] **`initial/single/` 与 `initial/population/` 严格分离**：单解生成器返回 `list[int]`，种群生成器返回 `list[list[int]]`
+- [ ] **GA/MA 使用 `generate_xxx_population()` 生成种群**，不循环调用单解生成器
+- [ ] **种群生成器保证 pop_size 个体互不相同**（ensure_diversity=True）
+- [ ] **`sh_batch_instances_algorithms.sh` 支持 `--unified-init` 和 `--unified-cache` 开关（交互式提示 + 命令行）**
+- [ ] **算法接受 `cache` 和 `init_fn` kwargs**，可被 `run_baselines.py` 从外部注入
+- [ ] **批量对比默认使用统一初始化 + 统一缓存**，非默认设置在 `configs/conventions.md` 记录
+- [ ] **`docs/YYYY-M-D_algorithm_design.md` 明确记录 EvalCache 强制约定 + 算法适配 + 批量一致性约定**
 - [ ] `result_reproducer.py` 能从 txt 的 best_seq 复现目标值
 - [ ] `incremental_eval.py` 增量评估存在
 - [ ] 输出统一 Schedule 格式

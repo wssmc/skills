@@ -69,6 +69,16 @@ src/problems/  src/constraints/  src/resources/  src/utils/
 - 生成 zip 前必须运行 `PROJECT_AUDIT.md` 审计
 - 交付时必须给出审计摘要（测试、占位、可运行算法、旧版目录）
 
+## 算法适配与批量一致性
+- **算法适配 — 初始化按用途分类**：
+  - 单解生成器 → `src/metaheuristics/initial/single/`（返回 `list[int]`，供 SA/IG/TS 用）
+  - 种群生成器 → `src/metaheuristics/initial/population/`（返回 `list[list[int]]`，供 GA/MA 用）
+  - **严禁混用**：单解生成器直接用于种群会导致个体相同，种群丧失多样性
+- **批量对比默认统一**：`sh_batch_instances_algorithms.sh` 默认 `--unified-init y --unified-cache y`
+- 交互式提示：脚本启动时询问是否使用统一初始化和统一缓存
+- 命令行开关：`--unified-init [y|n] --unified-cache [y|n] --init-method-single NAME --init-method-pop NAME`
+- 非默认设置需在 `configs/conventions.md` 记录理由
+
 ## 约定持久化
 - **所有对话中产生的自然语言约定必须写入项目文件**，不得停留在对话上下文
 - 用户澄清与建模决策：`docs/YYYY-M-D_*.md`

@@ -103,6 +103,72 @@
 
 > 此结构化定义驱动数据生成、Instance 字段、decoder、feasibility checker、MIP 模型、baseline、邻域算子等所有后续组件。特殊约束部分**根据问题描述智能提取**，不预设固定清单。
 
+### 4.4 算法适配项目（Algorithm Adaptation）
+
+> 当指令是**"算法适配项目"**（即将某已有算法/文献中的算法适配到本项目）时，遵循以下强制流程。
+
+**流程**：
+
+1. **拆解**：从原算法中识别可复用组件
+   - 初始化方法（如作者提出的 NEH 变体、启发式排序规则）
+   - 邻域算子
+   - 编码方式（如已有）
+   - 参数策略
+
+2. **提取初始化方法到 `src/metaheuristics/initial/`**，**严格区分单解 / 种群**：
+   - **单解生成器** → `initial/single/{方法名}.py`，供 SA/IG/TS 使用，返回 `list[int]`
+   - **种群生成器** → `initial/population/{方法名}_pop.py`，供 GA/MA 使用，返回 `list[list[int]]`
+   - **严禁混用**：单解生成器直接用于种群会导致所有个体相同，种群丧失多样性
+   - 函数签名：
+     - 单解：`init_xxx(instance, **kwargs) -> list[int]`
+     - 种群：`generate_xxx_population(instance, pop_size, seed=None, **kwargs) -> list[list[int]]`
+   - **原算法主体不重复实现初始化逻辑，而是 import 并调用**
+
+3. **原算法主文件放在对应目录**
+   - 如 `src/metaheuristics/ig/ig_author2020.py`
+   - 顶部 import 提取出的初始化：
+     ```python
+     from metaheuristics.initial.neh_author2020 import init_neh_author2020
+     ```
+
+4. **注册到 `registry.py`**（详见 §3.16 算法注册规则）
+
+**目的**：
+- 初始化方法**跨算法复用**（不同元启发式可共用同一初始化）
+- 消融实验时可**替换初始化**（如比较 NEH vs 随机 vs 作者变体）
+- 便于公平对比（详见 §4.5）
+
+### 4.5 批量对比时的一致性要求
+
+> 使用 `sh_batch_instances_algorithms.sh` 进行多算法批量对比时，**默认要求所有算法使用统一的初始化和缓存**，以保证对比公平性。
+
+**脚本必须支持两个交互式提示或命令行开关**：
+
+| 开关 | 默认 | 含义 |
+|------|------|------|
+| `--unified-init [y/n]` | `y` | 是否所有算法使用**同一个**初始化方法（如统一用 NEH） |
+| `--unified-cache [y/n]` | `y` | 是否所有算法使用**同一个** EvalCache（跨算法共享缓存） |
+
+**运行时行为**：
+
+- **交互模式**（无开关时）：脚本启动后提示用户选择
+  ```
+  Use unified initialization for all algorithms? [y/n] (default: y):
+  Use unified EvalCache across algorithms? [y/n] (default: y):
+  ```
+- **参数模式**：`bash scripts/sh_batch_instances_algorithms.sh all 0.1 --unified-init y --unified-cache y`
+
+**逻辑**：
+
+| 选项 | y（统一） | n（各自独立） |
+|------|----------|--------------|
+| unified-init | 所有算法用同一个 `init_xxx()`（默认 NEH），保证起点相同 | 各算法用注册时指定的初始化 |
+| unified-cache | 传入同一个 `EvalCache` 实例给所有算法 | 各算法内部各自 `EvalCache(500)` |
+
+**关键约定必须写入项目 `docs/YYYY-M-D_algorithm_design.md`**：
+- 批量对比默认使用统一初始化 + 统一缓存
+- 使用非统一选项需在 `configs/conventions.md` 中记录理由
+
 ### 4.4 约定持久化（重要）
 
 > **在使用 Skill 生成项目的整个对话过程中，所有自然语言描述的约定必须持久化到项目内**，避免上下文丢失后无法追溯。
@@ -218,3 +284,6 @@
 16. **不要在循环内频繁打印日志**，每行至少间隔 N 次迭代
 17. **不要在 skill 中写死问题特定内容**（如 re-entry、人工资源等），应根据问题描述智能生成
 18. **不要让对话约定停留在上下文中**：任何澄清、决策、默认假设、用户额外要求都必须持久化到 `docs/` 或 `configs/`
+19. **不要在算法适配时把初始化写在算法主文件中**：初始化必须提取到 `src/metaheuristics/initial/single/` 或 `src/metaheuristics/initial/population/`（按用途）独立文件，主文件通过 import 调用
+20. **不要混用单解生成器与种群生成器**：单解生成器（`initial/single/`，返回 `list[int]`）严禁用于 GA/MA 种群初始化；种群生成器（`initial/population/`，返回 `list[list[int]]`）严禁用于 SA/IG/TS
+21. **不要在批量对比时让各算法用不同初始化/缓存**（除非明确要求）：`sh_batch_instances_algorithms.sh` 默认统一初始化 + 统一缓存（单解/种群各自统一）

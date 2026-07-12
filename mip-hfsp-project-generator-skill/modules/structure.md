@@ -131,7 +131,9 @@ class PrecedenceArc:     # 前序弧
 
 ```text
 src/metaheuristics/
-├── initial/              # 初始化方法（SPT, LPT, NEH, random 等）
+├── initial/              # 初始化方法（严格区分单解 / 种群）
+│   ├── single/           # 单解生成器（SA/IG/TS 用）：SPT/LPT/NEH/random
+│   └── population/       # 种群生成器（GA/MA 用）：random_pop/neh_pop
 ├── encoding/             # 编码方案（多套）
 ├── decoding/             # 解码 + 增量评估 + 结果校验
 │   ├── list_decoder.py

@@ -32,11 +32,14 @@ project_name/
 │   │   ├── lower_bound.py      # 下界计算（快速下界 + 精确下界）
 │   │   └── __init__.py
 │   ├── metaheuristics/         # 元启发式算法
-│   │   ├── initial/            # 初始化方法
-│   │   │   ├── dispatching.py  # 调度规则初始化（SPT, LPT 等）
-│   │   │   ├── neh.py          # NEH 启发式
-│   │   │   ├── random_init.py  # 随机初始化
-│   │   │   └── topological.py  # 拓扑排序初始化
+│   │   ├── initial/            # 初始化方法（严格区分单解 / 种群）
+│   │   │   ├── single/         # 单解生成器（SA/IG/TS 用）
+│   │   │   │   ├── dispatching.py    # SPT / LPT / EDD
+│   │   │   │   ├── neh.py            # NEH 启发式（返回单个 list[int]）
+│   │   │   │   └── random_init.py    # 单个随机排列
+│   │   │   └── population/     # 种群生成器（GA/MA 用）
+│   │   │       ├── random_pop.py     # 生成 pop_size 个不同随机排列
+│   │   │       └── neh_pop.py        # NEH + 扰动策略生成多样化种群
 │   │   ├── encoding/           # 编码方案（多套）
 │   │   │   ├── sequence_encoding.py        # 置换序列编码
 │   │   │   ├── machine_order_encoding.py   # 机器顺序编码

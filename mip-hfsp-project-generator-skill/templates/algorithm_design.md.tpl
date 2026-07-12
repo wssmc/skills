@@ -133,7 +133,59 @@ def solve_xxx(instance, time_limit, seed=None, **kwargs):
 
 ---
 
-## 6. 变更历史
+## 6. 算法适配约定（Algorithm Adaptation）
+
+> 当有指令是"算法适配项目"时，遵循以下强制流程。
+
+### 6.1 初始化提取（严格区分单解 / 种群）
+
+原算法的初始化方法必须**按用途分类**提取到不同子目录：
+
+| 类型 | 目录 | 文件命名 | 函数签名 | 使用者 |
+|------|------|---------|---------|--------|
+| **单解生成器** | `src/metaheuristics/initial/single/` | `{方法名}.py` | `init_xxx(instance, **kwargs) -> list[int]` | SA / IG / TS / baselines |
+| **种群生成器** | `src/metaheuristics/initial/population/` | `{方法名}_pop.py` | `generate_xxx_population(instance, pop_size, seed, **kwargs) -> list[list[int]]` | GA / MA |
+
+**严禁混用**：
+- 单解生成器直接用于 GA/MA 种群 → 所有个体相同，种群丧失多样性
+- 种群生成器用于单解算法 → 语义不符（返回 `list[list[int]]`）
+
+### 6.2 已适配的算法（如有）
+
+| 原算法来源 | 项目位置 | 类型 | 初始化文件 |
+|-----------|---------|------|-----------|
+| {{author_year}} | `src/metaheuristics/{algo}/{name}.py` | 单解 | `initial/single/{init_name}.py` |
+| {{author_year}} | `src/metaheuristics/{algo}/{name}.py` | 种群 | `initial/population/{init_name}_pop.py` |
+
+---
+
+## 7. 批量对比一致性
+
+`sh_batch_instances_algorithms.sh` 提供两个开关，保证多算法对比公平：
+
+### 7.1 统一初始化 `--unified-init`
+- **默认 y**：所有算法调用同一个 `init_xxx()`（默认 `neh_basic`）
+- 保证不同算法从相同起点出发，对比其**搜索能力**而非初始化差异
+
+### 7.2 统一缓存 `--unified-cache`
+- **默认 y**：所有算法共享**同一个 EvalCache 实例**（跨算法共享编码→目标值）
+- 保证相同编码的评估成本对所有算法一致
+
+### 7.3 交互式提示
+
+脚本启动后若未提供开关，会提示：
+```
+Use unified initialization for all algorithms? [y/n] (default: y):
+Use unified EvalCache across algorithms? [y/n] (default: y):
+```
+
+### 7.4 非默认设置的记录
+
+使用 `--unified-init n` 或 `--unified-cache n` 时，脚本会自动在 `configs/conventions.md` 追加记录，并附上理由（需用户填写）。
+
+---
+
+## 8. 变更历史
 
 | 日期 | 变更 | 原因 |
 |------|------|------|

@@ -35,6 +35,11 @@
 | Algorithm status documented | PASS | ALGORITHM_STATUS populated |
 | **EvalCache used in all metaheuristics** | PASS | All 5 basic algorithms + baselines use EvalCache(max_size=500, FIFO) |
 | **EvalCache convention documented** | PASS | docs/YYYY-M-D_algorithm_design.md §1 |
+| **Adapted algorithms extract init to initial/** | PASS | All adapted algorithms have init in src/metaheuristics/initial/single or /population |
+| **initial/single vs initial/population separated** | PASS | Single-solution generators isolated from population generators |
+| **Population algorithms use generate_xxx_population()** | PASS | GA/MA use population generators, not loops over single-solution ones |
+| **sh_batch supports --unified-init/--unified-cache** | PASS | Interactive prompt + CLI flags implemented |
+| **Algorithms accept cache/init_fn kwargs** | PASS | All 5 basic algorithms accept optional cache and init_fn |
 
 ## Runtime Check
 

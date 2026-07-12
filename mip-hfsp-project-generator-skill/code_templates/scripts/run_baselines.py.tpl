@@ -86,15 +86,20 @@ SUPPORTED_ALGOS = tuple(get_runnable_algorithms())
 
 def run_single(instance_dir: str, algo: str, time_limit: float = 30.0,
                 seed: int | None = None, output_dir: str = "outputs/single",
-                txt_output: bool = False) -> dict:
-    """运行单个 算例 × 算法。"""
+                txt_output: bool = False, **solver_kwargs) -> dict:
+    """运行单个 算例 × 算法。
+
+    solver_kwargs 支持的可选参数（用于批量对比一致性）:
+        init_fn: 统一初始化函数（覆盖算法默认初始化）
+        cache: 共享 EvalCache 实例（覆盖算法内部缓存）
+    """
     instance = load_instance(instance_dir)
     inst_name = Path(instance_dir).name
 
     solver = _get_solver(algo)
     t0 = time.time()
     # 算法返回 (Schedule, trace, best_seq)
-    schedule, trace, best_seq = solver(instance, time_limit=time_limit, seed=seed)
+    schedule, trace, best_seq = solver(instance, time_limit=time_limit, seed=seed, **solver_kwargs)
     runtime = time.time() - t0
 
     # 评估
@@ -178,13 +183,56 @@ def main():
     parser.add_argument("--out", type=str, default="outputs/single", help="Output directory")
     parser.add_argument("--txt", action="store_true", help="Also output txt format")
     parser.add_argument("--verbose", type=int, default=0, help="Verbose level")
+    # 一致性开关（用于批量对比）
+    parser.add_argument("--unified-init", action="store_true",
+                        help="Use unified initialization method (per algorithm type)")
+    parser.add_argument("--init-method-single", type=str, default="neh",
+                        help="Init method for single-solution algorithms (SA/IG/TS)")
+    parser.add_argument("--init-method-pop", type=str, default="neh_pop",
+                        help="Init method for population algorithms (GA/MA)")
+    parser.add_argument("--unified-cache", action="store_true",
+                        help="Use shared EvalCache across algorithms")
     args = parser.parse_args()
 
     if args.algo not in SUPPORTED_ALGOS:
         print(f"Error: unsupported algorithm '{args.algo}'. Supported: {SUPPORTED_ALGOS}")
         sys.exit(1)
 
-    result = run_single(args.inst, args.algo, args.time, args.seed, args.out, txt_output=args.txt)
+    # 构建 kwargs 传给 solver
+    solver_kwargs = {}
+
+    # 单解 / 种群算法的分类（通过算法名前缀或 registry 元数据决定）
+    POP_ALGOS = {"ga", "ma"}
+    is_pop_algo = args.algo in POP_ALGOS or "ga" in args.algo or "ma" in args.algo
+
+    if args.unified_init:
+        from importlib import import_module
+        try:
+            if is_pop_algo:
+                # 种群算法：从 initial/population/ 导入种群生成器
+                mod = import_module(f"metaheuristics.initial.population.{args.init_method_pop}")
+                gen_fn = getattr(mod, f"generate_{args.init_method_pop.replace('_pop', '')}_population", None) \
+                    or getattr(mod, "generate_population", None)
+                if gen_fn is not None:
+                    solver_kwargs["population_generator"] = gen_fn
+                    print(f"[unified-init] population algo: using population.{args.init_method_pop}")
+            else:
+                # 单解算法：从 initial/single/ 导入单解生成器
+                mod = import_module(f"metaheuristics.initial.single.{args.init_method_single}")
+                init_fn = getattr(mod, f"init_{args.init_method_single}", None) \
+                    or getattr(mod, "init", None)
+                if init_fn is not None:
+                    solver_kwargs["init_fn"] = init_fn
+                    print(f"[unified-init] single algo: using single.{args.init_method_single}")
+        except ImportError as e:
+            print(f"Warning: cannot import init method: {e}")
+
+    if args.unified_cache:
+        from metaheuristics.decoding.eval_cache import EvalCache
+        solver_kwargs["cache"] = EvalCache(max_size=500)
+
+    result = run_single(args.inst, args.algo, args.time, args.seed, args.out,
+                        txt_output=args.txt, **solver_kwargs)
 
     print(f"Cmax: {result['objective']:.4f}")
     print(f"Runtime: {result['runtime']:.2f}s")
@@ -192,6 +240,13 @@ def main():
     print(f"Seed: {args.seed}")
     print(f"Instance: {result['instance']}")
     print(f"Algorithm: {result['algo']}")
+    if args.unified_init:
+        if is_pop_algo:
+            print(f"Unified init (pop): {args.init_method_pop}")
+        else:
+            print(f"Unified init (single): {args.init_method_single}")
+    if args.unified_cache:
+        print(f"Unified cache: shared EvalCache(500, FIFO)")
     if args.txt:
         print(f"Best seq saved to: {args.out}/{result['instance']}/{args.algo}.txt")
 

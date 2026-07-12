@@ -1,27 +1,20 @@
-"""NEH 启发式初始化 — src/metaheuristics/initial/neh.py
+"""NEH 启发式（单解生成器）— src/metaheuristics/initial/single/neh.py
 
-Nawaz-Enscore-Ham 启发式，经典 HFSP/FSP 初始化方法。
+⚠ 用途约定：仅用于单解元启发式（SA / IG / TS）的初始解生成。
+⚠ 严禁直接用于种群初始化（GA / MA）——NEH 是确定性算法，会产生相同个体。
+   种群初始化请使用 `src/metaheuristics/initial/population/` 下的生成器。
+
+函数签名：init_neh(instance, decoder=None) -> list[int]
 """
 from __future__ import annotations
 
 import sys
-sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.parent.parent))
+sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.parent.parent.parent))
 from core.domain import Instance
 
 
 def init_neh(instance: Instance, decoder=None) -> list[int]:
-    """NEH 启发式初始化。
-
-    1. 按作业总加工时间降序排列
-    2. 逐步插入，每次选择最佳位置
-
-    Args:
-        instance: 算例数据
-        decoder: 解码器（用于评估部分序列的目标值），如果为 None 则返回排序序列
-
-    Returns:
-        作业排列
-    """
+    """NEH 启发式：按 total processing time 降序，逐步插入最佳位置。"""
     totals = {}
     for j in range(instance.num_jobs):
         totals[j] = sum(instance.processing_times.get(j, {}).get(s, 0.0)
@@ -33,14 +26,12 @@ def init_neh(instance: Instance, decoder=None) -> list[int]:
 
     result = [ordered[0]]
     for k in range(1, len(ordered)):
-        best_seq = None
-        best_obj = float("inf")
+        best_seq, best_obj = None, float("inf")
         for pos in range(k + 1):
             trial = result[:pos] + [ordered[k]] + result[pos:]
             obj = decoder(trial)
             if obj < best_obj:
-                best_obj = obj
-                best_seq = trial
+                best_obj, best_seq = obj, trial
         result = best_seq
 
     return result

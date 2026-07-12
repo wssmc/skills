@@ -11,8 +11,8 @@ import time
 import sys
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.parent.parent))
 from core.domain import Instance, Schedule
-from metaheuristics.initial.random_init import init_random, init_random_machine_assignment
-from metaheuristics.initial.dispatching import init_spt
+from metaheuristics.initial.single.random_init import init_random, init_random_machine_assignment
+from metaheuristics.initial.single.dispatching import init_spt
 from metaheuristics.decoding.list_decoder import decode
 from metaheuristics.decoding.metrics import evaluate_schedule
 from metaheuristics.decoding.eval_cache import EvalCache
@@ -34,7 +34,10 @@ def solve_ig_basic(instance: Instance, time_limit: float = 30.0,
     t0 = time.time()
 
     # 计算缓存（FIFO，上限 500）
-    cache = EvalCache(max_size=500)
+    # 计算缓存：优先使用外部注入（批量对比一致性），否则新建
+    cache = kwargs.get("cache") or EvalCache(max_size=500)
+    # 初始化函数：优先使用外部注入的统一初始化，否则用算法默认初始化
+    init_fn = kwargs.get("init_fn")
 
     def evaluate(seq):
         key = tuple(seq)
