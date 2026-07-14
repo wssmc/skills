@@ -64,6 +64,35 @@ src/problems/  src/constraints/  src/resources/  src/utils/
 - **并行**: `ProcessPoolExecutor`，大规模 W=2，小规模 W=4
 - **断点续跑**: batch 脚本检测 `round{r}/` 目录非空则跳过
 
+## 代码质量红线（严禁打补丁 + 严禁兼容层）
+
+### §8.1 严禁打补丁
+- 遇到 bug 必须分析根因并修复设计/逻辑本身
+- 禁止用法：特殊值特判、`except: pass`、`pytest.skip`、注释掉失败代码、临时 workaround
+- 禁止注释关键字：临时/暂时/绕过/待重构/先这样/TODO 后修
+
+### §8.2 严禁兼容层
+- **接口/格式变更必须一次性迁移全部调用点**，禁止保留旧接口
+- 禁止用法：
+  - 旧名 shim：`def old(): return new()`
+  - `DeprecationWarning` 包装
+  - 旧参数/新参数并存
+  - 双格式/版本判断分支
+  - 模块 alias（`OldClass = NewClass`）
+  - 旧路径 fallback
+- 禁止注释关键字：兼容/legacy/deprecated/保留旧接口/过渡期/两版本共存
+
+### 遇到问题时的流程
+5-Why 根因分析 → 修复根因 → 同步调用方（若接口变了，全项目一次性替换）→ 添加回归测试 → 记录到 `docs/root_cause_fix_log.md`
+
+### 允许的例外
+- 上游库 bug：`# UPSTREAM BUG: <link>`
+- 数值稳定性护栏（< 1e-6）
+- 明确不支持：`raise NotImplementedError(...)`
+- **不再允许 "backward-compat" 例外**
+
+详见 SKILL.md §8
+
 ## 输出策略
 - 所有实验输出在 `outputs/` 内
 - 生成 zip 前必须运行 `PROJECT_AUDIT.md` 审计

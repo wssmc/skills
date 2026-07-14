@@ -94,6 +94,33 @@
 - [ ] 使用 `literature-matrix-review-skill-v2.1` 生成两类文献矩阵
 - [ ] 引言、相关工作、问题描述初稿由写作 Skill 辅助生成
 
+## 代码质量红线（严禁打补丁 + 严禁兼容层）
+
+> 详见 SKILL.md §8。以下项目**任何一项失败都必须重写代码，不得交付**。
+
+### §8.1 严禁打补丁
+- [ ] **无特殊值特判**：代码中无 `if inst_name == "..."` / `if job_id == N` 类根因外的硬编码分支
+- [ ] **无异常静默**：无 `except Exception: pass` / `except: pass` / `except: return None`
+- [ ] **无临时注释关键字**：核心代码（`src/`、`data/`）中无"临时/暂时/绕过/待重构/先这样/TODO 后修"
+- [ ] **无被注释掉的失败代码**：不允许 `# xxx = decode(...)  # 有 bug` 加 mock 替代
+- [ ] **无 `@pytest.mark.skip("暂时通不过")`**：只允许因缺少外部依赖（如 Gurobi）的 `pytest.importorskip`
+- [ ] **异常类型明确**：所有 `except` 都是特定类型（`FileNotFoundError`、`ValueError` 等），非泛型 catch
+- [ ] **占位使用 NotImplementedError**：占位函数明确 raise，禁止 `def f(): pass` 或返回伪值
+
+### §8.2 严禁兼容层
+- [ ] **无旧接口 shim**：无 `def old_name(*args, **kw): return new_name(*args, **kw)` 模式
+- [ ] **无 DeprecationWarning 包装**：无 `warnings.warn("use new_api")` 保留旧接口
+- [ ] **无旧参数/新参数并存**：函数签名不含 `old_name=None, new_name=None` 二选一
+- [ ] **无双格式支持分支**：无 `if isinstance(seq, list): ... elif isinstance(seq, dict): ...` 支持新旧数据格式
+- [ ] **无版本判断分支**：无 `if data.get("version") == "v1": ...` 类多版本共存
+- [ ] **无模块级 alias**：无 `OldClass = NewClass` / `from new_mod import X as OldX`
+- [ ] **无旧路径 fallback**：无 `if not new_path.exists(): return read(old_path)`
+- [ ] **无兼容注释关键字**：无"兼容/legacy/deprecated/保留旧接口/过渡期/两版本共存"
+
+### §8.4 补丁例外（须显式声明 + 文档登记）
+- [ ] **补丁例外有明确注释**：`# UPSTREAM BUG:` 类注释必须解释原因并在 `docs/root_cause_fix_log.md` 记录
+- [ ] 例外总数受控（建议 < 5 处，每处均需 docs 登记）
+
 ## 工程
 
 - [ ] `src/metaheuristics/` 组织算法（不用 `algorithms/`）

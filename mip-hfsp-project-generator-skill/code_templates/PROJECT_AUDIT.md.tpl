@@ -52,6 +52,38 @@
 | Pytest | PASS | {passed} passed, {failed} failed |
 | Output isolation | PASS | All outputs in outputs/ |
 
+## Code Quality Red-line Check (SKILL.md §8)
+
+> **任何一项 FAIL 都必须重写代码，不得交付**。
+
+### §8.1 No Patching
+| Check | Result | Notes |
+|---|---|---|
+| No special-case patches (硬编码算例名/job_id 特判) | PASS | grep 未发现 `if.*inst_name.*==` / `if.*job_id.*==\d` 硬编码模式 |
+| No silent exception swallowing | PASS | 无 `except Exception: pass` / `except: pass` / `except: return None` |
+| No "临时/暂时/绕过/待重构" 注释 in src/ or data/ | PASS | 核心模块干净 |
+| No `@pytest.mark.skip("...")` (除 importorskip 外) | PASS | 无被临时跳过的测试 |
+| All exceptions are specific types | PASS | 无泛型 catch |
+| Placeholder functions raise NotImplementedError | PASS | 无 `def f(): pass` 或返回伪值 |
+
+### §8.2 No Backward-Compat Layer
+| Check | Result | Notes |
+|---|---|---|
+| No old-name shims (`def old(): return new()`) | PASS | 无 shim 转发 |
+| No `DeprecationWarning` / `warnings.warn` wrapping old APIs | PASS | 无旧接口废弃包装 |
+| No dual parameter names (`old=None, new=None` picks one) | PASS | 参数签名单一 |
+| No dual-format branches (`isinstance(x, list) elif dict`) | PASS | 单一数据格式 |
+| No version guards (`if data['version'] == 'v1'`) | PASS | 单一版本 |
+| No module aliases (`OldClass = NewClass`) | PASS | 无重命名保留 |
+| No fallback paths (`if not new.exists(): return read(old)`) | PASS | 单一路径 |
+| No "兼容/legacy/deprecated/过渡期" comments | PASS | 无兼容层痕迹 |
+
+### §8.4 Exception Registry
+| Check | Result | Notes |
+|---|---|---|
+| All `# UPSTREAM BUG:` comments documented in docs/root_cause_fix_log.md | PASS | 例外说明均可追溯 |
+| Exception count within limit | PASS | {count} 处 (建议 < 5) |
+
 ## Convention Persistence Check
 
 | Check | Result | Notes |

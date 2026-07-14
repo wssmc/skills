@@ -85,7 +85,8 @@ docs/
 ├── YYYY-M-D_instance_design.md          # 算例设计依据
 ├── YYYY-M-D_algorithm_design.md         # 算法设计约定（**必须记录 EvalCache 强制约定**）
 ├── YYYY-M-D_experiment_plan.md          # 实验参数选择依据
-└── YYYY-M-D_project_audit.md            # 审计报告
+├── YYYY-M-D_project_audit.md            # 审计报告
+└── root_cause_fix_log.md                # 根因修复日志（严禁补丁，见 SKILL.md §8）
 
 configs/
 ├── problem_statement.md                 # 问题描述（正式版）
@@ -229,7 +230,55 @@ test_result_reproducer.py
 10. feasibility checker 检查
 11. pytest 检查
 12. 输出隔离检查
+13. **代码质量红线检查（SKILL.md §8）** — 扫描 TODO/FIXME/临时/绕过/特殊值特判/except pass 等模式
 ```
+
+### 代码质量红线扫描
+
+审计脚本必须执行以下扫描，任一命中即 FAIL：
+
+**§8.1 打补丁扫描**：
+
+```bash
+# 特殊值特判
+grep -rn "if.*inst_name.*==" src/ data/
+grep -rn "if.*job_id.*==" src/ data/
+
+# 异常静默
+grep -rn "except.*:\s*pass" src/ data/
+grep -rn "except\s*:" src/ data/  # 裸 except
+
+# 临时注释
+grep -rn "临时\|暂时\|绕过\|待重构\|先这样\|TODO 后" src/ data/
+
+# 被注释掉的代码
+grep -rn "^\s*#.*=.*decode\|^\s*#.*schedule" src/
+
+# pytest.skip 滥用
+grep -rn "@pytest.mark.skip" tests/  # importorskip 除外
+```
+
+**§8.2 兼容层扫描**：
+
+```bash
+# DeprecationWarning 包装
+grep -rn "warnings.warn\|DeprecationWarning" src/
+
+# 模块级 alias
+grep -rn "^[A-Z][A-Za-z]* = [A-Z][A-Za-z]*$" src/
+grep -rn "^from .* import .* as " src/  # 需人工确认是否兼容用途
+
+# 版本判断分支
+grep -rn "version.*==.*[\"']v[0-9]" src/
+
+# 双格式分支
+grep -rn "isinstance.*list.*elif.*isinstance.*dict" src/
+
+# 兼容注释关键字
+grep -rn "兼容\|legacy\|deprecated\|过渡期\|保留旧接口\|两版本共存" src/ data/
+```
+
+审计失败必须重写代码，不得交付。
 
 ---
 
