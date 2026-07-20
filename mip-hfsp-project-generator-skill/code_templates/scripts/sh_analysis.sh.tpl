@@ -1,76 +1,46 @@
-#!/bin/bash
-# ============================================================
-# sh_analysis.sh — 通用结果分析
-#
-# 用法:
-#   bash scripts/sh_analysis.sh <结果目录> [--standard auto|none|xlsx] [--profile auto] [--no-plots]
-#
-# 默认参数:
-#   --standard auto   自动检测标准值来源
-#   --profile auto    自动检测分析配置
-# ============================================================
+#!/usr/bin/env bash
+# 基础结果汇总：读取 *_result.json，打印并写出 analysis_summary.csv。
 
-set -e
+set -euo pipefail
 
-# 默认参数
-RESULT_DIR=""
-STANDARD="auto"
-PROFILE="auto"
-NO_PLOTS=false
-
-# 解析参数
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --standard) STANDARD="$2"; shift 2 ;;
-        --profile)  PROFILE="$2"; shift 2 ;;
-        --no-plots) NO_PLOTS=true; shift ;;
-        *) RESULT_DIR="$1"; shift ;;
-    esac
-done
-
-if [[ -z "$RESULT_DIR" ]]; then
-    echo "Usage: bash scripts/sh_analysis.sh <结果目录> [--standard auto|none|xlsx] [--profile auto] [--no-plots]"
-    exit 1
+if [[ $# -ne 1 ]]; then
+    echo "Usage: bash scripts/sh_analysis.sh <result-directory>" >&2
+    exit 2
 fi
+RESULT_DIR="$1"
 
 echo "=========================================="
 echo "Analysis"
 echo "  Result dir: $RESULT_DIR"
-echo "  Standard: $STANDARD"
-echo "  Profile: $PROFILE"
-echo "  No plots: $NO_PLOTS"
 echo "=========================================="
 
-# 检查 ExperimentAnalysis 是否可用
-if python -c "from src.ExperimentAnalysis import analyzer" 2>/dev/null; then
-    CMD="python -m src.ExperimentAnalysis.analyzer --dir $RESULT_DIR --standard $STANDARD --profile $PROFILE"
-    if $NO_PLOTS; then
-        CMD="$CMD --no-plots"
-    fi
-    eval "$CMD"
-else
-    echo "ExperimentAnalysis module not found (自行提供，不实现)."
-    echo "Generating basic summary..."
-
-    # 基础汇总
-    python -c "
-import json, os
+python -c "
+import csv, json
+import sys
 from pathlib import Path
 
-result_dir = Path('$RESULT_DIR')
+result_dir = Path(sys.argv[1]).resolve()
+if not result_dir.is_dir():
+    raise SystemExit(f'Not a directory: {result_dir}')
 results = []
 for f in result_dir.rglob('*_result.json'):
     data = json.loads(f.read_text(encoding='utf-8'))
+    data['source_file'] = str(f.relative_to(result_dir))
     results.append(data)
 
-if results:
-    print(f'Found {len(results)} result files')
-    for r in sorted(results, key=lambda x: x.get('objective', float('inf'))):
-        print(f\"  {r.get('method', '?'):15s}  obj={r.get('objective', 0):.4f}  time={r.get('runtime', 0):.2f}s  status={r.get('status', '?')}\")
-else:
-    print('No result files found.')
-"
-fi
+if not results:
+    raise SystemExit('No *_result.json files found')
+rows = sorted(results, key=lambda item: (item.get('instance', ''), item.get('objective', float('inf'))))
+fields = ['instance', 'method', 'objective', 'runtime', 'status', 'seed', 'source_file']
+output = result_dir / 'analysis_summary.csv'
+with output.open('w', newline='', encoding='utf-8') as stream:
+    writer = csv.DictWriter(stream, fieldnames=fields, extrasaction='ignore')
+    writer.writeheader()
+    writer.writerows(rows)
+print(f'Found {len(rows)} result files')
+for row in rows:
+    print(f\"  {row.get('instance', '?'):20s} {row.get('method', '?'):15s} obj={float(row['objective']):.4f}\")
+print(f'Wrote {output}')
+" "$RESULT_DIR"
 
-echo ""
 echo "Analysis complete."

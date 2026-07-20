@@ -107,6 +107,7 @@ Stage_1	worker_B	2
   "problem_type": "HFSP",
   "data_format": "txt",
   "instance_name": "demo_01_10_5",
+  "instance_seed": 42,
   "files": {
     "processing_times.txt": "processing_times.txt",
     "stage_machines.txt": "stage_machines.txt",
@@ -114,15 +115,14 @@ Stage_1	worker_B	2
     "release_times.txt": "release_times.txt"
   },
   "objective": {
-    "primary": "makespan",
-    "secondary": "total_tardiness"
+    "primary": "makespan"
   }
 }
 ```
 
-> **注意**：index.json 不记录 seed。种子管理统一由 `data/batch_seeds/` 种子文件控制。
+> `instance_seed` 只用于复现实例内容。`data/batch_seeds/` 中的 seed 只用于算法随机过程，两者不得混用。
 
-## 9. 种子文件
+## 9. 算法运行种子文件
 
 ```text
 data/batch_seeds/{scale}/seed_table.json   # 种子主表（算例名 → seed）

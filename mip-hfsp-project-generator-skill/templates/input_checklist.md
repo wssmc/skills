@@ -4,10 +4,10 @@
 
 | 项目 | 是否提供 | 说明 |
 |---|---|---|
-| 问题类型 |  | HFSP / FJSP / JSP / Parallel Machine / General MIP |
+| 问题类型 |  | 基础 HFSP 可直接生成；其他类型标记 adapter_required |
 | Job 数量 |  | |
 | Stage / Operation 数量 |  | |
-| 加工时间 |  | HFSP 推荐 JobID × Stage 表 |
+| 加工时间 |  | 直接模板要求 JobID × Stage 表，即 `p[j][s]` |
 | 机器 / 资源信息 |  | HFSP 推荐 stage_machines.txt |
 | 顺序约束 |  | Job 内 Stage 顺序 |
 | 机器冲突约束 |  | 同机不重叠 |
@@ -28,6 +28,7 @@
 | Gurobi 参数 |  | 默认 time_limit=3600(正式)/60(测试), MIPGap=0.001 |
 | 数据规模 |  | demo/small/large 三级 |
 | 对比算法 |  | 默认 SA, MA, IG, GA, TS |
+| 模板支持状态 |  | direct_basic_hfsp / adapter_required |
 
 ## 不足时的提示语
 
@@ -40,12 +41,14 @@
 
 ```text
 问题类型：
+是否满足基础 HFSP 假设：
 Job 数量：
 Stage 数量：
 每个 Stage 的机器数量：
 加工时间表：
 目标函数：
 特殊约束：
+需要适配的模块：
 数据规模：
 希望对比的算法：
 ```

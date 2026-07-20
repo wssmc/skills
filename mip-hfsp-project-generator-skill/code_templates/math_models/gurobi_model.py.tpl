@@ -46,8 +46,17 @@ def build_and_solve(
     """
     if gp is None:
         return Result(method="MIP", status="Error", extra={"error": "gurobipy not installed"})
+    validation_errors = instance.validate()
+    if validation_errors:
+        raise ValueError(f"Invalid instance: {validation_errors}")
+    if time_limit <= 0:
+        raise ValueError("time_limit must be positive")
+    if not 0 <= mip_gap < 1:
+        raise ValueError("mip_gap must be in [0, 1)")
+    if threads < 0:
+        raise ValueError("threads must be non-negative")
 
-    t0 = time.time()
+    t0 = time.perf_counter()
     env = gp.Env(empty=True)
     env.setParam("OutputFlag", 1 if log_output else 0)
     env.start()
@@ -81,7 +90,14 @@ def build_and_solve(
     model.update()
 
     # --- 约束 ---
-    BIG_M = 1e6
+    max_release = max(instance.release_times.values(), default=0.0)
+    total_processing = sum(
+        instance.processing_times[j][s]
+        for j in range(n_jobs)
+        for s in range(n_stages)
+    )
+    total_precedence_lag = sum(arc.lag for arc in instance.precedence)
+    BIG_M = max_release + total_processing + total_precedence_lag + 1.0
 
     for j in range(n_jobs):
         for s in range(n_stages):
@@ -95,7 +111,7 @@ def build_and_solve(
             )
 
             # 2. 完工时间定义
-            model.addConstr(C[j, s] >= S[j, s] + pt * gp.quicksum(x[j, s, m] for m in machines),
+            model.addConstr(C[j, s] == S[j, s] + pt,
                             name=f"comp_{j}_{s}")
 
             # 3. release time
@@ -122,12 +138,18 @@ def build_and_solve(
             # 6. makespan 定义
             model.addConstr(Cmax >= C[j, s], name=f"cmax_{j}_{s}")
 
+    for arc in instance.precedence:
+        model.addConstr(
+            S[arc.to_job, 0] >= C[arc.from_job, n_stages - 1] + arc.lag,
+            name=f"job_prec_{arc.from_job}_{arc.to_job}",
+        )
+
     # --- 目标 ---
     model.setObjective(Cmax, GRB.MINIMIZE)
 
     # --- 求解 ---
     model.optimize()
-    runtime = time.time() - t0
+    runtime = time.perf_counter() - t0
 
     # --- 提取结果 ---
     status_map = {
@@ -137,6 +159,8 @@ def build_and_solve(
         GRB.INFEASIBLE: "Infeasible",
     }
     status = status_map.get(model.status, "Unknown")
+    if model.SolCount > 0 and status == "Unknown":
+        status = "Feasible"
 
     result = Result(method="MIP", status=status, runtime=runtime)
 
@@ -145,9 +169,9 @@ def build_and_solve(
         result.makespan = model.ObjVal
         result.extra["LB"] = model.ObjBound
         result.extra["gap"] = model.MIPGap
-        result.extra["best_seq"] = {"job_sequence": [], "machine_assignment": {}}
+        result.extra["schedule_source"] = "direct_mip"
 
-        schedule = Schedule()
+        schedule = Schedule(objective=model.ObjVal, metrics={"makespan": model.ObjVal})
         for j in range(n_jobs):
             for s in range(n_stages):
                 machines = instance.stage_machines.get(s, [])
@@ -159,11 +183,11 @@ def build_and_solve(
                             processing_time=instance.processing_times.get(j, {}).get(s, 0.0),
                         )
                         schedule.operations.append(op)
-                        result.extra["best_seq"]["job_sequence"].append(j)
-                        result.extra["best_seq"]["machine_assignment"][(j, s)] = m
                         break
         result.schedule = schedule
     else:
         result.extra["LB"] = model.ObjBound if model.ObjBound < GRB.INFINITY else float("inf")
 
+    model.dispose()
+    env.dispose()
     return result

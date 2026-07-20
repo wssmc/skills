@@ -27,7 +27,7 @@ def _neh_with_perturbation(instance: Instance, rng: random.Random, decoder) -> l
     ordered = sorted(range(n), key=lambda j: -totals[j])
 
     # 随机交换若干对起始位置引入扰动
-    n_swaps = max(1, n // 5)
+    n_swaps = max(1, n // 5) if n >= 2 else 0
     for _ in range(n_swaps):
         i, k = rng.sample(range(n), 2)
         ordered[i], ordered[k] = ordered[k], ordered[i]

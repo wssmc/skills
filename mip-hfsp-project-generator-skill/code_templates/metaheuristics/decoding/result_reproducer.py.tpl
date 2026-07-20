@@ -14,6 +14,7 @@ from core.domain import Instance, Schedule
 from metaheuristics.decoding.list_decoder import decode
 from metaheuristics.decoding.metrics import evaluate_schedule
 from metaheuristics.decoding.feasibility_checker import check_feasibility
+from metaheuristics.encoding.sequence_encoding import deserialize_machine_assignment
 
 
 def parse_txt(txt_path: str) -> dict:
@@ -28,12 +29,12 @@ def parse_txt(txt_path: str) -> dict:
         ...
 
     Returns:
-        {"job_sequence": [...], "machine_assignment": {(j,s): m, ...}}
+        {"job_sequence": [...], "machine_assignment": [{job_id, stage_id, machine_id}, ...]}
     """
     lines = Path(txt_path).read_text(encoding="utf-8").strip().split("\n")
 
     job_sequence = []
-    machine_assignment = {}
+    machine_assignment = []
 
     section = None
     for line in lines:
@@ -53,7 +54,7 @@ def parse_txt(txt_path: str) -> dict:
             parts = line.split()
             if len(parts) >= 3:
                 j, s, m = int(parts[0]), int(parts[1]), int(parts[2])
-                machine_assignment[(j, s)] = m
+                machine_assignment.append({"job_id": j, "stage_id": s, "machine_id": m})
 
     return {"job_sequence": job_sequence, "machine_assignment": machine_assignment}
 
@@ -76,7 +77,7 @@ def reproduce_from_txt(txt_path: str, instance: Instance) -> dict:
     """
     best_seq = parse_txt(txt_path)
     job_sequence = best_seq["job_sequence"]
-    machine_assignment = best_seq["machine_assignment"]
+    machine_assignment = deserialize_machine_assignment(best_seq["machine_assignment"])
 
     # 解码
     schedule = decode(job_sequence, machine_assignment, instance)

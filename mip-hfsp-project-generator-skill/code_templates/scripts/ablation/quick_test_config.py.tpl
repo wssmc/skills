@@ -13,17 +13,14 @@ def _get_first_instance(scale: str) -> str:
     """获取指定规模的第一个算例路径。"""
     data_dir = Path(__file__).resolve().parent.parent.parent / "data" / scale
     if not data_dir.exists():
-        return f"data/{scale}/inst_001_10_5_01"  # fallback
+        raise FileNotFoundError(f"Instance scale directory does not exist: {data_dir}")
     instances = sorted([d for d in data_dir.iterdir() if d.is_dir()])
     if instances:
         return str(instances[0])
-    return f"data/{scale}/inst_001_10_5_01"
+    raise FileNotFoundError(f"No instance directories found in {data_dir}")
 
 
-QUICK_INSTANCES = {
-    "small": _get_first_instance("small"),
-    "large": _get_first_instance("large"),
-}
+QUICK_SCALES = ("small", "large")
 
 # 固定种子
 QUICK_SEEDS = [1, 2, 3]
@@ -44,8 +41,10 @@ def get_quick_config(scale: str = "small") -> dict:
     Returns:
         dict: {instance, seeds, repeat, time_factor}
     """
+    if scale not in QUICK_SCALES:
+        raise ValueError(f"scale must be one of {list(QUICK_SCALES)}")
     return {
-        "instance": QUICK_INSTANCES.get(scale, QUICK_INSTANCES["small"]),
+        "instance": _get_first_instance(scale),
         "seeds": QUICK_SEEDS,
         "repeat": REPEAT,
         "time_factor": TIME_FACTOR,
@@ -56,6 +55,8 @@ def calc_time_limit(num_jobs: int, num_stages: int, factor: float = None) -> flo
     """计算时间限制: N_jobs * M_stages * factor"""
     if factor is None:
         factor = TIME_FACTOR
+    if num_jobs <= 0 or num_stages <= 0 or factor <= 0:
+        raise ValueError("num_jobs, num_stages, and factor must be positive")
     return num_jobs * num_stages * factor
 
 

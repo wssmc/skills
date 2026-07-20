@@ -22,10 +22,11 @@
 
 | 项 | 值 |
 |---|---|
-| 缓存对象 | 编码序列 → 目标值 的映射 |
+| 缓存对象 | 算例 + 作业序列 + 机器分配 → 目标值 的映射 |
 | 缓存上限 | `MAX_SIZE = 500` |
 | 弹出策略 | **FIFO**（先入先出，最旧条目最先弹出） |
-| 缓存键 | 编码序列的哈希，如 `tuple(job_sequence)` |
+| 缓存键 | `make_eval_key(instance, job_sequence, machine_assignment)` |
+| 生命周期 | 每次算法运行独立创建；禁止跨算法、跨算例共享 |
 | 位置 | `src/metaheuristics/decoding/eval_cache.py` |
 | 引入 | `from metaheuristics.decoding.eval_cache import EvalCache` |
 
@@ -35,7 +36,7 @@
 cache = EvalCache(max_size=500)
 
 def evaluate(seq):
-    key = tuple(seq)
+    key = make_eval_key(instance, seq, machine_assign)
     cached = cache.get(key)
     if cached is not None:
         return cached
@@ -45,7 +46,7 @@ def evaluate(seq):
     return sched.objective
 ```
 
-**目的**：节省重复编码的解码计算时间。元启发式在邻域搜索/种群迭代中会大量重复评估相同编码，无缓存时可能占 80% 以上运行时间。
+**目的**：节省重复完整编码的解码计算时间。实际命中率和收益必须由实验测量，不预填未经验证的比例。
 
 ## 4. 算法命名规范
 - **basic**: 最小可运行实现
@@ -66,5 +67,5 @@ def evaluate(seq):
 ## 7. 注册要求
 所有可运行算法必须注册到 `src/metaheuristics/registry.py`:
 1. `ALGORITHM_REGISTRY` 添加 `名称: solver 函数`
-2. `ALGORITHM_STATUS` 添加状态（complete / runnable_mvp / placeholder）
+2. `ALGORITHM_STATUS` 添加状态（not_verified / runnable_mvp / complete）；只有测试通过后才能升级状态
 3. 占位算法不注册；若注册则运行时必须 raise NotImplementedError

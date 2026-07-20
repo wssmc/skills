@@ -35,6 +35,8 @@ def generate_random_population(instance: Instance, pop_size: int,
     """
     rng = random.Random(seed)
     n = instance.num_jobs
+    if n <= 0 or pop_size <= 0:
+        raise ValueError("instance.num_jobs and pop_size must be positive")
 
     # 若 pop_size 接近 n!，无法保证全部唯一，改为允许重复
     max_unique = factorial(n) if n <= 10 else float("inf")
@@ -71,13 +73,18 @@ def generate_random_population(instance: Instance, pop_size: int,
 def generate_random_machine_assignments(instance: Instance, pop_size: int,
                                         seed: int | None = None) -> list[dict]:
     """生成 pop_size 个随机机器分配。"""
+    if pop_size <= 0:
+        raise ValueError("pop_size must be positive")
+    missing = [s for s in range(instance.num_stages) if not instance.stage_machines.get(s)]
+    if missing:
+        raise ValueError(f"Stages without machines: {missing}")
     rng = random.Random(seed)
     result = []
     for _ in range(pop_size):
         assignment = {}
         for j in range(instance.num_jobs):
             for s in range(instance.num_stages):
-                machines = instance.stage_machines.get(s, [0])
+                machines = instance.stage_machines[s]
                 assignment[(j, s)] = rng.choice(machines)
         result.append(assignment)
     return result

@@ -11,7 +11,7 @@
 #   --verbose 0      详细输出级别
 # ============================================================
 
-set -e
+set -euo pipefail
 
 # 默认参数
 INST=""
@@ -57,13 +57,15 @@ echo "  Time Limit: ${TIME_LIMIT}s"
 echo "=========================================="
 
 # 构建命令
-CMD="python scripts/run_baselines.py --inst $INST --algo $ALGO --time $TIME_LIMIT --out $OUTPUT_DIR --verbose $VERBOSE"
+CMD=(python scripts/run_baselines.py --inst "$INST" --algo "$ALGO" --time "$TIME_LIMIT" --out "$OUTPUT_DIR" --verbose "$VERBOSE")
 if [[ -n "$SEED" ]]; then
-    CMD="$CMD --seed $SEED"
+    CMD+=(--seed "$SEED")
 fi
 
-echo "Command: $CMD"
-eval "$CMD"
+printf 'Command:'
+printf ' %q' "${CMD[@]}"
+printf '\n'
+"${CMD[@]}"
 
 # 输出路径提示
 INST_NAME=$(basename "$INST")

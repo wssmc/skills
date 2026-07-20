@@ -11,12 +11,12 @@
 #   时间: 30 秒
 # ============================================================
 
-set -e
+set -euo pipefail
 
 # 默认参数
 INST=""
 # 默认运行所有已注册且状态为 complete 或 runnable_mvp 的算法
-ALGOS=($(python -c "
+ALGOS=($(PYTHONPATH=src python -c "
 from metaheuristics.registry import get_runnable_algorithms
 print(' '.join(get_runnable_algorithms()))
 " 2>/dev/null || echo "sa_basic ma_basic ig_basic ga_basic ts_basic"))
@@ -63,7 +63,7 @@ echo "=========================================="
 for ALGO in "${ALGOS[@]}"; do
     echo ""
     echo "--- Running $ALGO ---"
-    python scripts/run_baselines.py --inst "$INST" --algo "$ALGO" --time "$TIME_LIMIT" --out "$OUTPUT_DIR" || true
+    python scripts/run_baselines.py --inst "$INST" --algo "$ALGO" --time "$TIME_LIMIT" --out "$OUTPUT_DIR"
 done
 
 echo ""

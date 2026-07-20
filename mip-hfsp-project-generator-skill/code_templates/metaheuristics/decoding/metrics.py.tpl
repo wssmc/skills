@@ -54,4 +54,5 @@ def evaluate_schedule(instance: Instance, schedule: Schedule) -> dict:
     schedule.metrics["makespan"] = calculate_makespan(schedule)
     schedule.metrics["total_tardiness"] = calculate_total_tardiness(instance, schedule)
     schedule.metrics["average_flow_time"] = calculate_average_flow_time(instance, schedule)
+    schedule.objective = schedule.metrics["makespan"]
     return schedule.metrics

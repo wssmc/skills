@@ -39,7 +39,7 @@ Do not invent missing application settings, decision makers, formulations, algor
 2. Ask or resolve the target journal/template before imposing structure.
 3. Build an internal ledger: `Gap -> Contribution -> Manuscript location -> Evidence -> Boundary`.
 4. Choose the introduction and related-work branches from the architecture references.
-5. Build or revise the six-section OR spine: problem, model, method, computational evidence, implications.
+5. Build or revise the six-section OR spine: problem, model, method, computational evidence, conclusions. Use the three-paragraph conclusions structure: overview, findings, boundaries and future research.
 6. Plan required and conditional figures/tables, emphasizing precise English caption naming.
 7. Draft or edit only claims supported by supplied or verified evidence.
 8. Run the full audit before final delivery.
@@ -58,6 +58,7 @@ Read the English reference by default. Read the matching Chinese reference when 
 - Full-paper and evidence audit: `references/en/audit-and-integrity.md`
 - Direct LaTeX project editing: `references/en/latex-project-editing.md`
 - Academic English polishing and Chinese-English translation: `references/en/polishing-and-translation.md`
+- Abstract writing: `references/en/abstract.md`
 
 Chinese mirrors are under `references/zh/` with the same filenames.
 
@@ -79,6 +80,7 @@ Chinese mirrors are under `references/zh/` with the same filenames.
 - Use fair computational budgets and distinguish optimum, incumbent, bound, gap, and time-limit status.
 - Do not fabricate citations, results, p-values, confidence intervals, captions, hardware, code outputs, or real-world claims.
 - When editing `.tex`, respect the journal template and preserve mathematical meaning, labels, references, and user results.
+- Present only favorable evidence in the main manuscript body. Confine limitations, weaknesses, and negative results to a brief statement in the Conclusions section. Do not qualify or hedge results in the Introduction, method, or experimental sections.
 
 ## Literature search
 

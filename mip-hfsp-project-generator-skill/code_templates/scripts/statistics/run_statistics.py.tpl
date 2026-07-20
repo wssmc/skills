@@ -1,7 +1,7 @@
 """非参数检验 — scripts/statistics/run_statistics.py
 
-Friedman 检验、Wilcoxon 秩和检验、Holm/Hochberg 校正。
-输出 p 值矩阵 + 临界差图（CD diagram）。
+Friedman 检验、配对 Wilcoxon 符号秩检验和 Holm 校正。
+输出检验结果与校正后的 p 值；当前入口不声明 CD diagram 能力。
 """
 from __future__ import annotations
 
@@ -19,6 +19,26 @@ except ImportError:
     wilcoxon = None
 
 
+def _paired_arrays(data: dict, minimum_algorithms: int) -> tuple[list[str], list[np.ndarray]]:
+    if not isinstance(data, dict):
+        raise ValueError("Input data must be an object mapping algorithm names to observations")
+    names = list(data)
+    if len(names) < minimum_algorithms:
+        raise ValueError(f"At least {minimum_algorithms} algorithms are required")
+    try:
+        arrays = [np.asarray(data[name], dtype=float) for name in names]
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Observations must be numeric arrays: {exc}") from exc
+    if any(array.ndim != 1 for array in arrays):
+        raise ValueError("Each algorithm must have a one-dimensional observation array")
+    lengths = {len(array) for array in arrays}
+    if len(lengths) != 1 or 0 in lengths:
+        raise ValueError("All algorithms must have the same non-zero number of paired observations")
+    if not all(np.isfinite(array).all() for array in arrays):
+        raise ValueError("Observations must all be finite")
+    return names, arrays
+
+
 def run_friedman_test(data: dict) -> dict:
     """Friedman 检验：多算法整体差异。
 
@@ -29,11 +49,12 @@ def run_friedman_test(data: dict) -> dict:
         {statistic, p_value, n_instances, n_algorithms}
     """
     if friedmanchisquare is None:
-        return {"error": "scipy not available"}
+        raise RuntimeError("scipy is required for the Friedman test")
 
-    algo_names = list(data.keys())
-    arrays = [np.array(data[name]) for name in algo_names]
+    algo_names, arrays = _paired_arrays(data, minimum_algorithms=3)
     stat, p = friedmanchisquare(*arrays)
+    if not np.isfinite(stat) or not np.isfinite(p):
+        raise RuntimeError("Friedman test returned a non-finite result")
     return {
         "statistic": float(stat),
         "p_value": float(p),
@@ -43,34 +64,43 @@ def run_friedman_test(data: dict) -> dict:
 
 
 def run_wilcoxon_test(data: dict) -> dict:
-    """Wilcoxon 秩和检验：两两算法对比。
+    """配对 Wilcoxon 符号秩检验：两两算法对比。
 
     Returns:
         {f"{algo1}_vs_{algo2}": {"statistic": s, "p_value": p}}
     """
     if wilcoxon is None:
-        return {"error": "scipy not available"}
+        raise RuntimeError("scipy is required for the Wilcoxon test")
 
-    algo_names = list(data.keys())
+    algo_names, arrays = _paired_arrays(data, minimum_algorithms=2)
+    paired = dict(zip(algo_names, arrays))
     results = {}
     for i in range(len(algo_names)):
         for j in range(i + 1, len(algo_names)):
             a, b = algo_names[i], algo_names[j]
             try:
-                stat, p = wilcoxon(data[a], data[b])
+                stat, p = wilcoxon(paired[a], paired[b])
+                if not np.isfinite(stat) or not np.isfinite(p):
+                    raise ValueError("test returned a non-finite result")
                 results[f"{a}_vs_{b}"] = {"statistic": float(stat), "p_value": float(p)}
-            except Exception as e:
-                results[f"{a}_vs_{b}"] = {"error": str(e)}
+            except ValueError as exc:
+                raise ValueError(f"Invalid paired observations for {a} vs {b}: {exc}") from exc
     return results
 
 
 def holm_correction(p_values: dict, alpha: float = 0.05) -> dict:
     """Holm 校正。"""
+    if not 0 < alpha < 1:
+        raise ValueError("alpha must be between 0 and 1")
+    if any(not isinstance(p, (int, float)) or not 0 <= p <= 1 for p in p_values.values()):
+        raise ValueError("p-values must be numeric values in [0, 1]")
     sorted_p = sorted(p_values.items(), key=lambda x: x[1])
     m = len(sorted_p)
     results = {}
+    running_adjusted = 0.0
     for i, (key, p) in enumerate(sorted_p):
-        adjusted_p = min(p * (m - i), 1.0)
+        adjusted_p = max(running_adjusted, min(p * (m - i), 1.0))
+        running_adjusted = adjusted_p
         results[key] = {
             "original_p": p,
             "adjusted_p": adjusted_p,
@@ -87,13 +117,17 @@ def main():
 
     data = json.loads(Path(args.input).read_text(encoding="utf-8"))
 
-    out_dir = Path(args.out)
+    project_root = Path(__file__).resolve().parent.parent.parent
+    outputs_root = (project_root / "outputs").resolve()
+    out_dir = (project_root / args.out).resolve()
+    if out_dir != outputs_root and outputs_root not in out_dir.parents:
+        raise ValueError("Statistics output must stay inside the project outputs directory")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Friedman
     friedman_result = run_friedman_test(data)
     (out_dir / "friedman_test.json").write_text(
-        json.dumps(friedman_result, indent=2), encoding="utf-8"
+        json.dumps(friedman_result, indent=2, allow_nan=False), encoding="utf-8"
     )
     print(f"Friedman test: {friedman_result}")
 

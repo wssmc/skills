@@ -18,6 +18,8 @@ from core.domain import Instance
 
 def init_random(instance: Instance, seed: int | None = None) -> list[int]:
     """随机作业排列。"""
+    if instance.num_jobs <= 0:
+        raise ValueError("instance.num_jobs must be positive")
     rng = random.Random(seed)
     seq = list(range(instance.num_jobs))
     rng.shuffle(seq)
@@ -26,10 +28,13 @@ def init_random(instance: Instance, seed: int | None = None) -> list[int]:
 
 def init_random_machine_assignment(instance: Instance, seed: int | None = None) -> dict:
     """随机机器分配 (job, stage) -> machine_id。"""
+    missing = [s for s in range(instance.num_stages) if not instance.stage_machines.get(s)]
+    if missing:
+        raise ValueError(f"Stages without machines: {missing}")
     rng = random.Random(seed)
     assignment = {}
     for j in range(instance.num_jobs):
         for s in range(instance.num_stages):
-            machines = instance.stage_machines.get(s, [0])
+            machines = instance.stage_machines[s]
             assignment[(j, s)] = rng.choice(machines)
     return assignment

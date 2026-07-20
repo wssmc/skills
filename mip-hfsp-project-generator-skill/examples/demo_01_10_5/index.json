@@ -2,6 +2,7 @@
   "problem_type": "HFSP",
   "data_format": "txt",
   "instance_name": "demo_01_10_5",
+  "instance_seed": 42,
   "files": {
     "processing_times.txt": "processing_times.txt",
     "stage_machines.txt": "stage_machines.txt",
@@ -9,7 +10,6 @@
     "release_times.txt": "release_times.txt"
   },
   "objective": {
-    "primary": "makespan",
-    "secondary": "total_tardiness"
+    "primary": "makespan"
   }
 }

@@ -1,18 +1,16 @@
-"""计算缓存 — src/metaheuristics/decoding/eval_cache.py
-
-对**编码序列 → 目标值**的映射进行缓存，以节省重复解码计算的时间。
-使用 FIFO 队列，缓存上限 500，超出时**弹出最旧的条目**。
-
-强制约定（写入项目 docs）：
-  - 所有元启发式算法必须使用 EvalCache
-  - 缓存上限固定为 500（MAX_SIZE = 500）
-  - 弹出策略为 FIFO（先入先出，最旧条目最先被弹出）
-  - 缓存键为编码序列的哈希（如 tuple(job_sequence)）
-  - 评估时先查缓存，未命中再解码 + 存入缓存
-"""
+"""单次算法运行内的完整编码评估缓存（固定容量 500，FIFO）。"""
 from __future__ import annotations
 
 from collections import OrderedDict
+
+
+def make_eval_key(instance, job_sequence: list[int], machine_assignment: dict) -> tuple:
+    """构造不会混淆算例或机器分配的确定性缓存键。"""
+    assignment_key = tuple(
+        (int(j), int(s), int(machine_id))
+        for (j, s), machine_id in sorted(machine_assignment.items())
+    )
+    return instance.name, tuple(job_sequence), assignment_key
 
 
 class EvalCache:
@@ -25,6 +23,8 @@ class EvalCache:
     MAX_SIZE = 500
 
     def __init__(self, max_size: int = MAX_SIZE):
+        if max_size != self.MAX_SIZE:
+            raise ValueError(f"EvalCache max_size is fixed at {self.MAX_SIZE}")
         self._cache: OrderedDict = OrderedDict()
         self.max_size = max_size
         self.hits = 0
@@ -34,7 +34,7 @@ class EvalCache:
         """查缓存。
 
         Args:
-            key: 编码的哈希键（如 tuple(job_sequence)）
+            key: `make_eval_key` 构造的完整编码键
 
         Returns:
             目标值，如果未命中返回 None
@@ -55,6 +55,9 @@ class EvalCache:
         self._cache[key] = value
         if len(self._cache) > self.max_size:
             self._cache.popitem(last=False)
+
+    def __len__(self) -> int:
+        return len(self._cache)
 
     def get_or_compute(self, key, compute_fn):
         """查缓存，未命中则计算并缓存。"""

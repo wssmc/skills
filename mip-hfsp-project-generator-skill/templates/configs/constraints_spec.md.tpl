@@ -26,7 +26,7 @@ S[j, s] >= C[i, s]  OR  S[i, s] >= C[j, s],  ∀ i < j, 同一机器 m
 
 ## 4. 完工时间定义
 ```
-C[j, s] = S[j, s] + p[j, s] * x[j, s, m]
+C[j, s] = S[j, s] + p[j, s]
 ```
 
 ## 5. 释放时间约束
@@ -45,6 +45,8 @@ Cmax >= C[j, s],  ∀ j, s
 ```
 
 ## 8. 可选约束
+以下任一项存在时，基础模板状态必须为 `adapter_required`，直至数据、领域模型、decoder、checker、MIP 与回归测试全部更新：
+
 - [ ] 换线时间 (setup time)
 - [ ] 运输时间 (transport time)
 - [ ] 人力资源约束 (worker resource)

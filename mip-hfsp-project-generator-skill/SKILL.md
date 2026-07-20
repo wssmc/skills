@@ -1,3 +1,8 @@
+---
+name: mip-hfsp-project-generator-skill
+description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水车间）研究工程，包括可复现 txt 算例、统一领域模型、解码与可行性检查、SA/MA/IG/GA/TS、MIP、批量实验和论文产物。用于用户要求创建 HFSP 调度项目、补全 HFSP 算法实验框架、把问题分解与文献矩阵结果落地为代码，或审计现有 HFSP 工程时；FJSP、JSP、重入、机器相关工时及额外资源约束必须先增加显式问题适配层，不得直接套用基础 HFSP 模板。
+---
+
 # MIP / HFSP 项目生成器 Skill
 
 ## 1. Skill 定位
@@ -6,9 +11,11 @@
 
 本 Skill 不应只输出单个脚本，而应输出结构化项目工程。
 
+当前内置代码模板只保证**基础 HFSP**：所有 Job 按相同 Stage 顺序加工，每个 Stage 有一组并行机，加工时间为 `p[j][s]`。对于 FJSP、JSP、重入、机器相关工时、人员/运输/维护等扩展约束，先根据问题画像扩展 `Instance`、编码、解码、可行性检查和 MIP，并增加对应回归测试；不得声称基础模板原样支持这些问题。
+
 > **模块索引**：本 Skill 拆分为以下模块文件，按需加载：
 > - `modules/structure.md` — 目录结构、数据层、源代码层、configs、outputs、docs、latex、AGENTS.md
-> - `modules/algorithms.md` — 算法命名与注册、元启发式模板、编码解码、邻域算子、评价、消融、MIP 建模
+> - `modules/algorithms.md` — 算法命名与注册、元启发式模板、编码解码、邻域算子、评价、消融、MIP 建模、**OOP 设计规范**
 > - `modules/scripts.md` — 脚本层架构、核心脚本、MIP 脚本、扩展实验脚本、项目执行步骤
 > - `modules/quality.md` — 占位策略、实现状态、问题描述文档、测试、审计、交付、可视化、算法打印
 
@@ -26,8 +33,8 @@
 - 需要与 MIP 结果对比
 - 需要甘特图或实验可视化
 - 需要批量实验脚本（single / bench / batch）
-- 需要消融实验、DOE、统计检验
-- 明确提到 HFSP、FJSP、JSP、并行机、车间调度、工序调度、资源约束调度
+- 需要消融实验、参数实验或统计检验（默认 DOE 入口只提供已验证的 `sa_basic` 全因子网格；其他算法需增加参数适配器）
+- 明确提到 HFSP/HFFS，或要求把其他调度问题先适配到本 Skill 的统一工程契约
 
 ---
 
@@ -36,9 +43,9 @@
 1. **可复现**：确定性种子、确定性输出、结果可从 best_seq 复现并校验
 2. **可扩展**：算法注册制，新增算法只需注册到 `registry.py`
 3. **分层清晰**：数据层、求解层、评估层、输出层、分析层各自独立
-4. **面向论文**：所有实验设计围绕论文需求（对比、消融、DOE、统计检验）
+4. **面向论文**：实验设计围绕对比、消融、已验证参数网格和统计检验；不把未实现的正交设计、响应面或 CD 图写成现成功能
 5. **禁止随意生成脚本**：优先复用核心脚本（single / bench / batch / analysis）
-6. **加速评估**：所有元启发式算法**必须**使用 `EvalCache`（编码序列 → 目标值缓存），上限 500，FIFO 弹出最旧策略。缓存键为编码序列的哈希（如 `tuple(job_sequence)`），评估时先查缓存未命中再解码。此约定必须写入生成项目的 `docs/YYYY-M-D_algorithm_design.md`
+6. **加速评估**：所有元启发式算法**必须**使用各自独立的 `EvalCache`，上限 500，FIFO 弹出最旧条目。缓存键必须包含算例身份、作业序列和机器分配；评估时先查缓存，未命中再解码。禁止跨算法或跨算例共享缓存。此约定必须写入生成项目的 `docs/YYYY-M-D_algorithm_design.md`
 7. **改进必须消融**：每次算法组件改进都必须消融，撰写完整消融记录文档
 8. **输出隔离**：所有实验输出仅限项目内 `outputs/` 目录
 9. **执行安全**：预估耗时超过 1 小时的任务必须后台运行
@@ -92,7 +99,8 @@
 分析完成后，输出结构化问题定义，作为后续所有模块的**问题定义源**：
 
 ```text
-问题类型：{HFSP / FJSP / JSP / Parallel Machine / General MIP}
+识别的问题类型：{HFSP / FJSP / JSP / Parallel Machine / General MIP}
+模板支持状态：{direct_basic_hfsp / adapter_required}
 调度对象：{描述}
 资源定义：{描述}
 顺序规则：{描述}
@@ -103,7 +111,7 @@
 默认假设：{对缺失信息的默认假设}
 ```
 
-> 此结构化定义驱动数据生成、Instance 字段、decoder、feasibility checker、MIP 模型、baseline、邻域算子等所有后续组件。特殊约束部分**根据问题描述智能提取**，不预设固定清单。
+> 只有 `direct_basic_hfsp` 可直接物化内置代码模板。若为 `adapter_required`，必须先列出并实现领域模型、编码、解码、checker、MIP 与测试的适配差异，再生成算法层；不得用基础模板冒充支持。
 
 ### 4.4 算法适配项目（Algorithm Adaptation）
 
@@ -130,10 +138,10 @@
    - 如 `src/metaheuristics/ig/ig_author2020.py`
    - 顶部 import 提取出的初始化：
      ```python
-     from metaheuristics.initial.neh_author2020 import init_neh_author2020
+     from metaheuristics.initial.single.neh_author2020 import init_neh_author2020
      ```
 
-4. **注册到 `registry.py`**（详见 §3.16 算法注册规则）
+4. **注册到 `registry.py`**（详见 `modules/algorithms.md` §1.4）
 
 **目的**：
 - 初始化方法**跨算法复用**（不同元启发式可共用同一初始化）
@@ -142,36 +150,33 @@
 
 ### 4.5 批量对比时的一致性要求
 
-> 使用 `sh_batch_instances_algorithms.sh` 进行多算法批量对比时，**默认要求所有算法使用统一的初始化和缓存**，以保证对比公平性。
+> 使用 `sh_batch_instances_algorithms.sh` 进行多算法批量对比时，默认要求同类算法使用相同的初始化方法、相同的时间预算和相同的缓存策略。每次算法运行必须创建独立缓存，避免运行顺序污染结果。
 
-**脚本必须支持两个交互式提示或命令行开关**：
+**脚本必须支持初始化控制开关**：
 
 | 开关 | 默认 | 含义 |
 |------|------|------|
-| `--unified-init [y/n]` | `y` | 是否所有算法使用**同一个**初始化方法（如统一用 NEH） |
-| `--unified-cache [y/n]` | `y` | 是否所有算法使用**同一个** EvalCache（跨算法共享缓存） |
+| `--unified-init [y/n]` | `y` | 是否在单解算法组和种群算法组内分别使用统一初始化方法 |
 
 **运行时行为**：
 
 - **交互模式**（无开关时）：脚本启动后提示用户选择
   ```
   Use unified initialization for all algorithms? [y/n] (default: y):
-  Use unified EvalCache across algorithms? [y/n] (default: y):
   ```
-- **参数模式**：`bash scripts/sh_batch_instances_algorithms.sh all 0.1 --unified-init y --unified-cache y`
+- **参数模式**：`bash scripts/sh_batch_instances_algorithms.sh all 0.1 --unified-init y`
 
 **逻辑**：
 
 | 选项 | y（统一） | n（各自独立） |
 |------|----------|--------------|
 | unified-init | 所有算法用同一个 `init_xxx()`（默认 NEH），保证起点相同 | 各算法用注册时指定的初始化 |
-| unified-cache | 传入同一个 `EvalCache` 实例给所有算法 | 各算法内部各自 `EvalCache(500)` |
 
 **关键约定必须写入项目 `docs/YYYY-M-D_algorithm_design.md`**：
-- 批量对比默认使用统一初始化 + 统一缓存
-- 使用非统一选项需在 `configs/conventions.md` 中记录理由
+- 批量对比默认在同类算法内统一初始化；所有算法使用相同配置但相互隔离的缓存
+- 使用非统一初始化需在 `configs/conventions.md` 中记录理由
 
-### 4.4 约定持久化（重要）
+### 4.6 约定持久化（重要）
 
 > **在使用 Skill 生成项目的整个对话过程中，所有自然语言描述的约定必须持久化到项目内**，避免上下文丢失后无法追溯。
 
@@ -195,14 +200,12 @@
 
 ---
 
-## 5. 问题类型识别
+## 5. 问题类型识别与适配门禁
 
-- HFSP：混合流水车间，每个 Job 按固定 Stage 顺序加工，每个 Stage 有一组并行机
-- FJSP：柔性作业车间，每道 Operation 可选机器，Job 内有工序顺序
-- JSP：经典作业车间，每道工序有指定机器
-- Parallel Machine Scheduling：并行机调度
-- Resource-Constrained Scheduling：资源约束项目调度
-- General MIP：无法归类时使用通用 MIP 框架
+- **direct_basic_hfsp**：每个 Job 按相同 Stage 顺序加工；每阶段有并行机；加工时间为 `p[j][s]`；允许等待、不允许抢占；Job 之间没有额外 precedence；目标为 makespan。可直接使用内置模板。
+- **adapter_required**：FJSP、JSP、并行机、资源约束项目调度、重入、可选路线、机器相关工时、额外资源或不同目标。Skill 可识别这些类型，但不能直接套用基础 HFSP 代码。
+
+适配必须同时更新 `Instance`、数据格式、编码、decoder、feasibility checker、MIP 和回归测试。任何一项未完成时，`problem_fingerprint.json` 与 `IMPLEMENTATION_STATUS.md` 都必须保留 `adapter_required` / `not_verified`。
 
 ---
 
@@ -248,7 +251,7 @@
 8.5. `tests/smoke_test.py` 冒烟测试（生成后立即运行）
 9. `src/metaheuristics/initial/` 初始化方法
 10. `src/metaheuristics/neighborhood/` 邻域算子
-11. 5 个 basic 算法（SA, MA, IG, GA, TS）——**每个算法必须使用 EvalCache(max_size=500, FIFO)**
+11. 5 个 basic 算法（SA, MA, IG, GA, TS）——**每次运行使用独立的 EvalCache(max_size=500, FIFO)**
 12. `src/math_models/gurobi_model.py` + `lower_bound.py`
 13. `src/visualization/` 可视化
 14. `src/metaheuristics/registry.py` 算法注册表
@@ -391,7 +394,7 @@
 4. 不要只输出数学模型而不输出代码
 5. 不要只输出代码而没有 demo 算例
 6. 不要在 `configs/` 放 JSON 配置文件（改为自然语言文档，`problem_fingerprint.json` 除外）
-7. 不要在算例生成时传入 seed 参数
+7. 不要隐式使用全局随机状态：算例生成必须显式接受 `master_seed`，并在每个 `index.json` 记录派生的 `instance_seed`
 8. 不要在 `run_baselines.py` 中设置算法内部开关参数
 9. 不要跳过消融实验直接纳入未验证的改进
 10. 不要将实验输出写到项目外路径
@@ -401,13 +404,15 @@
 14. **不要让占位模块静默返回伪结果**，必须 raise NotImplementedError
 15. **不要让 README 替代 docs/ 中的问题描述文档**
 16. **不要在循环内频繁打印日志**，每行至少间隔 N 次迭代
-17. **不要在 skill 中写死问题特定内容**（如 re-entry、人工资源等），应根据问题描述智能生成
+17. **不要声称内置模板自动支持问题特定内容**：应从问题描述提取特征并标记 `adapter_required`，完成全链适配和回归测试后才可宣称支持
 18. **不要让对话约定停留在上下文中**：任何澄清、决策、默认假设、用户额外要求都必须持久化到 `docs/` 或 `configs/`
 19. **不要在算法适配时把初始化写在算法主文件中**：初始化必须提取到 `src/metaheuristics/initial/single/` 或 `src/metaheuristics/initial/population/`（按用途）独立文件，主文件通过 import 调用
 20. **不要混用单解生成器与种群生成器**：单解生成器（`initial/single/`，返回 `list[int]`）严禁用于 GA/MA 种群初始化；种群生成器（`initial/population/`，返回 `list[list[int]]`）严禁用于 SA/IG/TS
-21. **不要在批量对比时让各算法用不同初始化/缓存**（除非明确要求）：`sh_batch_instances_algorithms.sh` 默认统一初始化 + 统一缓存（单解/种群各自统一）
+21. **不要跨算法或跨算例共享 EvalCache**：批量对比应统一缓存配置，但每次运行使用独立实例；初始化方法在单解/种群两类内部统一
 22. **严禁为特殊情况打补丁**（红线，详见 §8）：遇到 bug 必须找根因修复，禁止用特殊值特判、异常静默、临时 workaround、注释掉失败代码、pytest.skip 等方式绕过
 23. **禁止 `except Exception: pass` 和 `except: pass`**：只能 catch 已知且可恢复的特定异常类型
 24. **禁止在注释中使用"临时"、"暂时"、"绕过"、"待重构"字样**留下技术债——要么现在修根因，要么明确 `raise NotImplementedError` 并记录到 `docs/`
 25. **严禁兼容层**（红线，详见 §8.2）：接口变更必须一次性删除旧接口并全项目替换调用点。禁止保留旧函数名 shim、`DeprecationWarning` 包装、旧参数/新参数并存、模块 alias（`OldClass = NewClass`）、格式版本判断分支、旧路径 fallback 等
 26. **禁止在注释中使用"兼容"、"legacy"、"deprecated"、"保留旧接口"、"过渡期"、"两版本共存"字样**——一旦出现即意味着建立了兼容层
+27. **在 basic 元启发式模板中使用 OOP，在工具/算子/初始化中使用平级函数**：SA/IG/TS/GA/MA 的 basic 模板建议使用 `BaseSolver` 层次结构（统一评估接口/日志/输出格式）；但工具函数（`load_instance`, `decode`, `swap_move`）和初始化生成器（`init_*`, `generate_*_population`）应保持平级函数。详见 `modules/algorithms.md §10`
+28. **不要为算法变体分支强制使用继承**：study / branch 变体推荐使用组合、装饰器、或配置驱动模式（见 `modules/algorithms.md §10.6`），不强制继承 `BaseSolver`

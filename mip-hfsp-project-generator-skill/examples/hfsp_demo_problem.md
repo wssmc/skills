@@ -10,7 +10,7 @@
 ## 项目结构对应
 
 - 数据目录: `data/demo/demo_01_10_5/`
-- 数据生成: `data/generate.py`（不在算例生成时传 seed）
+- 数据生成: `data/generate.py --master-seed 42`（每个算例在 `index.json` 记录独立 `instance_seed`）
 - 数据读取: `data/loader.py` → `load_instance(dir) -> Instance`
 - MIP 求解: `src/math_models/gurobi_model.py`（Gurobi 实现）
 - 元启发式: `src/metaheuristics/{sa,ma,ig,ga,ts}/` 各 basic 版本

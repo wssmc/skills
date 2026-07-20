@@ -21,7 +21,13 @@ research context
 3. Problem description and mathematical formulation
 4. Solution method
 5. Computational study
-6. Conclusions and future research
+6. Conclusions
+
+Paragraph 1: problem, model, and algorithm overview — restate the studied problem, the key structure of the formulation, and the proposed method at the level of its central idea.
+
+Paragraph 2: main experimental findings — report the principal computational results, the magnitude of improvement, and the statistical evidence that supports the method's effectiveness. One to three sentences of numerical summary; do not enumerate every benchmark.
+
+Paragraph 3: three problem boundaries and three corresponding future research directions — state what the method does not cover or where it degrades, then pair each boundary with a concrete next-step extension. Do not propose vague future work such as "apply to other problems" or "improve the algorithm."
 
 Use the target journal's prescribed structure when it differs.
 

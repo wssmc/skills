@@ -1,78 +1,97 @@
-"""DOE 实验入口 — scripts/doe/run_doe.py
-
-参数校核实验：因子筛选、参数调优、验证。
-"""
+"""可运行的 SA 全因子参数实验。"""
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
+import time
 from itertools import product
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from ablation.quick_test_config import get_quick_config, calc_time_limit
+sys.path[:0] = [str(PROJECT_ROOT), str(PROJECT_ROOT / "src")]
+
+from data.loader import load_instance
+from metaheuristics.decoding.feasibility_checker import check_feasibility
+from metaheuristics.registry import get_algorithm
+from scripts.ablation.quick_test_config import calc_time_limit, get_quick_config
 
 
-def run_doe(algo: str, params: dict, scale: str = "small",
-            output_dir: str = "outputs/doe") -> None:
-    """运行 DOE 实验。
+SUPPORTED_GRIDS = {
+    "sa_basic": {
+        "initial_temperature_multiplier": [5.0, 10.0, 20.0],
+        "cooling_rate": [0.99, 0.995],
+    }
+}
 
-    Args:
-        algo: 算法名称
-        params: {param_name: [value1, value2, ...]}
-        scale: 算例规模
-        output_dir: 输出目录
-    """
-    from data.loader import load_instance
+
+def _output_dir(relative: str, algo: str) -> Path:
+    candidate = (PROJECT_ROOT / relative / algo).resolve()
+    outputs = (PROJECT_ROOT / "outputs").resolve()
+    if candidate != outputs and outputs not in candidate.parents:
+        raise ValueError("DOE output must stay inside the project outputs directory")
+    candidate.mkdir(parents=True, exist_ok=True)
+    return candidate
+
+
+def run_doe(algo: str, params: dict[str, list], scale: str = "small",
+            output_dir: str = "outputs/doe") -> Path:
+    if algo not in SUPPORTED_GRIDS:
+        raise ValueError(
+            f"No tested DOE parameter adapter for {algo!r}; supported={sorted(SUPPORTED_GRIDS)}"
+        )
+    if not params or any(not values for values in params.values()):
+        raise ValueError("Every DOE factor must contain at least one value")
+    unsupported = set(params) - set(SUPPORTED_GRIDS[algo])
+    if unsupported:
+        raise ValueError(f"Unsupported DOE factors for {algo}: {sorted(unsupported)}")
+
     config = get_quick_config(scale)
     instance = load_instance(config["instance"])
-    time_limit = calc_time_limit(instance.num_jobs, instance.num_stages)
+    time_limit = max(0.01, calc_time_limit(instance.num_jobs, instance.num_stages))
+    solver = get_algorithm(algo)
+    names = list(params)
+    rows: list[dict] = []
 
-    # 全因子实验
-    param_names = list(params.keys())
-    param_values = list(params.values())
+    for values in product(*(params[name] for name in names)):
+        combination = dict(zip(names, values))
+        for seed in config["seeds"]:
+            started = time.perf_counter()
+            schedule, _, _ = solver(
+                instance, time_limit=time_limit, seed=seed, verbose=0, **combination
+            )
+            violations = check_feasibility(instance, schedule)
+            if violations:
+                raise RuntimeError(f"DOE produced an infeasible schedule: {violations}")
+            rows.append({
+                **combination,
+                "seed": seed,
+                "objective": schedule.objective,
+                "runtime": time.perf_counter() - started,
+            })
 
-    results = []
-    for combo in product(*param_values):
-        param_combo = dict(zip(param_names, combo))
-        # 运行算法（具体实现由问题决定）
-        # solver = _get_solver(algo)
-        # schedule, trace, best_seq = solver(instance, time_limit=time_limit, **param_combo)
-        # results.append({**param_combo, "objective": schedule.objective})
-        print(f"  Testing {param_combo} ...")
-        results.append({**param_combo, "objective": 0.0})  # placeholder
-
-    # 写结果
-    out = Path(output_dir) / algo
-    out.mkdir(parents=True, exist_ok=True)
-
-    import csv
-    with open(out / "doe_results.csv", "w", newline="", encoding="utf-8") as f:
-        if results:
-            writer = csv.DictWriter(f, fieldnames=results[0].keys())
-            writer.writeheader()
-            writer.writerows(results)
-
-    print(f"DOE results saved to {out}/doe_results.csv")
+    out = _output_dir(output_dir, algo)
+    result_path = out / "doe_results.csv"
+    with result_path.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    metadata = {"algorithm": algo, "scale": scale, "factors": params, "runs": len(rows)}
+    (out / "doe_metadata.json").write_text(
+        json.dumps(metadata, indent=2, allow_nan=False), encoding="utf-8"
+    )
+    return result_path
 
 
-def main():
-    parser = argparse.ArgumentParser(description="DOE parameter experiment")
-    parser.add_argument("--algo", type=str, required=True, help="Algorithm name")
-    parser.add_argument("--scale", type=str, default="small", help="Instance scale")
-    parser.add_argument("--out", type=str, default="outputs/doe", help="Output directory")
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Tested SA full-factor parameter experiment")
+    parser.add_argument("--algo", default="sa_basic", choices=sorted(SUPPORTED_GRIDS))
+    parser.add_argument("--scale", default="small", choices=["small", "large"])
+    parser.add_argument("--out", default="outputs/doe")
     args = parser.parse_args()
-
-    # 默认参数网格（由具体问题修改）
-    default_params = {
-        "temperature": [0.1, 0.5, 1.0, 2.0],
-        "cooling_rate": [0.95, 0.99, 0.995],
-    }
-
-    run_doe(args.algo, default_params, args.scale, args.out)
+    path = run_doe(args.algo, SUPPORTED_GRIDS[args.algo], args.scale, args.out)
+    print(f"DOE results saved to {path}")
 
 
 if __name__ == "__main__":

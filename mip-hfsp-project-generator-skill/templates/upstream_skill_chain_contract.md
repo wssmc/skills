@@ -4,7 +4,7 @@ This skill should prefer inputs produced by the first two skills in the chain:
 
 ```text
 problem-decomposition-skill
-→ literature-matrix-review-skill
+→ literature-matrix-review-skill-v2.1
 → mip-hfsp-project-generator-skill
 ```
 
@@ -30,7 +30,7 @@ Use these files to define:
 - assumptions;
 - extension points.
 
-## From literature-matrix-review-skill
+## From literature-matrix-review-skill-v2.1
 
 ```text
 problem_feature_table.md

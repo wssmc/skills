@@ -1,65 +1,73 @@
-"""论文对比算法模板 — src/metaheuristics/baselines/
-
-从文献复现的对比算法，每个算法一个文件，注册到 run_baselines.py 统一调度。
-"""
+"""可运行的随机搜索 baseline。文献 baseline 应各自使用独立文件实现。"""
 from __future__ import annotations
 
+import random
 import sys
+import time
+
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.parent.parent))
-from core.domain import Instance, Schedule, Result
+from core.domain import Instance, Schedule
+from metaheuristics.decoding.eval_cache import EvalCache, make_eval_key
+from metaheuristics.decoding.list_decoder import decode
+from metaheuristics.decoding.metrics import evaluate_schedule
+from metaheuristics.encoding.sequence_encoding import serialize_machine_assignment
+from metaheuristics.initial.single.random_init import init_random, init_random_machine_assignment
 
 
-def solve_baseline_template(instance: Instance, time_limit: float = 30.0,
-                            seed: int | None = None, **kwargs) -> tuple[Schedule, list, dict]:
-    """对比算法模板。
-
-    复现文献中的算法，每个对比算法一个文件。
-    算法签名统一: solve_xxx(instance, time_limit, seed, **kwargs) -> (Schedule, trace_list)
-
-    Args:
-        instance: 算例数据
-        time_limit: 时间限制（秒）
-        seed: 随机种子
-
-    Returns:
-        (Schedule, trace_list) 其中 trace_list = [(iteration, time, objective), ...]
-    """
-    import time
-    import random
+def solve_random_search(instance: Instance, time_limit: float = 30.0,
+                        seed: int | None = None, **kwargs) -> tuple[Schedule, list, dict]:
+    supported_kwargs = {"cache", "init_fn", "verbose"}
+    unknown_kwargs = set(kwargs) - supported_kwargs
+    if unknown_kwargs:
+        raise TypeError(f"Unsupported random_search options: {sorted(unknown_kwargs)}")
+    if time_limit <= 0:
+        raise ValueError("time_limit must be positive")
+    errors = instance.validate()
+    if errors:
+        raise ValueError(f"Invalid instance: {errors}")
     rng = random.Random(seed)
-    t0 = time.time()
+    injected_cache = kwargs.get("cache")
+    if injected_cache is not None:
+        if not isinstance(injected_cache, EvalCache):
+            raise TypeError("cache must be an EvalCache")
+        if injected_cache.max_size != EvalCache.MAX_SIZE or len(injected_cache) != 0:
+            raise ValueError("injected cache must be an empty EvalCache(max_size=500)")
+    cache = injected_cache if injected_cache is not None else EvalCache(max_size=500)
+    init_fn = kwargs.get("init_fn") or init_random
+    started = time.perf_counter()
 
-    # 计算缓存（FIFO，上限 500）— 所有元启发式必须使用
-    cache = EvalCache(max_size=500)
+    def evaluate(sequence: list[int], assignment: dict) -> tuple[float, Schedule | None]:
+        key = make_eval_key(instance, sequence, assignment)
+        cached = cache.get(key)
+        if cached is not None:
+            return cached, None
+        schedule = decode(sequence, assignment, instance)
+        evaluate_schedule(instance, schedule)
+        cache.put(key, schedule.objective)
+        return schedule.objective, schedule
 
-    from metaheuristics.initial.single.random_init import init_random, init_random_machine_assignment
-    from metaheuristics.decoding.list_decoder import decode
-    from metaheuristics.decoding.metrics import evaluate_schedule
-from metaheuristics.decoding.eval_cache import EvalCache
-
-    trace = []
-
-    # 简单随机搜索作为模板
-    job_seq = init_random(instance, seed)
-    machine_assign = init_random_machine_assignment(instance, seed)
-    schedule = decode(job_seq, machine_assign, instance)
-    evaluate_schedule(instance, schedule)
-    best = schedule
-    best_seq = job_seq.copy()
-    trace.append((0, time.time() - t0, best.objective))
-
+    best_sequence = init_fn(instance, seed=seed)
+    best_assignment = init_random_machine_assignment(instance, seed)
+    best_obj, best_schedule = evaluate(best_sequence, best_assignment)
+    if best_schedule is None:
+        raise RuntimeError("isolated cache unexpectedly contained the initial encoding")
+    trace = [(0, time.perf_counter() - started, best_obj)]
     iteration = 0
-    while time.time() - t0 < time_limit:
+
+    while time.perf_counter() - started < time_limit:
         iteration += 1
-        new_seq = init_random(instance, rng.randint(0, 2**32))
-        new_assign = init_random_machine_assignment(instance, rng.randint(0, 2**32))
-        new_schedule = decode(new_seq, new_assign, instance)
-        evaluate_schedule(instance, new_schedule)
+        sequence = init_random(instance, rng.randint(0, 2**32 - 1))
+        assignment = init_random_machine_assignment(instance, rng.randint(0, 2**32 - 1))
+        objective, schedule = evaluate(sequence, assignment)
+        if objective < best_obj:
+            best_sequence = sequence
+            best_assignment = assignment
+            best_obj = objective
+            best_schedule = schedule or decode(sequence, assignment, instance)
+            evaluate_schedule(instance, best_schedule)
+        trace.append((iteration, time.perf_counter() - started, best_obj))
 
-        if new_schedule.objective < best.objective:
-            best = new_schedule
-            best_seq = new_seq
-
-        trace.append((iteration, time.time() - t0, best.objective))
-
-    return best, trace, {"job_sequence": best_seq, "machine_assignment": machine_assign}
+    return best_schedule, trace, {
+        "job_sequence": list(best_sequence),
+        "machine_assignment": serialize_machine_assignment(best_assignment),
+    }

@@ -13,7 +13,7 @@ sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.par
 from core.domain import Instance
 
 
-def init_spt(instance: Instance) -> list[int]:
+def init_spt(instance: Instance, seed: int | None = None) -> list[int]:
     """SPT (Shortest Processing Time)：按作业总加工时间升序。"""
     totals = {}
     for j in range(instance.num_jobs):
@@ -22,7 +22,7 @@ def init_spt(instance: Instance) -> list[int]:
     return sorted(range(instance.num_jobs), key=lambda j: totals[j])
 
 
-def init_lpt(instance: Instance) -> list[int]:
+def init_lpt(instance: Instance, seed: int | None = None) -> list[int]:
     """LPT (Longest Processing Time)：按作业总加工时间降序。"""
     totals = {}
     for j in range(instance.num_jobs):
@@ -31,7 +31,7 @@ def init_lpt(instance: Instance) -> list[int]:
     return sorted(range(instance.num_jobs), key=lambda j: -totals[j])
 
 
-def init_edd(instance: Instance) -> list[int]:
+def init_edd(instance: Instance, seed: int | None = None) -> list[int]:
     """EDD (Earliest Due Date)：按交期升序。"""
     return sorted(range(instance.num_jobs),
                   key=lambda j: instance.due_dates.get(j, float("inf")))

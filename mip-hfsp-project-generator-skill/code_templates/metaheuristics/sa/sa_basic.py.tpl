@@ -1,94 +1,83 @@
-"""模拟退火 (SA) 基础版 — src/metaheuristics/sa/sa_basic.py
-
-最小可运行实现，验证基本框架正确性。
-算法签名: solve_sa_basic(instance, time_limit, seed, **kwargs) -> (Schedule, trace_list, best_seq)
-"""
+"""模拟退火（SA）基础版。"""
 from __future__ import annotations
 
 import math
-import random
-import time
-
 import sys
+
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.parent.parent))
 from core.domain import Instance, Schedule
-from metaheuristics.initial.single.random_init import init_random, init_random_machine_assignment
-from metaheuristics.decoding.list_decoder import decode
-from metaheuristics.decoding.metrics import evaluate_schedule
-from metaheuristics.decoding.eval_cache import EvalCache
-from metaheuristics.neighborhood.operators import random_swap, random_insert
+from metaheuristics.base_solver.base_solver import SingleSolutionSolver
+from metaheuristics.neighborhood.operators import random_insert, random_swap
+
+
+class SASolver(SingleSolutionSolver):
+    ALGO_NAME = "sa_basic"
+    ALGO_SHORT = "SA"
+
+    def __init__(self, initial_temperature_multiplier: float = 10.0,
+                 cooling_rate: float = 0.995, minimum_temperature: float = 0.01):
+        if initial_temperature_multiplier <= 0:
+            raise ValueError("initial_temperature_multiplier must be positive")
+        if not 0 < cooling_rate < 1:
+            raise ValueError("cooling_rate must be between 0 and 1")
+        if minimum_temperature <= 0:
+            raise ValueError("minimum_temperature must be positive")
+        super().__init__()
+        self.initial_temperature_multiplier = float(initial_temperature_multiplier)
+        self.cooling_rate = float(cooling_rate)
+        self.minimum_temperature = float(minimum_temperature)
+
+    def _solve(self) -> None:
+        current_seq, assignment = self._init_single()
+        self.machine_assign = assignment
+        current_obj = self.evaluate(current_seq, assignment)
+        best_obj = current_obj
+        self.record_best(current_seq, assignment)
+        self.trace = [(0, 0.0, best_obj)]
+
+        max_processing_time = max(
+            self.instance.processing_times[j][s]
+            for j in range(self.instance.num_jobs)
+            for s in range(self.instance.num_stages)
+        )
+        temperature = max(
+            max_processing_time * self.initial_temperature_multiplier,
+            self.minimum_temperature,
+        )
+        iteration = 0
+
+        while self.elapsed() < self.time_limit:
+            iteration += 1
+            candidate = (
+                random_swap(current_seq, self.rng)
+                if self.rng.random() < 0.5
+                else random_insert(current_seq, self.rng)
+            )
+            candidate_obj = self.evaluate(candidate, assignment)
+            delta = candidate_obj - current_obj
+            accepted = delta < 0 or self.rng.random() < math.exp(-delta / max(temperature, 1e-12))
+            if accepted:
+                current_seq = candidate
+                current_obj = candidate_obj
+                if current_obj < best_obj:
+                    best_obj = current_obj
+                    self.record_best(current_seq, assignment)
+
+            self.trace.append((iteration, self.elapsed(), best_obj))
+            self.log_iteration(
+                iteration,
+                f"cur={current_obj:.2f} accepted={int(accepted)} T={temperature:.4f}",
+            )
+            temperature = max(self.minimum_temperature, temperature * self.cooling_rate)
+
+        self.log_done(iteration)
 
 
 def solve_sa_basic(instance: Instance, time_limit: float = 30.0,
                    seed: int | None = None, **kwargs) -> tuple[Schedule, list, dict]:
-    """基础模拟退火。
-
-    Args:
-        instance: 算例数据
-        time_limit: 时间限制（秒）
-        seed: 随机种子
-
-    Returns:
-        (Schedule, trace_list, best_seq)
-    """
-    rng = random.Random(seed)
-    t0 = time.time()
-
-    # 计算缓存（FIFO，上限 500）
-    # 计算缓存：优先使用外部注入（批量对比一致性），否则新建
-    cache = kwargs.get("cache") or EvalCache(max_size=500)
-    # 初始化函数：优先使用外部注入的统一初始化，否则用算法默认初始化
-    init_fn = kwargs.get("init_fn")
-
-    def evaluate(seq):
-        """带缓存的评估: 命中返回目标值，未命中则解码+计算+入缓存。"""
-        key = tuple(seq)
-        cached = cache.get(key)
-        if cached is not None:
-            return cached
-        sched = decode(seq, machine_assign, instance)
-        evaluate_schedule(instance, sched)
-        cache.put(key, sched.objective)
-        return sched.objective
-
-    # 初始化
-    job_seq = init_random(instance, seed)
-    machine_assign = init_random_machine_assignment(instance, seed)
-    current = decode(job_seq, machine_assign, instance)
-    evaluate_schedule(instance, current)
-    best = current
-    best_seq = job_seq.copy()
-    trace = [(0, 0.0, best.objective)]
-
-    # SA 参数
-    initial_temp = max(op.processing_time for op in current.operations) * 10
-    cooling_rate = 0.995
-    min_temp = 0.01
-    temp = initial_temp
-
-    iteration = 0
-    while time.time() - t0 < time_limit and temp > min_temp:
-        iteration += 1
-
-        # 生成邻居
-        if rng.random() < 0.5:
-            new_seq = random_swap(job_seq, rng)
-        else:
-            new_seq = random_insert(job_seq, rng)
-
-        new_schedule = decode(new_seq, machine_assign, instance)
-        evaluate_schedule(instance, new_schedule)
-
-        # 接受准则
-        delta = new_schedule.objective - current.objective
-        if delta < 0 or rng.random() < math.exp(-delta / max(temp, 1e-10)):
-            job_seq = new_seq
-            current = new_schedule
-            if current.objective < best.objective:
-                best = current
-                best_seq = job_seq.copy()
-
-        trace.append((iteration, time.time() - t0, best.objective))
-        temp *= cooling_rate
-
-    return best, trace, {"job_sequence": best_seq, "machine_assignment": machine_assign}
+    solver = SASolver(
+        initial_temperature_multiplier=kwargs.pop("initial_temperature_multiplier", 10.0),
+        cooling_rate=kwargs.pop("cooling_rate", 0.995),
+        minimum_temperature=kwargs.pop("minimum_temperature", 0.01),
+    )
+    return solver.solve(instance, time_limit, seed, **kwargs)

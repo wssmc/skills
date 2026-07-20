@@ -1,190 +1,171 @@
 # 模块：脚本与执行
 
-## 1. 脚本层架构
+## 导航
 
+- §1 执行链
+- §2 单次与对比运行
+- §3 批量实验
+- §4 MIP 与扩展实验
+- §5 失败、续跑与产物契约
+- §6 推荐执行顺序
+
+## 1. 执行链
+
+生成项目只有两个直接 Python 求解入口：
+
+```text
+scripts/run_baselines.py          -> 元启发式与 random_search
+scripts/mip/run_gurobi_mip.py     -> Gurobi MIP
 ```
-sh_single_instance.sh  ─┐  (单算例 · 单算法)
-sh_bench_instance.sh   ─┼──> run_baselines.py ──> src/metaheuristics/*
-sh_batch_instances_*.sh ─┘  (全量 · 多轮)       ──> src/math_models/*
 
-scripts/mip/run_gurobi_mip.py ──> src/math_models/* (独立入口)
+Shell 脚本只负责组合参数，不复制求解逻辑：
+
+```text
+sh_single_instance.sh ─┐
+sh_bench_instance.sh  ─┼─> run_baselines.py -> registry -> solver
+sh_batch_instances_algorithms.sh ┘
 ```
 
-数据管线：
+统一数据流：
 
+```text
+load_instance(dir)
+  -> solver(instance, time_limit, seed, ...)
+  -> (Schedule, trace, best_seq)
+  -> check_feasibility
+  -> JSON / CSV / PNG
 ```
-load_instance(dir) ──> solve(...) ──> (Schedule, trace, best_seq) ──> check_feasibility ──> write_artifacts
+
+## 2. 单次与对比运行
+
+### 2.1 `run_baselines.py`
+
+示例：
+
+```bash
+python scripts/run_baselines.py \
+  --inst data/demo/demo_01_10_5 \
+  --algo sa_basic \
+  --time 30 \
+  --seed 42 \
+  --out outputs/single
 ```
 
----
+`--algo` 必须是注册表中的精确名称。默认注册：
 
-## 2. 核心脚本
-
-### 2.1 `run_baselines.py` — 中央调度枢纽
-
-注册全部算法，解析算例目录，`ProcessPoolExecutor` 并行调度，统一写产物。
-
-**输出（每个 算例 × 算法）**：
-
+```text
+random_search
+sa_basic
+ma_basic
+ig_basic
+ga_basic
+ts_basic
 ```
+
+每个任务写出：
+
+```text
 {out}/{instance}/{algo}_result.json
 {out}/{instance}/{algo}_schedule.json
-{out}/{instance}/{algo}_trace.csv        # iteration, time, objective
+{out}/{instance}/{algo}_trace.csv
 {out}/{instance}/{algo}_gantt.png
 ```
 
-txt 模式：`{txt_out}/{algo}.txt`（保存 **best_seq**，不从 schedule 反推）
+启用 `--txt` 时额外保存 JSON 可序列化的 `best_seq`。不得从 schedule 反推编码。
 
-**算法返回值**：`(Schedule, trace, best_seq)`，`best_seq = {"job_sequence": [...], "machine_assignment": {...}}`
-
-### 2.2 `sh_single_instance.sh` — 单算例 · 单算法
+### 2.2 `sh_single_instance.sh`
 
 ```bash
-bash scripts/sh_single_instance.sh --inst <算例名|路径> --algo <算法名> [--time N] [--seed N] [--verbose 1]
+bash scripts/sh_single_instance.sh \
+  --inst data/demo/demo_01_10_5 \
+  --algo sa_basic \
+  --time 30 \
+  --seed 42
 ```
 
-必须输出 `schedule.json` 和 `gantt.png`。
+脚本以 Bash 数组传参，禁止 `eval`。底层求解、可行性校验或绘图失败时，脚本必须返回非零状态。
 
-### 2.3 `sh_bench_instance.sh` — 单算例 · 多算法对比
+### 2.3 `sh_bench_instance.sh`
 
 ```bash
-bash scripts/sh_bench_instance.sh [算例路径] [算法1 算法2 ...]
+bash scripts/sh_bench_instance.sh data/demo/demo_01_10_5
+bash scripts/sh_bench_instance.sh data/demo/demo_01_10_5 sa_basic ig_basic
 ```
 
-默认运行所有已注册且状态为 `complete` 或 `runnable_mvp` 的算法。
+未显式给算法时，从 `get_runnable_algorithms()` 读取全部可运行算法。注册表是唯一名称来源。
 
-### 2.4 `sh_batch_instances_algorithms.sh` — 全量批量 · 多轮
+### 2.4 `sh_analysis.sh`
 
 ```bash
-bash scripts/sh_batch_instances_algorithms.sh [small|large|all] [time_factor]
+bash scripts/sh_analysis.sh outputs/batch/<batch-name>
 ```
 
-固定模式：
-- 7 轮循环，已有 `round{r}/` 数据则跳过（断点续跑）
-- 种子源：`random.Random(20260616 + sum(ord(c) for c in scale))`
-- 时间公式：`time = N_jobs * M_stages * factor`，factor 默认 `0.05`（单）/ `0.1`（批量）
-- 并行：大规模 `W=2`，小规模 `W=4`
+脚本递归读取 `*_result.json`，写出 `analysis_summary.csv`。若目录不存在、没有结果或 JSON 无效，返回非零状态。它不依赖一个并未生成的外部分析包。
 
-### 2.5 `sh_analysis.sh` — 通用结果分析
+## 3. 批量实验
 
 ```bash
-bash scripts/sh_analysis.sh <结果目录> [--standard auto|none|xlsx] [--no-plots]
+bash scripts/sh_batch_instances_algorithms.sh small 0.1 \
+  --batch-name experiment_01 \
+  --rounds 7 \
+  --unified-init y
 ```
 
----
+批量规则：
 
-## 3. MIP 脚本（`scripts/mip/`）
+1. 默认顺序执行，当前模板不宣称并行能力。
+2. 时间上限为 `max(1, int(num_jobs * num_stages * factor))`。
+3. 每轮每个算例使用确定性运行种子，种子表写入 `data/batch_seeds/{scale}/round{r}.json`。
+4. `--unified-init y` 只统一同类算法的初始化配置；单解与种群初始化仍严格分开。
+5. 每个“算例 × 算法 × 轮次”运行创建独立 `EvalCache(max_size=500)`。禁止跨任务共享缓存。
+6. 结果位于 `outputs/batch/{batch_name}/round{r}/{scale}/...`。
 
-| 脚本 | 职责 |
-|------|------|
-| `run_gurobi_mip.py` | Gurobi MIP 精确求解（单算例），默认时限 60s |
-| `run_gurobi_mip_small.py` | 小规模批量求解 |
-| `calc_lower_bounds.py` | 下界计算 |
-| `tune_gurobi_mip_params.py` | Gurobi 参数调优 |
-| `reproduce_mip_with_decode.py` | MIP 结果解码复现 |
+断点续跑以单个 `{algo}_result.json` 存在且非空为判断条件。使用相同 `--batch-name` 才会续跑同一批次；不得用“整轮目录非空”跳过未完成任务。
 
-MIP 输出：`result.json`（status, objective, LB, gap, runtime, violations）+ `schedule.csv` + `gantt.png`
+## 4. MIP 与扩展实验
 
----
+### 4.1 Gurobi MIP
 
-## 4. 扩展实验脚本
+```bash
+python scripts/mip/run_gurobi_mip.py \
+  --inst data/demo/demo_01_10_5 \
+  --time 60 \
+  --out outputs/mip
+```
 
-### 4.1 DOE（`scripts/doe/`）
+唯一默认 MIP 脚本是 `run_gurobi_mip.py`。输出必须区分无解、未找到可行解和已有 incumbent；非有限目标、下界与 gap 写为 JSON `null`，不得输出 `NaN`/`Infinity`。
 
-| 脚本 | 职责 |
-|------|------|
-| `run_doe.py` | DOE 实验入口 |
-| `sh_doe.sh` | DOE 批量脚本 |
+### 4.2 DOE、消融与统计
 
-输出：`outputs/doe/{algo}/{param_name}/doe_results.csv` + 主效应图 + 交互效应图
+默认模板包含：
 
-### 4.2 消融实验（`scripts/ablation/`）
+```text
+scripts/doe/run_doe.py
+scripts/doe/sh_doe.sh
+scripts/ablation/quick_test_config.py
+scripts/statistics/run_statistics.py
+```
 
-| 脚本 | 职责 |
-|------|------|
-| `quick_test_config.py` | 固化小实验默认配置 |
-| `run_ablation.py` | 消融实验入口 |
+这些入口只允许报告实际实现的能力。统计模块使用 Friedman、配对 Wilcoxon signed-rank 和多重比较校正；依赖缺失或数据不满足检验条件时必须明确失败。
 
-### 4.3 统计检验（`scripts/statistics/`）
+## 5. 失败、续跑与产物契约
 
-- Friedman 检验、Wilcoxon 秩和检验、Holm/Hochberg 校正
-- 输出 p 值矩阵 + 临界差图（CD diagram）
+- 核心求解、解码、可行性检查、序列化和必需绘图不能被 `except Exception: pass` 吞掉。
+- CLI 参数错误返回状态码 2；运行失败返回非零状态。
+- 所有输出路径必须解析到项目 `outputs/` 内，拒绝路径穿越。
+- `result.json` 使用 `allow_nan=False`，并保存算法名、算例、目标、运行时间、种子和可行性状态。
+- `best_seq` 必须能重新解码出与 result 相同的目标，并通过 `check_feasibility`。
+- 新增并行前必须实现进程隔离、任务级错误传播、独立缓存和确定性结果路径，并增加回归测试。
 
----
+## 6. 推荐执行顺序
 
-## 5. 项目执行步骤
+```bash
+python tests/smoke_test.py
+python scripts/audit_project.py
+bash scripts/sh_single_instance.sh --inst data/demo/demo_01_10_5 --algo sa_basic
+bash scripts/sh_bench_instance.sh data/demo/demo_01_10_5
+bash scripts/sh_batch_instances_algorithms.sh small 0.1 --batch-name experiment_01
+bash scripts/sh_analysis.sh outputs/batch/experiment_01
+```
 
-### 阶段一：问题定义与数据准备
-
-| 步骤 | 内容 | 产出 |
-|------|------|------|
-| 1 | 问题描述结构化分析（SKILL.md §4） | 结构化问题定义 |
-| 2 | 撰写 `configs/` 项目规范文档 + `problem_fingerprint.json` | `configs/*.md` |
-| 3 | 实现 `data/generate.py`，生成算例 | `data/demo/`, `data/small/`, `data/large/` |
-| 4 | 实现 `data/loader.py` | `data/loader.py` |
-| 5 | 撰写 `docs/` 数据格式文档 | `docs/YYYY-M-D*.md` |
-
-### 阶段二：核心框架搭建
-
-| 步骤 | 内容 | 产出 |
-|------|------|------|
-| 6 | 实现 `src/core/domain.py` | `src/core/domain.py` |
-| 7 | 实现 encoding + decoding + feasibility_checker + metrics + eval_cache | `decoding/*.py` |
-| 8 | 初期校验：demo 算例验证解码正确性 | demo 运行通过 |
-| 8.5 | 编写 `tests/smoke_test.py` 并运行通过 | `tests/smoke_test.py` |
-
-### 阶段三：基础算法实现
-
-| 步骤 | 内容 | 产出 |
-|------|------|------|
-| 9 | 实现 initial + neighborhood | `initial/*.py`, `neighborhood/*.py` |
-| 10 | 实现 5 个 basic 算法（SA, MA, IG, GA, TS） | `sa/`, `ma/`, `ig/`, `ga/`, `ts/` |
-| 11 | 注册到 `registry.py` | `registry.py` |
-| 12 | 用 `sh_single_instance.sh` 在 demo 上验证 | `outputs/single_*` |
-
-### 阶段四：数学模型与基准
-
-| 步骤 | 内容 | 产出 |
-|------|------|------|
-| 13 | 实现 `src/math_models/gurobi_model.py` | `math_models/gurobi_model.py` |
-| 14 | 实现 `lower_bound.py` | `math_models/lower_bound.py` |
-| 15 | 用 `run_gurobi_mip.py` 求解 small 算例 | `outputs/mip/` |
-
-### 阶段五：算法研究与改进
-
-| 步骤 | 内容 | 产出 |
-|------|------|------|
-| 16 | basic → study（命名带父前缀） | `sa/sa_basic_study.py` 等 |
-| 17 | 每次组件改进**必须消融** | 消融记录文档 |
-| 18 | study → branch（命名带父前缀），注册到中枢 | `sa/sa_basic_study_xxx.py` |
-| 19 | 实现 baselines 论文对比算法 | `baselines/*.py` |
-
-### 阶段六：正式实验
-
-| 步骤 | 内容 | 产出 |
-|------|------|------|
-| 20 | 生成 `data/batch_seeds/` 种子表 | `batch_seeds/*.json` |
-| 21 | 运行 `sh_batch_instances_algorithms.sh`（7 轮） | `outputs/batch/` |
-| 22 | 运行 `sh_analysis.sh` | `outputs/batch/*/analysis.xlsx` |
-| 23 | 运行 DOE | `outputs/doe/` |
-| 24 | 运行消融实验 | `outputs/ablation/` |
-| 25 | 运行统计检验 | `outputs/statistics/` |
-
-### 阶段七：论文写作
-
-| 步骤 | 内容 | 产出 |
-|------|------|------|
-| 26 | 建立 `latex/` 工作目录 | `latex/{project}_bundle/` |
-| 27 | 整理实验结果表格与图表 | `latex/figures/`, `latex/tables/` |
-| 28 | 调用写作 Skill 生成引言、相关工作、问题描述初稿 | `latex/{project}.tex` |
-| 29 | 使用 `literature-matrix-review-skill-v2.1` 生成两类文献矩阵 | 文献矩阵 |
-| 30 | 撰写论文正文 | `latex/{project}.tex` |
-
-### 阶段八：审计与交付
-
-| 步骤 | 内容 | 产出 |
-|------|------|------|
-| 31 | 生成 `IMPLEMENTATION_STATUS.md` | `IMPLEMENTATION_STATUS.md` |
-| 32 | 生成 `PROJECT_AUDIT.md` 并通过审计 | `PROJECT_AUDIT.md` |
-| 33 | 运行 smoke test + pytest | 测试通过 |
-| 34 | 输出审计摘要 | 审计摘要 |
+只有 smoke 与审计均成功后，才能把 `IMPLEMENTATION_STATUS.md` 中对应模块改为 `runnable_mvp` 或 `complete`。

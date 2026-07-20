@@ -51,20 +51,18 @@ def reverse_move(sequence: list[int], start: int, end: int) -> list[int]:
 def random_insert(sequence: list[int], rng: random.Random) -> list[int]:
     """随机插入移动。"""
     n = len(sequence)
-    from_pos = rng.randint(0, n - 1)
-    to_pos = rng.randint(0, n - 1)
-    while to_pos == from_pos:
-        to_pos = rng.randint(0, n - 1)
+    if n < 2:
+        return list(sequence)
+    from_pos, to_pos = rng.sample(range(n), 2)
     return insert_move(sequence, from_pos, to_pos)
 
 
 def random_swap(sequence: list[int], rng: random.Random) -> list[int]:
     """随机交换移动。"""
     n = len(sequence)
-    i = rng.randint(0, n - 1)
-    j = rng.randint(0, n - 1)
-    while j == i:
-        j = rng.randint(0, n - 1)
+    if n < 2:
+        return list(sequence)
+    i, j = rng.sample(range(n), 2)
     return swap_move(sequence, i, j)
 
 
@@ -77,12 +75,16 @@ def get_neighbor(sequence: list[int], move_type: NeighborhoodType,
         return random_swap(sequence, rng)
     elif move_type == NeighborhoodType.BLOCK_MOVE:
         n = len(sequence)
+        if n < 2:
+            return list(sequence)
         start = rng.randint(0, n - 2)
         end = rng.randint(start + 1, n)
         to_pos = rng.randint(0, n - (end - start))
         return block_move(sequence, start, end, to_pos)
     elif move_type == NeighborhoodType.REVERSE:
         n = len(sequence)
+        if n < 2:
+            return list(sequence)
         start = rng.randint(0, n - 2)
         end = rng.randint(start + 1, n)
         return reverse_move(sequence, start, end)

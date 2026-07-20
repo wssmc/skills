@@ -5,11 +5,9 @@
 ## 1. 问题类型
 
 - [ ] HFSP 混合流水车间
-- [ ] FJSP 柔性作业车间
-- [ ] JSP 作业车间
-- [ ] 并行机调度
-- [ ] 资源约束调度
-- [ ] 其他：____
+- [ ] 其他（需要适配）：____
+
+内置代码只直接支持基础 HFSP：所有 Job 依次通过相同 Stage，每阶段有并行机，工时为 `p[j][s]`，允许等待、不允许抢占，Job 间没有额外 precedence，目标为 makespan。FJSP、JSP、重入、可选路线、机器相关工时或额外资源应标记 `adapter_required`，并在生成算法前完成全链适配。
 
 ## 2. 问题背景
 
@@ -54,6 +52,8 @@ JobID	Stage_0	Stage_1	Stage_2
 - 是否有机器维护时间：
 - 是否有批处理或容量约束：
 
+若任一答案超出基础 HFSP，请列出需要修改的数据、领域模型、编码、解码、checker、MIP 与测试，不得仅修改自然语言说明。
+
 ## 6. 目标函数
 
 目标是：
@@ -86,7 +86,7 @@ objective = alpha * makespan + beta * total_tardiness + ...
 - [ ] 5 个 basic 元启发式（SA, MA, IG, GA, TS）
 - [ ] 论文对比算法 (baselines)
 - [ ] 消融实验（quick_test_config + 记录文档）
-- [ ] DOE 参数校核
+- [ ] 参数校核（默认仅 `sa_basic` 全因子网格；其他算法需参数适配器）
 - [ ] 统计检验（Friedman, Wilcoxon）
 - [ ] 甘特图
 - [ ] 收敛曲线

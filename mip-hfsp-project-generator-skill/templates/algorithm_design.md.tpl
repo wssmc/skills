@@ -11,10 +11,11 @@
 
 | 项 | 值 |
 |---|---|
-| 缓存对象 | **编码序列 → 目标值** 的映射 |
+| 缓存对象 | **算例 + 作业序列 + 机器分配 → 目标值** 的映射 |
 | 缓存上限 | `MAX_SIZE = 500` |
 | 弹出策略 | **FIFO**（先入先出，超过上限时最旧的条目最先被弹出） |
-| 缓存键 | 编码序列的哈希，如 `tuple(job_sequence)` |
+| 缓存键 | `make_eval_key(instance, job_sequence, machine_assignment)` |
+| 生命周期 | 每次算法运行创建独立实例；禁止跨算法、跨算例共享 |
 | 引入位置 | `src/metaheuristics/decoding/eval_cache.py` |
 | 引入方式 | `from metaheuristics.decoding.eval_cache import EvalCache` |
 
@@ -28,12 +29,13 @@
 - GA/MA 种群中的相同个体
 - TS 的邻域重访
 
-无缓存时，这些重复解码成本极高，可占大规模算例运行时间的 80% 以上。
+无缓存时会重复执行确定性的解码与指标计算，具体收益应由项目基准实验报告，不预填未经测量的比例。
 
 ### 1.3 标准使用范式
 
 ```python
 from metaheuristics.decoding.eval_cache import EvalCache
+from metaheuristics.decoding.eval_cache import make_eval_key
 from metaheuristics.decoding.list_decoder import decode
 from metaheuristics.decoding.metrics import evaluate_schedule
 
@@ -42,7 +44,7 @@ def solve_xxx(instance, time_limit, seed=None, **kwargs):
 
     def evaluate(seq):
         """带缓存的目标值评估。"""
-        key = tuple(seq)
+        key = make_eval_key(instance, seq, machine_assign)
         cached = cache.get(key)
         if cached is not None:
             return cached
@@ -161,27 +163,27 @@ def solve_xxx(instance, time_limit, seed=None, **kwargs):
 
 ## 7. 批量对比一致性
 
-`sh_batch_instances_algorithms.sh` 提供两个开关，保证多算法对比公平：
+`sh_batch_instances_algorithms.sh` 提供初始化开关，并固定每次运行的缓存策略：
 
 ### 7.1 统一初始化 `--unified-init`
 - **默认 y**：所有算法调用同一个 `init_xxx()`（默认 `neh_basic`）
 - 保证不同算法从相同起点出发，对比其**搜索能力**而非初始化差异
 
-### 7.2 统一缓存 `--unified-cache`
-- **默认 y**：所有算法共享**同一个 EvalCache 实例**（跨算法共享编码→目标值）
-- 保证相同编码的评估成本对所有算法一致
+### 7.2 缓存隔离
+- 每个“算例 × 算法 × 轮次”任务创建独立 `EvalCache(max_size=500)`。
+- 所有任务采用同一容量和 FIFO 策略，但禁止共享缓存内容；否则命中率、计时和执行顺序会互相污染。
+- 批处理脚本不提供 `--unified-cache` 开关。
 
 ### 7.3 交互式提示
 
 脚本启动后若未提供开关，会提示：
 ```
 Use unified initialization for all algorithms? [y/n] (default: y):
-Use unified EvalCache across algorithms? [y/n] (default: y):
 ```
 
 ### 7.4 非默认设置的记录
 
-使用 `--unified-init n` 或 `--unified-cache n` 时，脚本会自动在 `configs/conventions.md` 追加记录，并附上理由（需用户填写）。
+批处理脚本把初始化方法、轮数、时间因子和缓存隔离策略写入 `configs/conventions.md`；使用 `--unified-init n` 时同时记录该选择。
 
 ---
 

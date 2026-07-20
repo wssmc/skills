@@ -20,7 +20,17 @@ def decode(job_sequence: list[int], machine_assignment: dict, instance: Instance
     Returns:
         Schedule 对象
     """
-    machine_available = {}  # machine_id -> available_time
+    expected_jobs = list(range(instance.num_jobs))
+    if sorted(job_sequence) != expected_jobs:
+        raise ValueError("job_sequence must contain every job exactly once")
+    positions = {job: index for index, job in enumerate(job_sequence)}
+    for arc in instance.precedence:
+        if positions[arc.from_job] >= positions[arc.to_job]:
+            raise ValueError(
+                f"job_sequence violates precedence {arc.from_job} -> {arc.to_job}"
+            )
+
+    machine_available = {}  # (stage_id, machine_id) -> available_time
     job_completion = {}     # job_id -> {stage_id: completion_time}
 
     schedule = Schedule()
@@ -28,16 +38,30 @@ def decode(job_sequence: list[int], machine_assignment: dict, instance: Instance
 
     for j in job_sequence:
         for s in range(instance.num_stages):
-            m = machine_assignment.get((j, s), 0)
-            pt = instance.processing_times.get(j, {}).get(s, 0.0)
+            assignment_key = (j, s)
+            if assignment_key not in machine_assignment:
+                raise ValueError(f"Missing machine assignment for job {j} stage {s}")
+            m = machine_assignment[assignment_key]
+            if m not in instance.stage_machines.get(s, []):
+                raise ValueError(f"Machine {m} is not eligible for stage {s}")
+            pt = instance.processing_times[j][s]
 
             # 作业在该 Stage 的最早开始时间
             job_ready = instance.release_times.get(j, 0.0)
             if s > 0:
                 job_ready = max(job_ready, job_completion.get(j, {}).get(s - 1, 0.0))
+            elif instance.precedence:
+                predecessor_ready = [
+                    job_completion[arc.from_job][instance.num_stages - 1] + arc.lag
+                    for arc in instance.precedence
+                    if arc.to_job == j
+                ]
+                if predecessor_ready:
+                    job_ready = max(job_ready, max(predecessor_ready))
 
             # 机器可用时间
-            machine_ready = machine_available.get(m, 0.0)
+            resource_key = (s, m)
+            machine_ready = machine_available.get(resource_key, 0.0)
 
             start = max(job_ready, machine_ready)
             end = start + pt
@@ -48,7 +72,7 @@ def decode(job_sequence: list[int], machine_assignment: dict, instance: Instance
             )
             schedule.operations.append(op)
 
-            machine_available[m] = end
+            machine_available[resource_key] = end
             if j not in job_completion:
                 job_completion[j] = {}
             job_completion[j][s] = end

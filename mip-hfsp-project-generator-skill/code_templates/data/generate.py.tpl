@@ -1,8 +1,8 @@
 """数据生成入口 — data/generate.py
 
 定义 demo / small / large 三种规模的参数组合，生成算例。
-不在算例生成时传入 seed 参数，不写入 index.json 的 seed 字段。
-种子管理统一由测试阶段的 data/batch_seeds/ 种子文件控制。
+算例生成使用独立的 instance_seed，并写入 index.json 以支持精确再生成。
+算法运行种子仍由 data/batch_seeds/ 管理，两类种子不得混用。
 
 算例命名:
   - demo:  demo_0x_n_m
@@ -11,7 +11,6 @@
 from __future__ import annotations
 
 import json
-import os
 import random
 from pathlib import Path
 
@@ -43,6 +42,9 @@ def generate_instance(n_jobs: int, n_stages: int, rng: random.Random) -> dict:
     返回字典，包含各 txt 文件的内容。
     由具体问题实现具体的生成逻辑。
     """
+    if n_jobs <= 0 or n_stages <= 0:
+        raise ValueError("n_jobs and n_stages must be positive")
+
     # --- processing_times.txt ---
     # JobID  Stage_0  Stage_1  ...  Stage_{n_stages-1}
     pt_lines = ["JobID\t" + "\t".join(f"Stage_{s}" for s in range(n_stages))]
@@ -75,8 +77,11 @@ def generate_instance(n_jobs: int, n_stages: int, rng: random.Random) -> dict:
     }
 
 
-def write_instance(output_dir: Path, instance_name: str, data: dict, problem_type: str = "HFSP"):
+def write_instance(output_dir: Path, instance_name: str, data: dict,
+                   instance_seed: int, problem_type: str = "HFSP"):
     """将算例数据写入目录，并生成 index.json。"""
+    if not instance_name or Path(instance_name).name != instance_name:
+        raise ValueError("instance_name must be a single safe path component")
     inst_dir = output_dir / instance_name
     inst_dir.mkdir(parents=True, exist_ok=True)
 
@@ -87,10 +92,10 @@ def write_instance(output_dir: Path, instance_name: str, data: dict, problem_typ
         "problem_type": problem_type,
         "data_format": "txt",
         "instance_name": instance_name,
+        "instance_seed": instance_seed,
         "files": {f: f for f in data.keys()},
         "objective": {
             "primary": "makespan",
-            "secondary": "total_tardiness",
         },
     }
     (inst_dir / "index.json").write_text(
@@ -98,37 +103,42 @@ def write_instance(output_dir: Path, instance_name: str, data: dict, problem_typ
     )
 
 
-def generate_all(base_dir: str = "."):
+def generate_all(base_dir: str = ".", master_seed: int = 42):
     """生成全部 demo / small / large 算例。"""
     data_root = Path(base_dir) / "data"
-    rng = random.Random(42)  # 生成用固定种子，但不在 index.json 中记录
+    seed_rng = random.Random(master_seed)
+
+    def generate_named(output_dir: Path, name: str, n_jobs: int, n_stages: int) -> None:
+        instance_seed = seed_rng.randint(0, 2**32 - 1)
+        data = generate_instance(n_jobs, n_stages, random.Random(instance_seed))
+        write_instance(output_dir, name, data, instance_seed)
 
     # demo
     for cfg in DEMO_CONFIGS:
-        data = generate_instance(cfg["n_jobs"], cfg["n_stages"], rng)
-        write_instance(data_root / "demo", cfg["name"], data)
+        generate_named(data_root / "demo", cfg["name"], cfg["n_jobs"], cfg["n_stages"])
         print(f"  [demo] {cfg['name']}")
 
     # small
     for cfg in SMALL_CONFIGS:
         for i in range(cfg["count"]):
             name = f"inst_{i+1:03d}_{cfg['n_jobs']}_{cfg['n_stages']}_{i+1:02d}"
-            data = generate_instance(cfg["n_jobs"], cfg["n_stages"], rng)
-            write_instance(data_root / "small", name, data)
+            generate_named(data_root / "small", name, cfg["n_jobs"], cfg["n_stages"])
             print(f"  [small] {name}")
 
     # large
     for cfg in LARGE_CONFIGS:
         for i in range(cfg["count"]):
             name = f"inst_{i+1:03d}_{cfg['n_jobs']}_{cfg['n_stages']}_{i+1:02d}"
-            data = generate_instance(cfg["n_jobs"], cfg["n_stages"], rng)
-            write_instance(data_root / "large", name, data)
+            generate_named(data_root / "large", name, cfg["n_jobs"], cfg["n_stages"])
             print(f"  [large] {name}")
 
 
 if __name__ == "__main__":
-    import sys
-    base = sys.argv[1] if len(sys.argv) > 1 else "."
-    print(f"Generating instances in {base}/data/ ...")
-    generate_all(base)
+    import argparse
+    parser = argparse.ArgumentParser(description="Generate reproducible HFSP instances")
+    parser.add_argument("--base-dir", default=".")
+    parser.add_argument("--master-seed", type=int, default=42)
+    args = parser.parse_args()
+    print(f"Generating instances in {args.base_dir}/data/ ...")
+    generate_all(args.base_dir, args.master_seed)
     print("Done.")

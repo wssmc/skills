@@ -5,10 +5,10 @@
 ## 数据
 
 - [ ] 主体数据保存为 txt
-- [ ] index.json 能正确索引 txt（不记录 seed）
+- [ ] index.json 能正确索引 txt，并记录用于复现实例内容的 `instance_seed`
 - [ ] demo 算例可人工检查（命名 `demo_0x_n_m`）
 - [ ] small / large 算例可复现（命名 `inst_xxx_n_m_yy`）
-- [ ] `data/generate.py` 不在算例生成时传 seed
+- [ ] `data/generate.py` 使用 master seed 派生各算例独立 seed；算法 seed 单独管理
 - [ ] `data/loader.py` 统一 `load_instance(dir) -> Instance` 接口
 - [ ] `data/batch_seeds/` 种子文件存在（seed_table.json + round{r}.json）
 
@@ -31,19 +31,19 @@
 - [ ] `check_feasibility(instance, schedule) -> violations` 存在
 - [ ] `metrics.py` 计算 makespan / total_tardiness / average_flow_time
 - [ ] `eval_cache.py` FIFO 队列大小限制 500
-- [ ] **所有元启发式算法（SA/MA/IG/GA/TS）都 import 并使用 EvalCache**
+- [ ] **所有元启发式算法（SA/MA/IG/GA/TS）都实际通过 EvalCache 评估**
 - [ ] **EvalCache 上限固定为 500，弹出策略为 FIFO**
 - [ ] **算法内部通过 `evaluate(seq)` 函数统一调用缓存**，而非直接 decode+evaluate_schedule
 - [ ] **算法适配（如有）：原算法的初始化已按用途提取——单解算法用 `src/metaheuristics/initial/single/`，种群算法用 `src/metaheuristics/initial/population/`**
 - [ ] **`initial/single/` 与 `initial/population/` 严格分离**：单解生成器返回 `list[int]`，种群生成器返回 `list[list[int]]`
 - [ ] **GA/MA 使用 `generate_xxx_population()` 生成种群**，不循环调用单解生成器
 - [ ] **种群生成器保证 pop_size 个体互不相同**（ensure_diversity=True）
-- [ ] **`sh_batch_instances_algorithms.sh` 支持 `--unified-init` 和 `--unified-cache` 开关（交互式提示 + 命令行）**
-- [ ] **算法接受 `cache` 和 `init_fn` kwargs**，可被 `run_baselines.py` 从外部注入
-- [ ] **批量对比默认使用统一初始化 + 统一缓存**，非默认设置在 `configs/conventions.md` 记录
+- [ ] **`sh_batch_instances_algorithms.sh` 支持 `--unified-init`，且单解/种群初始化分别统一**
+- [ ] **算法接受 `cache` 测试注入点和初始化策略 kwargs**
+- [ ] **每个算法运行使用独立缓存；不存在跨算法/跨算例共享缓存**
 - [ ] **`docs/YYYY-M-D_algorithm_design.md` 明确记录 EvalCache 强制约定 + 算法适配 + 批量一致性约定**
 - [ ] `result_reproducer.py` 能从 txt 的 best_seq 复现目标值
-- [ ] `incremental_eval.py` 增量评估存在
+- [ ] 未把全量重解码包装成“增量评估”；若声明增量能力，必须有等价性与性能回归测试
 - [ ] 输出统一 Schedule 格式
 - [ ] **相似解码器输入输出一致**；不同编码类型（seq vs seq_machine）不强制一致
 
@@ -52,7 +52,7 @@
 - [ ] 默认实现 SA, MA, IG, GA, TS 五个 basic 算法
 - [ ] 算法签名: `solve_xxx(...) -> (Schedule, trace_list, best_seq)`
 - [ ] **best_seq 是算法返回的最优编码序列**，不从 schedule 反推
-- [ ] 所有算法注册到 `run_baselines.py`（5 步注册流程）
+- [ ] 所有算法只在 `src/metaheuristics/registry.py` 注册，名称与状态一一对应
 - [ ] `run_baselines.py` 不设算法内部开关参数
 - [ ] 邻域算子集中在 `metaheuristics/neighborhood/`
 - [ ] 论文对比算法在 `metaheuristics/baselines/`
@@ -84,7 +84,7 @@
 ## 收敛曲线
 
 - [ ] trace.csv 含 iteration, time, objective 三列
-- [ ] convergence.png 支持 PNG（200 DPI）和 PDF
+- [ ] convergence.png 支持 PNG（300 DPI）和 PDF 矢量
 - [ ] 多算法对比时附图例，标注最终目标值
 
 ## 论文写作
@@ -104,7 +104,7 @@
 - [ ] **无临时注释关键字**：核心代码（`src/`、`data/`）中无"临时/暂时/绕过/待重构/先这样/TODO 后修"
 - [ ] **无被注释掉的失败代码**：不允许 `# xxx = decode(...)  # 有 bug` 加 mock 替代
 - [ ] **无 `@pytest.mark.skip("暂时通不过")`**：只允许因缺少外部依赖（如 Gurobi）的 `pytest.importorskip`
-- [ ] **异常类型明确**：所有 `except` 都是特定类型（`FileNotFoundError`、`ValueError` 等），非泛型 catch
+- [ ] **异常不会被静默吞掉**：边界审计代码允许捕获 `Exception` 以生成 FAIL 报告，其余位置使用具体异常并传播失败
 - [ ] **占位使用 NotImplementedError**：占位函数明确 raise，禁止 `def f(): pass` 或返回伪值
 
 ### §8.2 严禁兼容层
@@ -126,10 +126,10 @@
 - [ ] `src/metaheuristics/` 组织算法（不用 `algorithms/`）
 - [ ] `src/math_models/` 存放 Gurobi MIP（不用 `solvers/`）
 - [ ] 评估逻辑在 `decoding/` 下（不用 `evaluation/`）
-- [ ] `configs/` 存放自然语言文档（不放 JSON）
+- [ ] `configs/` 存放自然语言文档，唯一结构化例外为 `problem_fingerprint.json`
 - [ ] `AGENTS.md` 项目记忆索引存在
 - [ ] `requirements.txt` 含 gurobipy
-- [ ] tests/ 含 smoke_test + test_loader / test_decoder / test_feasibility_checker / test_gurobi_model / test_gantt
+- [ ] `tests/smoke_test.py` 覆盖加载、Stage-aware 解码、校验、缓存、六个注册算法、复现和产物；问题扩展另加专项测试
 - [ ] README 含运行命令和 7 阶段执行步骤
 - [ ] 输出目录自动创建
 - [ ] `docs/` 文件前缀加日期 `YYYY-M-D`

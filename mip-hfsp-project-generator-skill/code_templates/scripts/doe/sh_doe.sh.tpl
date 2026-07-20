@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ============================================================
 # sh_doe.sh — DOE 批量脚本
 #
@@ -10,7 +10,7 @@
 #   规模: small
 # ============================================================
 
-set -e
+set -euo pipefail
 
 ALGO="${1:-sa_basic}"
 SCALE="${2:-small}"
@@ -23,5 +23,4 @@ echo "=========================================="
 
 python scripts/doe/run_doe.py --algo "$ALGO" --scale "$SCALE"
 
-echo ""
 echo "DOE experiment complete."

@@ -39,7 +39,7 @@ class UniformRandomState(NeighborhoodFramework):
         return new_seq, nt
 
     def update(self, neighborhood_type: NeighborhoodType, improvement: float):
-        pass  # 均匀随机不需要更新
+        return None
 
 
 class VnsState(NeighborhoodFramework):

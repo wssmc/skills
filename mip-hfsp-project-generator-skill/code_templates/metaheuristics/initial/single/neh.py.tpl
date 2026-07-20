@@ -4,7 +4,7 @@
 ⚠ 严禁直接用于种群初始化（GA / MA）——NEH 是确定性算法，会产生相同个体。
    种群初始化请使用 `src/metaheuristics/initial/population/` 下的生成器。
 
-函数签名：init_neh(instance, decoder=None) -> list[int]
+函数签名：init_neh(instance, decoder=None, seed=None) -> list[int]
 """
 from __future__ import annotations
 
@@ -13,8 +13,10 @@ sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.par
 from core.domain import Instance
 
 
-def init_neh(instance: Instance, decoder=None) -> list[int]:
+def init_neh(instance: Instance, decoder=None, seed: int | None = None) -> list[int]:
     """NEH 启发式：按 total processing time 降序，逐步插入最佳位置。"""
+    if instance.num_jobs <= 0:
+        raise ValueError("instance.num_jobs must be positive")
     totals = {}
     for j in range(instance.num_jobs):
         totals[j] = sum(instance.processing_times.get(j, {}).get(s, 0.0)
@@ -22,7 +24,13 @@ def init_neh(instance: Instance, decoder=None) -> list[int]:
     ordered = sorted(range(instance.num_jobs), key=lambda j: -totals[j])
 
     if decoder is None:
-        return ordered
+        from metaheuristics.decoding.list_decoder import decode
+        assignment = {
+            (j, s): instance.stage_machines[s][0]
+            for j in range(instance.num_jobs)
+            for s in range(instance.num_stages)
+        }
+        decoder = lambda sequence: decode(sequence, assignment, instance).objective
 
     result = [ordered[0]]
     for k in range(1, len(ordered)):

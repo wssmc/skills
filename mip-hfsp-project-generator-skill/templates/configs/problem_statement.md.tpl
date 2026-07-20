@@ -15,7 +15,8 @@
 
 ## 目标函数
 - **主目标**: {如 minimize Cmax (最大完工时间)}
-- **次目标**: {如 minimize total_tardiness (总延迟)}
+- **模板支持状态**: {direct_basic_hfsp / adapter_required}
+- **扩展目标**: {如 total_tardiness；非 makespan 时必须标 adapter_required 并扩展全链}
 
 ## 假设
 1. {假设1，如：不允许抢占}

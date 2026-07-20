@@ -1,5 +1,16 @@
 # 模块：项目结构规范
 
+## 导航
+
+- §1 顶层结构
+- §2 数据层与种子
+- §3 源代码层
+- §4 configs 与约定
+- §5 outputs
+- §6 docs
+- §7 LaTeX
+- §8 AGENTS.md
+
 ## 1. 顶层目录结构
 
 ```text
@@ -17,6 +28,7 @@ project_name/
 │   ├── core/                   # 领域模型
 │   ├── math_models/            # MIP / CP 建模（Gurobi）
 │   ├── metaheuristics/         # 元启发式算法
+│   │   ├── base_solver/
 │   │   ├── initial/
 │   │   ├── encoding/
 │   │   ├── decoding/
@@ -27,11 +39,10 @@ project_name/
 │   │   ├── ig/
 │   │   ├── ga/
 │   │   └── ts/
-│   ├── visualization/
-│   ├── ExperimentAnalysis/
-│   └── common/
+│   └── visualization/
 ├── scripts/
 │   ├── run_baselines.py
+│   ├── audit_project.py
 │   ├── sh_single_instance.sh
 │   ├── sh_bench_instance.sh
 │   ├── sh_batch_instances_algorithms.sh
@@ -45,6 +56,8 @@ project_name/
 ├── latex/
 ├── requirements.txt
 ├── AGENTS.md
+├── IMPLEMENTATION_STATUS.md
+├── PROJECT_AUDIT.md
 └── README.md
 ```
 
@@ -79,8 +92,9 @@ data/
 
 - 定义 demo / small / large 三种规模的参数组合
 - 算例命名：demo 用 `demo_0x_n_m`，正式算例用 `inst_xxx_n_m_yy`
-- **不在算例生成时传入 seed 参数，不写入 index.json**
-- `index.json` 仅记录文件索引和问题元信息
+- `data/generate.py --master-seed N` 使用主种子派生每个算例的独立 `instance_seed`
+- `index.json` 记录 `instance_seed`、文件索引和问题元信息，以便单个算例独立再生成
+- 算例生成 seed 与算法运行 seed 分离；后者只存放在 `data/batch_seeds/`
 
 ### 2.3 数据读取 — `data/loader.py`
 
@@ -98,7 +112,7 @@ data/
 - `data/batch_seeds/{scale}/seed_table.json` — 种子主表
 - `data/batch_seeds/{scale}/round{r}.json` — 每轮种子映射
 - 种子源：`random.Random(20260616 + sum(ord(c) for c in scale))`
-- 单次运行无指定 seed 时默认 `secrets.randbits(32)`
+- 单次算法运行默认 seed 为 `0`；正式实验必须从轮次种子表读取
 
 ---
 
@@ -122,7 +136,7 @@ class PrecedenceArc:     # 前序弧
 ### 3.2 `src/math_models/` — MIP / CP 建模（Gurobi）
 
 - **MIP**：Gurobi 实现，建模文件 `gurobi_model.py`
-- **下界计算**：`lower_bound.py`（快速下界 + 精确下界）
+- **下界计算**：`lower_bound.py`（快速解析下界 + Gurobi 时限内 best bound；不把整数模型早停误称为 LP 精确下界）
 - **结果校核**：MIP 求解后必须调用 `check_feasibility(instance, schedule)`
 - 默认时限 **3600 秒**（正式实验），60s（小规模测试）
 - 输出 `result.json` + `schedule.csv` + `gantt.png`
@@ -131,13 +145,13 @@ class PrecedenceArc:     # 前序弧
 
 ```text
 src/metaheuristics/
+├── base_solver/           # basic 算法统一生命周期、评估、日志和结果记录
 ├── initial/              # 初始化方法（严格区分单解 / 种群）
 │   ├── single/           # 单解生成器（SA/IG/TS 用）：SPT/LPT/NEH/random
 │   └── population/       # 种群生成器（GA/MA 用）：random_pop/neh_pop
 ├── encoding/             # 编码方案（多套）
-├── decoding/             # 解码 + 增量评估 + 结果校验
+├── decoding/             # 解码、缓存、指标、可行性与结果复现
 │   ├── list_decoder.py
-│   ├── incremental_eval.py
 │   ├── eval_cache.py     # FIFO 队列，限制大小 500
 │   ├── feasibility_checker.py
 │   ├── metrics.py
@@ -158,17 +172,14 @@ src/metaheuristics/
 
 | 文件 | 职责 |
 |------|------|
-| `gantt.py` | 甘特图绘制 |
-| `gantt_plotter.py` | 甘特图高级封装（自行提供，不实现） |
-| `convergence.py` | 收敛曲线绘制 |
+| `plot_utils.py` | 共享样式常量（配色、线型、字体、导出参数），所有可视化文件共用 |
+| `gantt.py` | 发表级甘特图（按 Machine / Stage 两种布局），颜色按 `plot_utils` 分配 |
+| `convergence.py` | 发表级收敛曲线（支持 12+ 曲线 + 置信区间） |
+| `comparison.py` | 对比图（ARPD 柱状图、多算例分组柱状图、消融实验汇总图） |
 
-### 3.5 `src/ExperimentAnalysis/`
+### 3.5 可选扩展目录
 
-**自行提供，不实现**。保留目录结构。
-
-### 3.6 `src/common/`
-
-通用工具：绘图工具、配色方案、基准算例工具等。
+只在用户提供实现或需求明确时创建额外扩展目录。不得为追求目录完整而生成空壳；共享绘图样式统一放在 `src/visualization/plot_utils.py`，其他工具按领域归入现有模块。
 
 ---
 
@@ -193,19 +204,18 @@ src/metaheuristics/
 
 ```
 outputs/
-├── single_{INST}_{ALGO}/
-├── bench_{INST}/
+├── single/{instance}/
+├── bench/{instance}/
 ├── batch/{batch_name}/
 │   ├── round{r}/{scale}/
-│   └── txt/{scale}/{algo}.txt     # 保存 best_seq
+│   └── round{r}/{scale}/{instance}/{algo}.txt  # 保存 best_seq
 ├── mip/
-├── doe/{algo}/{param_name}/
+├── doe/{algo}/
 ├── ablation/{algo}/{ablation_name}/
 │   ├── raw/{instance}_{seed}_{repeat}/
 │   ├── comparison.xlsx
 │   └── arpd.png
-├── statistics/{experiment_name}/
-└── lower_bounds_all/
+└── statistics/{experiment_name}/
 ```
 
 ---

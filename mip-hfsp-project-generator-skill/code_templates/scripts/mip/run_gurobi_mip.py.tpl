@@ -15,12 +15,12 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import sys
-import time
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+sys.path[:0] = [str(PROJECT_ROOT), str(PROJECT_ROOT / "src")]
 
 from data.loader import load_instance
 from math_models.gurobi_model import build_and_solve
@@ -41,7 +41,6 @@ def main():
     inst_name = Path(args.inst).name
 
     print(f"Solving {inst_name} with Gurobi MIP (time_limit={args.time}s)...")
-    t0 = time.time()
     result = build_and_solve(
         instance,
         time_limit=args.time,
@@ -49,31 +48,38 @@ def main():
         threads=args.threads,
         log_output=bool(args.log),
     )
+    if result.status == "Error":
+        raise RuntimeError(result.extra.get("error", "Gurobi solve failed"))
 
     # 校核
     violations = []
     if result.schedule.operations:
         violations = check_feasibility(instance, result.schedule)
+        if violations:
+            raise RuntimeError(f"MIP returned an infeasible schedule: {violations}")
 
     # 写产物
-    out_dir = Path(args.out) / inst_name
+    outputs_root = (PROJECT_ROOT / "outputs").resolve()
+    out_base = (PROJECT_ROOT / args.out).resolve()
+    if out_base != outputs_root and outputs_root not in out_base.parents:
+        raise ValueError("Output directory must stay inside the project outputs directory")
+    out_dir = out_base / inst_name
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    def finite_or_none(value):
+        return value if isinstance(value, (int, float)) and math.isfinite(value) else None
 
     result_data = {
         "method": "MIP",
         "status": result.status,
-        "objective": result.objective,
-        "makespan": result.makespan,
-        "LB": result.extra.get("LB", float("inf")),
-        "gap": result.extra.get("gap", 0.0),
+        "objective": finite_or_none(result.objective),
+        "makespan": finite_or_none(result.makespan),
+        "LB": finite_or_none(result.extra.get("LB", float("inf"))),
+        "gap": finite_or_none(result.extra.get("gap")),
         "runtime": result.runtime,
         "violations": violations,
         "instance": inst_name,
     }
-    (out_dir / "result.json").write_text(
-        json.dumps(result_data, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-
     # schedule.csv
     if result.schedule.operations:
         with open(out_dir / "schedule.csv", "w", newline="", encoding="utf-8") as f:
@@ -82,18 +88,23 @@ def main():
             for op in result.schedule.operations:
                 writer.writerow([op.job_id, op.stage_id, op.machine_id, op.start, op.end, op.processing_time])
 
-        # gantt.png
-        try:
-            from visualization.gantt import plot_gantt
-            plot_gantt(result.schedule, str(out_dir / "gantt.png"), title=f"MIP - {inst_name}")
-        except Exception:
-            pass
+        from visualization.gantt import plot_gantt
+        plot_gantt(result.schedule, str(out_dir / "gantt.png"), title=f"MIP - {inst_name}")
+
+    temporary_result = out_dir / "result.json.tmp"
+    temporary_result.write_text(
+        json.dumps(result_data, indent=2, ensure_ascii=False, allow_nan=False), encoding="utf-8"
+    )
+    temporary_result.replace(out_dir / "result.json")
 
     print(f"\nResult:")
     print(f"  Status: {result.status}")
-    print(f"  Objective: {result.objective:.4f}")
+    objective_text = f"{result.objective:.4f}" if math.isfinite(result.objective) else "N/A"
+    gap = result.extra.get("gap")
+    gap_text = f"{gap:.4%}" if isinstance(gap, (int, float)) and math.isfinite(gap) else "N/A"
+    print(f"  Objective: {objective_text}")
     print(f"  LB: {result.extra.get('LB', 'N/A')}")
-    print(f"  Gap: {result.extra.get('gap', 0.0):.4%}")
+    print(f"  Gap: {gap_text}")
     print(f"  Runtime: {result.runtime:.2f}s")
     print(f"  Violations: {len(violations)}")
     print(f"  Output: {out_dir}")

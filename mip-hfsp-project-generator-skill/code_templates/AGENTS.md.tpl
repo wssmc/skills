@@ -34,7 +34,7 @@
 ## 算法注册表
 注册入口：`src/metaheuristics/registry.py`
 - `ALGORITHM_REGISTRY`：算法名称 → solver 函数映射
-- `ALGORITHM_STATUS`：算法状态（complete / runnable_mvp / placeholder / not_applicable）
+- `ALGORITHM_STATUS`：算法状态（not_verified / runnable_mvp / complete / placeholder / not_applicable）
 - 占位算法不注册，若注册则运行时必须报错
 
 ## 占位策略
@@ -59,10 +59,10 @@ src/problems/  src/constraints/  src/resources/  src/utils/
 - **算法命名**: basic → basic_study → basic_study_xxx 三级；子算法带父算法前缀
 - **默认算法**: SA, MA, IG, GA, TS + 问题特性启发式
 - **消融实验**: 每次改进必须消融，使用 `scripts/ablation/quick_test_config.py`
-- **计算缓存**: FIFO 队列，大小限制 500
+- **计算缓存**: 每次算法运行独立创建 FIFO 缓存，大小限制 500；键包含算例、序列和机器分配
 - **时间公式**: `time = N_jobs * M_stages * factor`，factor 默认 0.05（单）/ 0.1（批量）
-- **并行**: `ProcessPoolExecutor`，大规模 W=2，小规模 W=4
-- **断点续跑**: batch 脚本检测 `round{r}/` 目录非空则跳过
+- **批处理**: 默认顺序执行；只有在实现进程隔离、失败传播和独立缓存后才可扩展并行
+- **断点续跑**: batch 脚本按单个 `{algorithm}_result.json` 是否存在且非空判断，不按整轮目录跳过
 
 ## 代码质量红线（严禁打补丁 + 严禁兼容层）
 
@@ -103,9 +103,9 @@ src/problems/  src/constraints/  src/resources/  src/utils/
   - 单解生成器 → `src/metaheuristics/initial/single/`（返回 `list[int]`，供 SA/IG/TS 用）
   - 种群生成器 → `src/metaheuristics/initial/population/`（返回 `list[list[int]]`，供 GA/MA 用）
   - **严禁混用**：单解生成器直接用于种群会导致个体相同，种群丧失多样性
-- **批量对比默认统一**：`sh_batch_instances_algorithms.sh` 默认 `--unified-init y --unified-cache y`
-- 交互式提示：脚本启动时询问是否使用统一初始化和统一缓存
-- 命令行开关：`--unified-init [y|n] --unified-cache [y|n] --init-method-single NAME --init-method-pop NAME`
+- **批量对比默认统一初始化**：`sh_batch_instances_algorithms.sh` 默认 `--unified-init y`
+- **缓存隔离**：每个“算例 × 算法 × 轮次”任务使用独立缓存；不存在 `--unified-cache` 开关
+- 命令行开关：`--unified-init [y|n] --init-method-single NAME --init-method-pop NAME`
 - 非默认设置需在 `configs/conventions.md` 记录理由
 
 ## 约定持久化

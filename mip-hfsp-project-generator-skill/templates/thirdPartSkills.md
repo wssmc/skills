@@ -12,7 +12,7 @@
 
 | Skill 名称 | 版本 | 用途 |
 |-----------|------|------|
-| `literature-matrix-review-skill` | v2.1 | 生成两类文献矩阵 |
+| `literature-matrix-review-skill-v2.1` | v2.1 | 生成两类文献矩阵 |
 
 ### 文献矩阵输出要求
 
