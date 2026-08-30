@@ -1,6 +1,6 @@
-# paper-workflow-OR
+# paper-workflow-or
 
-`paper-workflow-OR` is a bilingual Codex/ChatGPT skill for method-driven operations research papers. It supports architecture design, manuscript drafting, direct LaTeX revision, academic English polishing, Chinese-English translation, external literature research, figure/table caption planning, and full manuscript audits.
+`paper-workflow-or` is a bilingual skill for method-driven operations-research manuscripts. It routes architecture, drafting, revision, direct LaTeX editing, polishing/translation, literature/evidence work, and integrity audits while preserving the problem-model-method-evidence chain.
 
 ## Default behavior
 
@@ -8,18 +8,20 @@
 - Default manuscript output: English.
 - Discussion language: follows the user.
 - Chinese and English rule sets: included under `references/zh` and `references/en`.
-- Missing project information: ask a concise grouped intake question before drafting.
-- Target journal: ask first; inspect a supplied journal LaTeX template before restructuring.
+- Missing information: inspect supplied material first, then ask only for blockers to the requested deliverable.
+- Target journal/template: apply when relevant to the requested scope; a supplied official template overrides generic structure.
+- Evidence: distinguish provided, verified, derivable, planned, missing, and prohibited-to-infer content.
 
 ## Installation
 
-Copy the `paper-workflow-OR` directory into the skills directory used by your agent environment. Keep `SKILL.md` at the package root.
+The skill's canonical name is `paper-workflow-or`. This repository retains the legacy folder spelling `paper-workflow-OR` for path compatibility; when installing elsewhere, prefer a `paper-workflow-or` directory. Keep `SKILL.md` and `manifest.json` at the package root.
 
 ## Main package structure
 
 ```text
-paper-workflow-OR/
+paper-workflow-or/
 ├── SKILL.md
+├── manifest.json
 ├── README.md
 ├── CHANGELOG.md
 ├── MANIFEST.md
@@ -39,8 +41,8 @@ Run:
 python scripts/validate_skill.py
 ```
 
-The validator checks the package structure, front matter, bilingual mirror files, and unresolved malformed Markdown fences.
+The package validator checks frontmatter/manifest consistency, bilingual mirror sets, routed references/templates, local links, and Markdown fences. The standard skill validator should also pass.
 
 ## Evidence policy
 
-The skill never fabricates references, experiment results, statistical significance, hardware, algorithm components, or real-case claims. Planning language is kept distinct from completed-study language.
+The skill never fabricates references, experiment results, statistical significance, hardware, algorithm components, or real-case claims. Planning language is kept distinct from completed-study language, and material neutral/adverse evidence is not selectively hidden.

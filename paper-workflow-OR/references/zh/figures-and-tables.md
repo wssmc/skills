@@ -1,15 +1,23 @@
 # 图表与标题命名
 
-本版本重点处理图表必要性、证据作用、放置位置和英文标题命名。标题通常使用sentence case名词短语，并按期刊风格加句号。
+先按证据功能选择图表，再遵循目标期刊的放置与标题风格。sentence case名词短语只是常用默认，不是统一强制格式。
 
-## 默认图表集合
+## 证据优先的选择
 
-- 文献综述：文献矩阵。
-- 问题与模型：x张示例输入表、1张甘特/网络/路径图、1张符号表。
-- 求解方法：1张算法总体框架图，必要时增加机制图。
-- 参数校准：参数水平表、DOE组合与响应表、主效应图、因素响应分析表。
-- 总体性能：算法比较表、统计表、收敛曲线、适用时的小规模精确比较表。
-- 组件分析：每个核心贡献组件至少一个受控比较表或图（可行时）。
+| 证据需求 | 候选图表 | 可省略或合并的情形 |
+|---|---|---|
+| 结构化文献定位 | 文献矩阵 | 正文已清楚比较，或编码稀疏/未经核实 |
+| 问题/可行性说明 | 示例数据表与调度/网络/路径/时间线图 | 输入到可行方案的映射已直观 |
+| 符号较密 | 符号表 | 符号很少且可就地定义 |
+| 方法接口/信息流 | 框架图或机制图 | 简洁正文/伪代码更清楚 |
+| 参数选择 | 校准设计/结果表或效应图 | 未做经验校准或图表不提供决策证据 |
+| 总体性能 | 比较表/图 | 更紧凑的图表已能回答问题且不隐藏波动 |
+| 统计不确定性 | 区间/分布图或检验表 | 仅作描述性声明，或设计不支持推断 |
+| 搜索行为 | 收敛/性能剖面图 | 计算工作量不可比，或实例选择会误导 |
+| 组件作用 | 受控消融/析因比较 | 组件无法隔离；此时应缩小因果表述 |
+| 实践稳定性 | 案例、敏感性或稳健性图表 | 没有相应实践或稳健性声明 |
+
+每个主图表只需清楚回答一个已声明问题。相同结果的多个视图应优先合并，并保留足够的源数据或标识以核验每个绘图值和表格值。
 
 ## 标题语法
 
@@ -19,30 +27,27 @@
 
 避免只有`Experimental results`、`Algorithm comparison`、`Ablation results`或`Example`。
 
-## 从源.tex提取的标题库
+## 画布、标题和正文引用的分工
 
-1. `Comparison of representative related studies and this study.`
-2. `Processing times and due windows of the illustrative instance.`
-3. `Machine unavailability periods of the illustrative instance.`
-4. `Gantt chart for permutation sequence [solution sequence] in the example.`
-5. `Notation for the MIP model.`
-6. `Overall framework of the proposed two-phase solution approach.`
-7. `Illustration of the two-phase schedule construction and refinement mechanisms.`
-8. `Levels of the calibrated [algorithm name] parameters.`
-9. `Orthogonal parameter combinations and average response values of [algorithm name].`
-10. `Main effects plot for the mean normalized objective.`
-11. `Factor-response analysis for the mean normalized objective.`
-12. `Algorithm comparison on large-scale instances under [setting].`
-13. `Representative convergence behavior under [selected scenario combinations].`
-14. `Small-scale comparison between [exact model] and [proposed algorithm].`
-15. `Comparison of initialization rules.`
-16. `Comparison of [component] strategies.`
-17. `[Performance metric] improvement of different [component] strategies over [ablation baseline].`
-18. `[Component] comparison under all [scenario families].`
+- **图内画布：**通常只保留坐标轴/单位、图例、分面标签、参考线/带和必要注释。除非期刊或其他使用场景要求，省略与caption重复的图内标题。
+- **Caption：**标明对象/图表类型、比较或机制、数据/实例/场景范围，以及理解图表所必需的非标准编码。只有坐标轴、图例或注释无法说明时才补充指标方向或不确定性含义。
+- **正文引用：**先说明图表回答的问题，再解释主要观察、重要例外、不确定性和有边界的含义。
+- **表注：**缩写、分母、显著性符号、并列/最优值格式和缺失值编码放在表下注释，而不是塞进标题。
+
+不要在图内标题、caption和正文首句中重复同一句话。坐标轴、图例和邻近正文已提供细节时，caption可以保持简洁。
+
+以下只是可调整的示例：
+
+- `Comparison of representative related studies and this study.`
+- `Notation for the MIP model.`
+- `Overall framework of the proposed [method name].`
+- `Algorithm comparison on [instance group] under equal [time/evaluation] budgets.`
+- `Time-normalized convergence profiles on [selection rule or instance group].`
+- `Effect of [component] on [metric] across [scope].`
 
 ## 标题审计
 
-检查比较对象、指标、实验条件、缩写定义、声明边界、正文引用解释和数字一致性。
+检查比较对象、指标、实验条件、缩写定义、声明边界、正文引用解释和数字一致性；同时检查面板/序列选择是否掩盖反例或失败运行，以及颜色、线型、符号和排序在印刷与无障碍呈现中是否可区分。
 
 ## 图表描述顺序
 

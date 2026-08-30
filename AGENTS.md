@@ -21,14 +21,14 @@ problem-decomposition-skill
 | Skill | Entry | Notes |
 |---|---|---|
 | `code-reading-assistant-skill` | `SKILL.md` | Lightweight code reading helper |
-| `paper-workflow-OR` | `SKILL.md` | Bilingual OR paper writing. Validate with `python scripts/validate_skill.py` |
+| `paper-workflow-or` | `paper-workflow-OR/SKILL.md` | Bilingual OR paper writing; repository folder keeps its legacy spelling. Validate with `python scripts/validate_skill.py` |
 | `paper-repro-agent-skills` | `README.md` | 4 sub-skills for reproducing scheduling papers (0→flow-reconstruction, 1→reproduction, 2→verification, 3→adaptation) |
 | `scheduling-writing-workflow` | `要求.md` | Writing tips for scheduling papers (Chinese) |
 | `thirdPartSkills` | `thirdPartSkills.md` | Catalog of external OR/scheduling skills |
 
 ## Key conventions
 
-- **Primary language**: zh-CN (Chinese). `paper-workflow-OR` is bilingual (en/zh).
+- **Primary language**: zh-CN (Chinese). `paper-workflow-or` is bilingual (en/zh).
 - **Each skill is self-contained**: `manifest.json` + `SKILL.md` + optional templates/examples.
 - **No lockfiles, no dev server, no CI** — this repo only stores skill definitions.
 - **Direct push to `main`** — no PR workflow. Commit messages in simple English.

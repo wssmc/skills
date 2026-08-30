@@ -1,18 +1,20 @@
 # Abstract
 
-Write the abstract as a self-contained miniature paper addressing five questions in sequence:
+Write the abstract as a self-contained miniature paper that answers five functions in a coherent order:
 
 ```text
 Research background → Research problem → Method → Main results → Implications
 ```
 
-## Generic structure
+Adapt the order for the target journal's structured-abstract headings, but do not omit the research question, method, result, or implication merely to follow a stock sentence pattern.
+
+## Functional structure
 
 ### 1. Background and problem
 
 One to two sentences positioning the research field and the specific gap.
 
-Common patterns:
+Possible patterns:
 
 ```text
 [Research topic] plays an important role in [application or research field].
@@ -25,7 +27,7 @@ Do not write a lengthy industry review or accumulate macro-level significance.
 
 State what this study investigates, solves, or tests.
 
-Common patterns:
+Possible patterns:
 
 ```text
 This study investigates ...
@@ -39,7 +41,7 @@ The research object, core variables, or problem name must appear explicitly here
 
 Summarize the data, model, experimental design, or solution approach. Include only what defines the contribution; omit parameters and implementation details.
 
-Common patterns:
+Possible patterns:
 
 ```text
 To address this problem, we develop/propose/formulate ...
@@ -87,19 +89,13 @@ The proposed framework offers an effective approach for ...
 
 Do not reintroduce the method or claim conclusions not supported by the manuscript.
 
-## Generic English template
+## Evidence-readiness branch
 
-```latex
-[Topic or practical context] is important for [research field or
-application]. However, existing studies have not sufficiently addressed
-[specific research gap]. This study investigates [research objective or
-problem]. To address this problem, we develop/propose [main model,
-framework, or method] and evaluate it using [data, experiments, cases,
-or benchmarks]. The results show that [main quantitative or qualitative
-finding]. In particular, [most important comparison, mechanism, or
-secondary finding]. These findings demonstrate that [main implication]
-and provide [theoretical or practical contribution].
-```
+- **Completed study:** report the principal result, its comparison/reference, scope, and uncertainty or proof status when material.
+- **Protocol/proposal/ongoing study:** do not write future or planned experiments as completed results. Follow the document type's required abstract and label expected outcomes as objectives, not findings.
+- **Missing result evidence during drafting:** produce a structural abstract plan or draft only the supported sentences; list the exact result slots needed outside the abstract.
+
+Avoid copying a generic fill-in-the-blank paragraph. Vary syntax to fit the causal and evidential relationships of the actual paper.
 
 ## Emphasis by paper type
 
@@ -141,9 +137,9 @@ A good abstract should:
 * avoid bare evaluation words such as `novel`, `significant`, or `effective` without evidence;
 * avoid concatenating the Introduction and Conclusion as a substitute for a coherent abstract.
 
-## Length guideline
+## Length allocation
 
-For an approximately 200-word abstract:
+Follow the journal's word limit. As a diagnostic for an approximately 200-word abstract, results often deserve the largest share:
 
 | Component | Approximate proportion |
 |---|---|
@@ -153,4 +149,4 @@ For an approximately 200-word abstract:
 | Results | 30%–40% |
 | Implications | 10%–15% |
 
-The most common faults are **excessive background, overly detailed method, and too few results**. A strong abstract allocates the largest share to results.
+These proportions are not quotas. The most common faults are excessive background, overly detailed method, and too few supported results. After drafting, cross-check every number and claim against the main text, tables/figures, and source result artifact.

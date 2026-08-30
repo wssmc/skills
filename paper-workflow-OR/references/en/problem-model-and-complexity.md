@@ -1,16 +1,16 @@
 # Problem, formulation, illustrative instance, and complexity
 
-## 3.1 Problem description and illustrative instance
+## Problem description and illustrative instance
 
 **Guide:** system elements -> operating process -> decisions -> key conditions -> assumptions -> illustrative data -> explanatory solution
 
 - Define entities, resources, stages, decision timing, and the objective.
 - State feasibility conditions and assumptions, including omitted factors and scope boundaries.
-- Add a compact illustrative instance when the problem is not immediately transparent.
+- Add a compact illustrative instance only when it materially clarifies feasibility, timing, interaction among features, or the mapping from data to decisions.
 
 ### Illustrative-instance tables
 
-Use `x` tables, where `x` equals the number of independent input-data categories. Use at least two when the problem has separate entity/task data and resource/calendar/compatibility data.
+Choose the smallest table set that remains readable and lets a reader reconstruct the instance. Split entity/task data from resource/calendar/compatibility data when combining them would obscure units, keys, or constraints; otherwise consolidate. Do not invent data merely to complete an example.
 
 Caption patterns:
 
@@ -27,11 +27,11 @@ Source-derived examples:
 
 Use a Gantt chart for scheduling, or a route/network/layout/timeline figure for other problem families.
 
-Preferred generic caption:
+Possible generic caption:
 
 `Figure X. Gantt chart of an illustrative solution for the illustrative instance.`
 
-Avoid mixing `demo instance`, `sample case`, and `illustrative instance` in one manuscript. Prefer `illustrative instance`.
+Use one term consistently (`illustrative instance` is usually clear); follow the target outlet when it has an established convention.
 
 After the figure, explicitly connect each data table to the displayed solution and point out the feature or conflict that motivates the model.
 
@@ -39,14 +39,15 @@ After the figure, explicitly connect each data table to the displayed solution a
 
 **Guide:** notation -> parameter construction -> objective -> complete formulation -> operational interpretation
 
-- Define sets, indices, parameters, uncertain quantities, decision variables, auxiliary variables, and domains before use.
+- Define sets, indices, parameters, uncertain quantities, decision variables, auxiliary variables, units, and domains before or at first use.
 - Explain data-to-parameter or scenario construction when applicable.
 - Present the complete objective and all necessary constraints.
-- Interpret non-obvious constraint groups and modelling choices.
+- Interpret non-obvious constraint groups and modelling choices, and state which operational rule each group enforces.
+- Check index domains, units, objective direction, variable domains, big-M values/bounds, and the logical completeness of linking constraints against the implementation when available.
 
-### Notation table
+### Notation table (conditional)
 
-Default MIP caption:
+When the number or reuse of symbols makes prose definitions difficult to navigate, a suitable MIP caption is:
 
 `Table X. Notation for the MIP model.`
 
@@ -72,7 +73,7 @@ Use a real title such as `Problem complexity`, `Computational complexity`, or `N
 
 1. A known NP-hard problem is a special case of the studied problem.
 2. A polynomial reduction maps a known NP-hard problem to the studied problem.
-3. A reliable source proves NP-hardness for an exactly matching special case.
+3. A reliable source proves NP-hardness for a special case whose assumptions and objective genuinely match the reduction argument.
 
 Suggested statement:
 
@@ -90,4 +91,4 @@ known NP-hard problem P
 
 Do not claim NP-hardness because the formulation is large or commercial solvers are slow. To claim NP-completeness, define a decision version and also establish membership in NP.
 
-Explain how the complexity result motivates the selected solution method.
+State every feature fixed, removed, or transformed in a special-case argument. Explain how the result motivates the selected solution method, without implying that NP-hardness alone proves the chosen heuristic is necessary or effective.

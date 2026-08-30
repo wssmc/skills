@@ -14,7 +14,7 @@ research context
 -> theoretical/practical implications and boundaries
 ```
 
-## Default main body
+## Fallback main body
 
 1. Introduction
 2. Literature review / Related work
@@ -23,11 +23,18 @@ research context
 5. Computational study
 6. Conclusions
 
-Paragraph 1: problem, model, and algorithm overview — restate the studied problem, the key structure of the formulation, and the proposed method at the level of its central idea.
+This six-section arrangement is a fallback for a model-algorithm-computation paper, not a required shell. Merge or rename sections when the journal, paper type, or argument warrants it. For example, a theory paper may integrate the problem and formulation, while an application paper may separate case context from computational validation.
 
-Paragraph 2: main experimental findings — report the principal computational results, the magnitude of improvement, and the statistical evidence that supports the method's effectiveness. One to three sentences of numerical summary; do not enumerate every benchmark.
+### Conclusions
 
-Paragraph 3: three problem boundaries and three corresponding future research directions — state what the method does not cover or where it degrades, then pair each boundary with a concrete next-step extension. Do not propose vague future work such as "apply to other problems" or "improve the algorithm."
+Cover the functions supported by the paper, without forcing a fixed paragraph or item count:
+
+1. Reconnect the research question to the formulation/method contribution.
+2. State only the main analytical or computational findings, with the most decision-relevant magnitudes when available.
+3. Explain implications at the level supported by the evidence.
+4. State material scope boundaries and pair useful future work with the mechanism causing each boundary.
+
+Do not introduce new experiments or citations in the conclusion, repeat the abstract verbatim, enumerate every result, or hide adverse evidence that should have been reported earlier.
 
 Use the target journal's prescribed structure when it differs.
 
@@ -45,21 +52,23 @@ Do not use numbered circled bullets for section-content planning.
 
 ## Subsection economy
 
-- Most main sections should have 3-5 subsections.
-- Merge explanatory fragments that do not carry independent argumentative functions.
-- Use third-level headings only for actual method components, evidence blocks, or substantive research streams.
+- Give a subsection its own heading only when it carries an independent argumentative, methodological, or evidential function.
+- Merge explanatory fragments that do not carry independent functions; split dense blocks when readers must navigate distinct claims or procedures.
+- Use third-level headings only for actual method components, evidence blocks, or substantive research streams, not to satisfy a preferred count.
 - Move long proofs, implementation details, full parameter tables, and supplemental experiments to appendices when permitted.
 
-## Default fixed evidence package
+## Evidence-module selection
 
-For a typical model-algorithm-computational OR paper, plan:
+Select each module by the question it answers. Common candidates are:
 
-- literature matrix;
-- illustrative-instance data tables plus one explanatory Gantt/network/route figure;
-- model notation table;
-- overall algorithm framework figure;
-- parameter calibration tables/plot when calibration is used;
-- algorithm comparison table(s), statistical comparison, and convergence plot;
-- component comparison tables/plots for claimed algorithmic contributions.
+- a literature matrix when side-by-side coding exposes the gap more clearly than prose;
+- an illustrative instance when the problem or feasibility logic is otherwise difficult to reconstruct;
+- a notation table when symbol volume makes definitions hard to navigate;
+- a framework figure when module interfaces or information flow are not clear from concise prose/pseudocode;
+- calibration evidence when parameters were selected empirically;
+- exact/reference comparison, repeated-run statistics, convergence, or ablation when the corresponding performance or mechanism claim is made;
+- case, sensitivity, or robustness evidence when practical validity or stability is claimed.
 
-Case study and sensitivity/robustness sections are conditional but supported.
+Omit decorative or redundant items. Every major table/figure should support a stated contribution, research question, reproducibility need, or foreseeable reviewer concern.
+
+For a compact planning example with an explicit missing-evidence decision, see [architecture output example](../../examples/en/architecture-output.md).

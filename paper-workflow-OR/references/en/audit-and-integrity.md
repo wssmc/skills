@@ -1,5 +1,14 @@
 # Audit and integrity
 
+Audit before rewriting. Record what was actually inspected and distinguish observed defects from unverified risks. If result files, code, logs, or full text are unavailable, state the resulting limit instead of treating absence of evidence as evidence of absence.
+
+## Severity
+
+- **Blocking:** fabrication, invalid central model/theory, unrecoverable source inconsistency, or missing evidence that invalidates a principal conclusion/submission artifact.
+- **Major:** a contribution, comparison, reproducibility claim, or central section is materially unsupported or misleading but repairable.
+- **Minor:** localized clarity, consistency, reporting, or formatting defect that does not change the central conclusion.
+- **Suggestion:** optional improvement with no demonstrated correctness or integrity impact.
+
 ## Gap-contribution-evidence ledger
 
 Maintain:
@@ -7,7 +16,11 @@ Maintain:
 | Gap | Contribution | Manuscript location | Evidence | Boundary |
 |---|---|---|---|---|
 
-Reject or revise any contribution with no evidence path.
+Flag every contribution with no evidence path; recommend deletion, narrowing, relabelling as planned work, or the specific evidence needed.
+
+## Source-of-truth audit
+
+For numerical and algorithmic claims, trace manuscript text and displayed artifacts back to the most authoritative available source: raw/processed result file, code/configuration/log, generated table/figure input, then manually transcribed prose. Report conflicts rather than choosing the most favorable value.
 
 ## Architecture audit
 
@@ -43,10 +56,12 @@ Reject or revise any contribution with no evidence path.
 - Exact comparison distinguishes incumbent, bound, gap, and optimum status.
 - Ablations change one factor at a time.
 - Case and sensitivity evidence support their claimed implications.
+- Failed runs, infeasible outputs, neutral results, and unfavorable instance groups are accounted for rather than silently excluded.
+- Calibration/training and final evaluation data roles are separated or their overlap is disclosed.
 
 ## Figure/table audit
 
-- Every main item supports a contribution or reviewer-risk question.
+- Every main item supports a research/evidence question, contribution, reproducibility need, or reviewer-risk question.
 - Every item is cited and interpreted.
 - Captions identify objects, metric, and setting.
 - No blank/placeholder result cells in contribution-supporting tables.
@@ -59,6 +74,7 @@ Reject or revise any contribution with no evidence path.
 - Avoid `first`, `novel`, `significantly better`, `fully solves`, and universal applicability without evidence.
 - Distinguish completed, planned, and missing work.
 - Distinguish constructed data, benchmark data, and real data.
+- Check for selective reporting: abstract/conclusions, main tables, appendix, and source results should cover the same stated experiment population or explain exclusions.
 
 ## Audit report format
 
@@ -68,9 +84,12 @@ For each issue report:
 Location
 -> Severity
 -> Problem
+-> Evidence observed
 -> Why it matters
 -> Required revision
 -> Additional evidence needed
 ```
 
-Prioritize: blocking integrity issues, major argument/evidence gaps, reproducibility issues, then language/style.
+Prioritize blocking integrity issues, major argument/evidence gaps, reproducibility issues, then minor language/style defects. Do not bury the highest-risk findings inside a chronological walkthrough.
+
+See the [audit finding example](../../examples/en/audit-output.md) for the expected evidence-first issue format.

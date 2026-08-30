@@ -3,6 +3,7 @@
 ## Root
 
 - `SKILL.md`: executable skill entry point.
+- `manifest.json`: machine-readable identity, version, language, domain, modes, and outputs.
 - `README.md`: installation and package overview.
 - `CHANGELOG.md`: release history.
 - `MANIFEST.md`: file inventory.
@@ -21,6 +22,7 @@ Both `references/en/` and `references/zh/` contain:
 8. `audit-and-integrity.md`
 9. `latex-project-editing.md`
 10. `polishing-and-translation.md`
+11. `abstract.md`
 
 ## Templates
 
@@ -37,4 +39,4 @@ Both `references/en/` and `references/zh/` contain:
 
 ## Scripts
 
-- `validate_skill.py`: package integrity validator.
+- `validate_skill.py`: frontmatter/manifest, bilingual mirror, routing/link, and Markdown integrity validator.

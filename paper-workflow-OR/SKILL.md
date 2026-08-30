@@ -1,244 +1,119 @@
 ---
-name: paper-workflow-OR
-description: Plan, draft, restructure, polish, translate, audit, and directly edit LaTeX projects for method-driven operations research papers that connect an optimization problem, a mathematical formulation, a solution method, and computational evidence. Use for OR manuscript architecture, introduction and related-work routing, MIP/model writing, NP-hardness placement, algorithm exposition and pseudocode, computational-study design, figure/table caption naming, literature search, journal-template adaptation, Chinese-English translation, and full manuscript integrity audits.
-version: 2026.07.13.1
+name: paper-workflow-or
+description: Draft, revise, or audit method-driven operations-research manuscripts and LaTeX projects while keeping the problem-model-method-evidence chain consistent. Use for OR paper architecture, formulation and algorithm exposition, computational-study reporting, evidence-grounded literature synthesis, bilingual academic polishing, or manuscript integrity checks; do not use for generic prose without an optimization or decision-model core.
+metadata:
+  version: "2026.08.30.1"
 ---
 
-# paper-workflow-OR
+# Paper workflow for operations research
 
-Use this skill only for operations research and optimization manuscripts. The default manuscript language is English; discussion may follow the user's language. A Chinese reference set is available and may be selected explicitly.
+Support the requested manuscript task without expanding its scope. Discussion follows the user's language; manuscript-ready text follows the requested language and otherwise defaults to English. The target journal, article type, and supplied template take precedence over this skill's structural defaults.
 
-## First decision
+## 1. Route the request before acting
 
-Classify the request before writing:
+Identify the primary mode and requested deliverable:
 
-- `Architecture`: outline, branch selection, section titles, paragraph plan, evidence plan, figure/table plan.
-- `Drafting`: write manuscript-ready content from supplied facts and evidence.
-- `Revision`: restructure or directly revise an existing manuscript or LaTeX project.
-- `Polishing/Translation`: improve academic English, translate Chinese/English, remove formulaic AI prose, preserve technical meaning.
-- `Audit`: inspect argument, model, algorithm, experiments, citations, figures/tables, LaTeX integrity, and claim boundaries.
+- **Architecture:** argument map, section structure, paragraph plan, contribution/evidence plan, or figure/table plan.
+- **Drafting:** manuscript-ready prose based on supplied, verified, or directly derivable material.
+- **Revision:** restructure content or directly edit an existing manuscript/LaTeX project.
+- **Polishing/translation:** improve language while preserving mathematics, terminology, cross-references, and claim strength.
+- **Audit:** inspect scientific argument, model, method, evidence, citations, figures/tables, or LaTeX integrity. An audit is read-only unless the user also asks for edits.
+- **Literature/evidence work:** search, screen, synthesize, build a matrix, verify novelty/theory/baselines, or map claims to sources.
 
-Then determine the requested output mode: outline only, outline plus Guide, paragraph plan, full prose, LaTeX-ready prose, caption plan, literature matrix, audit report, revision plan, or direct `.tex` edits.
+Do not turn a sentence-level edit into a paper redesign or a diagnosis into an unsolicited rewrite.
 
-## Mandatory intake
+## 2. Establish readiness with the minimum necessary intake
 
-When material information is missing, ask one concise grouped set of questions before drafting. At minimum resolve:
+Inspect supplied files and context before asking questions. Determine only what the requested deliverable requires. Typical decision variables are the target outlet/template, problem and objective, formulation status, method status, evidence status, output language, and edit scope.
 
-1. Target journal or journal family, and whether an official LaTeX template is available.
-2. Base OR problem, decision setting, objective, resources, constraints, and uncertainty.
-3. Model family and whether a complete formulation exists.
-4. Algorithm family, encoding/decoding, initialization, actual components, and available pseudocode.
-5. Data/benchmarks, baselines, completed experiments, hardware/software, and available result files.
-6. Requested language and output mode.
+- Proceed when a bounded assumption or an explicitly labelled planning gap is sufficient.
+- Ask one concise grouped question only when missing information would materially change the requested manuscript-ready text, mathematical meaning, claims, or required format.
+- For planning work, mark unknown work as `planned`, `missing`, or `decision required`; do not present it as completed.
+- For polishing, use the source text as the semantic authority and ask only about genuine technical ambiguity.
+- For direct edits, identify the exact project scope, main file, template, included files, bibliography, result sources, and feasible validation command.
 
-Do not invent missing application settings, decision makers, formulations, algorithm components, parameter values, experiment results, statistical significance, real cases, or references.
+Track factual readiness with these evidence states:
 
-## Core workflow
+`provided` · `verified externally` · `directly derivable` · `planned but not executed` · `missing` · `not permitted to infer`
 
-1. Inspect user files first. For LaTeX projects, identify the main file, included files, bibliography, template/class, figures, tables, code, solver logs, and generated results.
-2. Ask or resolve the target journal/template before imposing structure.
-3. Build an internal ledger: `Gap -> Contribution -> Manuscript location -> Evidence -> Boundary`.
-4. Choose the introduction and related-work branches from the architecture references.
-5. Build or revise the six-section OR spine: problem, model, method, computational evidence, conclusions. Use the three-paragraph conclusions structure: overview, findings, boundaries and future research.
-6. Plan required and conditional figures/tables, emphasizing precise English caption naming.
-7. Draft or edit only claims supported by supplied or verified evidence.
-8. Run the full audit before final delivery.
+Only the first three states may be written as completed facts. Use the [intake and routing reference](references/en/intake-and-routing.md) when the request spans multiple sections or its route is unclear. Use the [intake worksheet](templates/intake-questionnaire.md) internally; never force the user to fill every field.
 
-## Reference routing
+## 3. Load only the references needed for the task
 
-Read the English reference by default. Read the matching Chinese reference when the user selects Chinese output or when Chinese planning is more useful.
+Use the English reference by default. For Chinese manuscript output or Chinese-first planning, use the matching file under `references/zh/`. Do not load both language versions unless translating, comparing, or synchronizing them.
 
-- Intake, task routing, and branching: `references/en/intake-and-routing.md`
-- Six-section manuscript architecture: `references/en/manuscript-architecture.md`
-- Introduction and related work: `references/en/introduction-and-related-work.md`
-- Problem, formulation, demo, notation, and NP-hardness: `references/en/problem-model-and-complexity.md`
-- Encoding, initialization, method components, pseudocode, and analysis: `references/en/solution-method.md`
-- DOE, benchmark, statistics, convergence, ablation, case, and sensitivity: `references/en/computational-study.md`
-- Fixed/default figure and table set plus caption library: `references/en/figures-and-tables.md`
-- Full-paper and evidence audit: `references/en/audit-and-integrity.md`
-- Direct LaTeX project editing: `references/en/latex-project-editing.md`
-- Academic English polishing and Chinese-English translation: `references/en/polishing-and-translation.md`
-- Abstract writing: `references/en/abstract.md`
+| Need | Reference |
+|---|---|
+| Whole-paper argument and section architecture | [Manuscript architecture](references/en/manuscript-architecture.md) |
+| Introduction, related work, or literature matrix | [Introduction and related work](references/en/introduction-and-related-work.md) |
+| Problem definition, formulation, notation, or complexity claim | [Problem, model, and complexity](references/en/problem-model-and-complexity.md) |
+| Exact/decomposition/heuristic/learning-assisted method exposition | [Solution method](references/en/solution-method.md) |
+| Experimental design, comparison, statistics, ablation, case, or sensitivity | [Computational study](references/en/computational-study.md) |
+| Evidence-driven figure/table selection, captions, and discussion | [Figures and tables](references/en/figures-and-tables.md) |
+| Abstract drafting or audit | [Abstract](references/en/abstract.md) |
+| Academic English, Chinese-English translation, or local polishing | [Polishing and translation](references/en/polishing-and-translation.md) |
+| Full-paper, claim, and reproducibility audit | [Audit and integrity](references/en/audit-and-integrity.md) |
+| Direct `.tex` project edits and build checks | [LaTeX project editing](references/en/latex-project-editing.md) |
 
-Chinese mirrors are under `references/zh/` with the same filenames.
+Available reusable artifacts:
 
-## Hard rules
+- [Gap-contribution-evidence ledger](templates/contribution-ledger.md)
+- [Literature matrix](templates/literature-matrix.md)
+- [Figure/table plan](templates/figure-table-plan.md)
+- [Audit report](templates/audit-report.md)
 
-- Preserve the OR spine: `decision problem -> formulation -> solution method -> evidence -> implications`.
-- Match gaps and contributions one-to-one and in the same order.
-- Redeem each contribution with a model result, theorem/proposition, algorithm/pseudocode, benchmark, statistical test, ablation, case, sensitivity result, figure, table, or appendix proof.
-- Use real subsection titles. Placeholders such as `Feature A`, `Mechanism B`, `Method 1`, and `TBD` may appear only in planning notes, never in manuscript-ready output.
-- A literature review must classify, compare, synthesize, and close each stream with a specific unresolved issue; do not produce an author-year list.
-- Include a literature matrix by default for full method-driven papers unless the journal format or evidence makes it unnecessary.
-- Use an illustrative instance with data tables and an explanatory schedule/network/route figure when the problem is not immediately transparent.
-- Use `Notation for the MIP model.` by default for MIP formulations; rename accurately for other paradigms.
-- Claim NP-hardness only with a valid special-case argument, polynomial reduction, or reliable cited result. Do not infer NP-hardness from computational difficulty.
-- State whether the method is exact, approximate, decomposition-based, heuristic, metaheuristic, hybrid, or learning-assisted.
-- Explain encoding/decoding and initialization only when they exist; otherwise use the documented branch titles.
-- Name algorithm-component subsections by their actual function and provide purpose, procedure, interfaces, feasibility conditions, and pseudocode where needed.
-- Report computing environment before interpreting results: language, CPU, clock speed, RAM, operating system, solver/version, threads, time limit, gap, seeds, repetitions, and preprocessing policy when applicable.
-- Use fair computational budgets and distinguish optimum, incumbent, bound, gap, and time-limit status.
-- Do not fabricate citations, results, p-values, confidence intervals, captions, hardware, code outputs, or real-world claims.
-- When editing `.tex`, respect the journal template and preserve mathematical meaning, labels, references, and user results.
-- Present only favorable evidence in the main manuscript body. Confine limitations, weaknesses, and negative results to a brief statement in the Conclusions section. Do not qualify or hedge results in the Introduction, method, or experimental sections.
+Use a template only when it improves the requested deliverable; do not emit blank templates as the answer.
 
-## Literature search
+## 4. Preserve the OR argument and its evidence trace
 
-External literature search is allowed and expected when the user requests it, when novelty or `first` claims must be verified, when a literature matrix is built, when a base NP-hard result is needed, or when credible baselines must be selected. Verify bibliographic metadata and technical claims from primary sources. State evidence boundaries when full text is unavailable.
-
-## Figure and table scope
-
-This version prioritizes necessity, manuscript location, evidence role, and caption naming. It may plan or revise figures/tables and their LaTeX captions. Automatic plotting is optional and secondary. Do not claim a figure or table exists unless supplied or generated.
-
-## Figure title, caption, and in-text reference
-
-Distinguish among the following elements.
-
-### 1. In-figure title
-
-An in-figure title is text placed inside the graphical canvas, usually above the plotting area.
-
-For journal manuscripts, an in-figure title should normally be omitted because the figure caption already identifies and explains the figure.
-
-Avoid placing titles such as:
+For section- or paper-level work, maintain this chain:
 
 ```text
-Algorithm comparison
-ARPD distribution
-Convergence analysis
-Sensitivity results
+decision or optimization problem
+-> unresolved limitation or question
+-> formulation / theory / solution method
+-> computational or analytical evidence
+-> supported implication and boundary
 ```
 
-inside the figure.
+Build a gap-contribution-evidence ledger when contributions or claims are in scope. The mapping need not be one-to-one, but every advertised contribution must have a visible evidence path, and every major experiment should answer a stated research question or reviewer-risk question.
 
-An in-figure title may be retained only when:
+Choose sections and evidence modules by paper type, claim, outlet, and available material. The familiar six-section model-algorithm-experiment structure is a fallback, not a mandate. Do not require a literature matrix, illustrative instance, notation table, framework figure, DOE, convergence plot, ablation, case study, or sensitivity analysis unless it materially supports the argument or reproducibility.
 
-* the target journal or template explicitly requires it;
-* the figure is intended for a presentation rather than a manuscript;
-* multiple self-contained panels require short internal panel headings;
-* the title conveys information that cannot be represented clearly in the caption or panel labels.
+## 5. Apply non-negotiable integrity rules
 
-### 2. Figure caption
+- Never invent an application setting, decision maker, equation, assumption, algorithm component, parameter, dataset, result, statistic, hardware detail, citation, theorem, benchmark, or real-case claim.
+- Preserve mathematical meaning, variable definitions, objective direction, units, numerical values, labels, citations, and algorithm semantics unless the user asks to change them and the change is justified.
+- Calibrate wording to evidence. Claims such as `first`, `novel`, `optimal`, `convergent`, `significantly better`, `real-world`, and `generalizable` require the corresponding search, proof, test, provenance, or scope evidence.
+- Report material favorable, neutral, adverse, and inconsistent evidence where readers need it to interpret the method. Do not hide negative results or move all limitations to the conclusion.
+- Keep planned studies and placeholder values out of manuscript-ready prose. If evidence is missing, draft only the supported portion and list the unresolved evidence separately.
+- Synthesize literature by concepts, assumptions, formulations, methods, and evidence; do not produce an author-year inventory. Verify each technical attribution against the source.
+- State the solution-method class accurately. Describe encoding, decoding, initialization, learning, bounds, convergence, or approximation guarantees only when they actually exist.
+- Claim NP-hardness only through a valid special-case argument, polynomial reduction, or a verified result for a genuinely matching case. NP-completeness additionally requires a decision version and membership in NP.
+- For computational comparisons, disclose applicable data provenance, implementation environment, budgets, solver status, seeds/repetitions, metrics, and statistical design. Distinguish optimum, best known, incumbent, bound, gap, and time-limit status.
+- Use publication-ready section titles and captions. Planning placeholders such as `Component A`, `Method 1`, and `TBD` must not survive into submission-ready output.
+- Respect the journal template and preserve unrelated user work when editing `.tex` files.
 
-The figure caption appears outside the graphical canvas and is normally placed below the figure.
+## 6. Research and citation boundary
 
-A caption should identify:
+Search external literature when the user requests it or when the requested output depends on verifying novelty, prior theory, benchmark provenance, baseline credibility, or journal requirements. Prefer primary papers and official journal or dataset documentation. Verify bibliographic metadata and the exact technical claim; a search snippet or an inaccessible abstract is not enough for a detailed attribution. State the search and access boundary when coverage is incomplete.
 
-```text
-what is shown
-→ what is compared
-→ the data, instance, or scenario scope
-→ the meaning of nonstandard symbols
-→ the direction of better performance when necessary
-```
+If verification is unavailable, weaken the claim, retain a clearly marked citation need in planning output, or report the blocker. Never manufacture a plausible reference.
 
-Example:
+## 7. Deliver by mode
 
-```text
-Figure X. Distribution of ARPD values obtained by the compared
-algorithms across the test instances. Diamonds indicate the mean
-values, and lower ARPD values indicate better solution quality.
-```
+- **Architecture:** state the selected paper route and why, then provide the argument/section/paragraph map, contribution-evidence mapping, and unresolved decisions.
+- **Drafting:** provide coherent manuscript-ready prose from supported facts; keep assumptions or missing evidence outside the prose.
+- **Revision/direct edit:** make only the requested changes, then summarize affected files or sections, validation performed, and unresolved risks.
+- **Polishing/translation:** return the revised text in the requested format; explain changes only when useful or requested. Flag ambiguities instead of silently guessing.
+- **Audit:** lead with prioritized findings, each with location, severity, evidence, consequence, and concrete correction. Separate observed defects from optional improvements.
+- **Literature/evidence:** report search scope and access limits, synthesize rather than list, and connect each source-backed gap to a manuscript decision.
 
-The caption should not repeat information that is already unambiguous from the axis labels and legend unless that information is necessary for correct interpretation.
+## 8. Validate in proportion to the task
 
-### 3. In-text reference
+- Local prose: terminology, notation, cross-references, factual support, and claim strength.
+- One section: local logic plus consistency with the problem, method, evidence, and contribution it serves.
+- Full manuscript: argument trace, model-method consistency, evidence coverage, citation integrity, numerical consistency, and publication boundaries.
+- LaTeX project: compile when feasible; inspect undefined references/citations, duplicate labels, missing files, stale generated results, and layout warnings relevant to the edit.
 
-The manuscript text should introduce the purpose of the figure before interpreting its evidence.
-
-Example:
-
-```text
-Figure X compares the distributions of ARPD values obtained by the
-six algorithms.
-```
-
-The following sentences should report the principal observations, relevant numerical comparisons, exceptions, interpretation, and evidence-bounded conclusion.
-
-### 4. Elements retained inside a figure
-
-A journal figure should normally retain only:
-
-* x-axis and y-axis labels;
-* measurement units;
-* legend entries;
-* panel labels such as `(a)`, `(b)`, and `(c)`;
-* reference lines;
-* confidence bands or error bars;
-* necessary value annotations;
-* necessary statistical markers;
-* short annotations identifying important thresholds or events.
-
-### 5. Redundancy rule
-
-Do not repeat the same information in all three locations.
-
-Avoid:
-
-```text
-In-figure title: ARPD distribution
-Caption: ARPD distribution of the algorithms
-Text: Figure X shows the ARPD distribution of the algorithms
-```
-
-Prefer:
-
-```text
-In-figure title: omitted
-
-Caption:
-Figure X. Distribution of ARPD values obtained by the compared
-algorithms across the test instances.
-
-Text:
-Figure X compares both the central tendency and dispersion of the
-ARPD values produced by the six algorithms.
-```
-
-### 6. Table equivalent
-
-The same distinction applies to tables.
-
-A manuscript table normally has:
-
-* no title embedded inside the tabular cells;
-* a table caption placed above the table;
-* notes placed below the table;
-* an in-text sentence introducing and interpreting the table.
-
-Example:
-
-```text
-Table X. Algorithm comparison on large-scale instances under equal
-CPU-time budgets.
-```
-
-Information such as abbreviations, significance symbols, denominator definitions, and best-value formatting should be explained in table notes rather than inserted as an internal table title.
-
-### 7. Convergence figure caption default
-
-For convergence curves, prefer a concise noun-phrase caption that identifies the figure type and analysis object:
-
-```text
-Convergence profiles for representative instances.
-```
-
-Do not overload the caption with information already conveyed by the axes, legend, panel labels, or surrounding text. Details such as the number of instances, time scale, performance direction, and algorithm names should be added only when they are necessary for correct interpretation.
-
-The default naming template is:
-
-```text
-Figure X. Convergence profiles for representative instances.
-```
-
-## Completion standard
-
-Before final delivery, check:
-
-- selected branches fit the paper;
-- titles are publication-ready and not placeholders;
-- model and algorithm match the stated problem;
-- evidence supports every contribution and conclusion;
-- figures/tables are cited, interpreted, and numerically consistent;
-- citations are verifiable;
-- LaTeX compiles or any unresolved compile limitations are explicitly reported.
+Run a full audit only for a full-paper deliverable, a direct project revision whose scope warrants it, or an explicit audit request. Never claim compilation, literature verification, statistical support, or cross-file consistency that was not actually checked.

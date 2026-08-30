@@ -6,12 +6,9 @@
 
 **Guide:** application background -> decision abstraction -> current practice/research -> technical difficulty -> gap -> model and method -> contributions -> organization
 
-- **Paragraph 1:** establish the application need and operational importance. Translate the setting into an OR abstraction: who decides, what is decided, what resource is scarce, what constraints/uncertainty matter, and how solution quality is judged.
-- **Paragraph 2:** explain current practice and related research, including what has been solved and where existing rules, formulations, or algorithms fall short.
-- **Paragraph 3:** explain interacting problem features and the resulting modelling and computational difficulty; state the specific unresolved gap.
-- **Paragraph 4:** define the studied problem and summarize the formulation and solution approach, including why they fit the setting.
-- **Paragraph 5:** state contributions in gap order and with bounded claims.
-- **Paragraph 6:** map the remaining sections.
+Cover these functions in a coherent order: establish the operational need; translate it into an OR abstraction (who decides, what is decided, scarce resources, constraints/uncertainty, and performance criterion); explain the unresolved modelling or solution difficulty; define the studied problem and approach; state evidence-bounded contributions; and provide an organization map when the outlet expects one.
+
+Combine or split paragraphs to suit article length and argument density. Do not force one paragraph per function.
 
 ### Branch B: problem or method driven
 
@@ -25,6 +22,8 @@ Use when the decision abstraction is not a strong narrative anchor. Explicitly s
 
 Use for formulation, decomposition, exact-method, or theory-centred papers.
 
+Whichever branch is selected, keep context proportional: the introduction should reach the precise research question before broad motivation overwhelms the technical contribution. Contributions should identify what was formulated/designed/proved/evaluated, not merely list manuscript activities.
+
 ## 2. Related-work branches
 
 ### Branch A: problem-model-algorithm
@@ -36,11 +35,11 @@ Suggested publication-ready functions:
 3. Exact, heuristic, decomposition, or learning-assisted solution methods.
 4. Synthesis, research gap, and positioning.
 
-Each stream should define the topic, classify representative work, compare assumptions and capabilities, and end with a specific unresolved issue.
+Each stream should define the topic, classify representative work, compare assumptions/capabilities/evidence, and end with a specific implication for the studied research question. A stream need not manufacture a gap if its role is to establish a baseline or method choice.
 
 ### Branch B: base problem and concrete themes
 
-Use one subsection for the base problem and one subsection for each theme with an independent literature base. Titles must name the actual themes.
+Organize around the base problem and concrete themes with independent literature bases. Combine closely coupled themes when separation would repeat the same studies or assumptions. Titles must name the actual themes.
 
 ### Branch C: hybrid
 
@@ -48,7 +47,7 @@ Combine problem/application, one or more concrete feature streams, model literat
 
 ## Literature matrix
 
-Include by default for a full method-driven paper.
+Use a matrix when structured comparison exposes the claimed gap, baseline choice, or positioning more clearly than prose and the outlet has room for it. Omit it when the coding would be sparse, redundant, or unsupported by verified sources.
 
 Preferred caption:
 
@@ -64,7 +63,7 @@ Candidate columns:
 - Solution method
 - Validation or data
 
-Use only columns that expose the claimed gap. The matrix and prose must agree.
+Use only columns that answer the positioning question. Verify every cell against the source paper, retain a citation or evidence locator for audit, and keep the matrix, prose, and contribution claims consistent.
 
 ## Prohibited patterns
 
@@ -73,3 +72,4 @@ Use only columns that expose the claimed gap. The matrix and prose must agree.
 - generic subsection titles such as `Problem line` in final prose;
 - mentioning the proposed algorithm repeatedly in the middle of literature summaries instead of reserving it for synthesis/positioning;
 - a gap that does not map to a later contribution and evidence block.
+- treating absence from a limited search as proof that no prior study exists.

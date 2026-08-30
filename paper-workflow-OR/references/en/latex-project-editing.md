@@ -14,9 +14,11 @@
 ## Before editing
 
 - Identify the build command and compiler.
+- Inspect version-control status or another change baseline when available; preserve unrelated user changes.
+- Compile or inspect the current build log before editing when feasible so pre-existing errors are not attributed to the revision.
 - Check whether the template prescribes section titles, abstract length, highlights, author statements, appendices, and caption style.
 - Build an inventory of labels, references, figures, tables, equations, algorithms, citations, and included files.
-- Preserve a clear change scope; do not overwrite unrelated user work.
+- Establish the requested file/section scope and the source of truth for formulas, algorithms, and result values.
 
 ## Editing rules
 
@@ -27,12 +29,15 @@
 - Do not manually type result values in multiple places when they can be sourced from generated files.
 - Keep planning comments and placeholders out of submission-ready text.
 - Use actual algorithm/component names in headings and captions.
+- Preserve custom macros, bibliography keys, author comments, and formatting commands unless they are explicitly in scope or demonstrably broken.
+- Prefer narrow edits over global search/replace when commands, math, or citation keys could be affected.
+- Do not regenerate figures/tables from guessed data. Trace generated artifacts to their script/data source or report that regeneration was not verified.
 
 ## Validation
 
 After editing, check:
 
-- compilation status and warnings;
+- compilation status and relevant warnings, compared with the pre-edit baseline when available;
 - undefined references/citations;
 - duplicate labels;
 - missing files;
@@ -41,5 +46,6 @@ After editing, check:
 - stale numbers and captions;
 - bibliography entries unused or cited but missing;
 - consistency between abstract, contributions, results, and conclusions.
+- the actual diff for accidental scope expansion, changed equations/numbers, or unrelated formatting churn.
 
-If compilation cannot be completed, report the exact unresolved dependency or error instead of claiming success.
+Use the project's documented build path when present. Do not introduce a new toolchain merely to make a local build pass unless the user requests it. If compilation cannot be completed, report the exact command attempted and unresolved dependency/error instead of claiming success.

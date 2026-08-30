@@ -1,0 +1,37 @@
+{
+  "name": "paper-workflow-or",
+  "version": "2026.08.30.1",
+  "updated_at": "2026-08-30T00:00:00+08:00",
+  "description": "Draft, revise, translate, or audit method-driven operations-research manuscripts and LaTeX projects with explicit problem-model-method-evidence traceability.",
+  "languages": [
+    "en",
+    "zh-CN"
+  ],
+  "main_file": "SKILL.md",
+  "domain": [
+    "operations research",
+    "optimization",
+    "academic writing",
+    "LaTeX",
+    "computational experiments"
+  ],
+  "modes": [
+    "architecture",
+    "drafting",
+    "revision",
+    "polishing-translation",
+    "audit",
+    "literature-evidence"
+  ],
+  "upstream_skills": [],
+  "downstream_skills": [],
+  "outputs": [
+    "manuscript architecture or paragraph plan",
+    "manuscript-ready prose",
+    "direct LaTeX revisions",
+    "gap-contribution-evidence ledger",
+    "literature matrix",
+    "figure and table plan",
+    "prioritized manuscript audit"
+  ]
+}

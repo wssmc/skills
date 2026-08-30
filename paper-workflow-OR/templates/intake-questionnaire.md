@@ -1,4 +1,6 @@
-# paper-workflow-OR intake questionnaire
+# paper-workflow-or intake questionnaire
+
+Internal worksheet: use only the fields that affect the current deliverable. Pre-fill from supplied files/context and ask the user only for unresolved blockers.
 
 ## Outlet and delivery
 
@@ -6,7 +8,8 @@
 - Official LaTeX template supplied? 
 - Page/word/figure/table limits:
 - Output language: English / Chinese / bilingual
-- Output mode: outline / paragraph plan / full prose / LaTeX edit / audit
+- Output mode: architecture / paragraph plan / full prose / direct edit / audit / literature-evidence work
+- Requested scope/files:
 
 ## Problem and model
 
@@ -18,6 +21,7 @@
 - Model family:
 - Complete formulation available?
 - NP-hardness/theory available?
+- Evidence state for each central claim: provided / verified / derivable / planned / missing
 
 ## Method
 
@@ -40,3 +44,5 @@
 - Real case:
 - Sensitivity/robustness:
 - Language/CPU/RAM/OS/solver/version/threads/time limit/gap:
+- Source-of-truth result files/logs:
+- Failed or excluded runs and reason:
