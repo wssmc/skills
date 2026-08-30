@@ -50,6 +50,10 @@ Paragraph 2: purpose and content.
 
 Do not use numbered circled bullets for section-content planning.
 
+Default to a section-level blueprint that explains what each section writes and which formulas, algorithms, tables, and figures support it. If the user explicitly asks for paragraph-by-paragraph guidance, expand only the requested sections and make each paragraph concrete enough to draft.
+
+Default planning output should be directly readable in chat or Markdown. Raw LaTeX is appropriate only for an explicit LaTeX/source-editing request; Word or PDF should be created only when requested.
+
 ## Subsection economy
 
 - Give a subsection its own heading only when it carries an independent argumentative, methodological, or evidential function.

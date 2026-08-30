@@ -1,84 +1,132 @@
 # Solution method
 
-## Chapter opening and method branch
+Build the method section from algorithmic responsibilities and contribution evidence, not from source-code layout. The method section may be Section 3, 4, or another number; use the manuscript's actual structure.
 
-**Guide:** method-design motivation -> overall framework -> encoding/decoding -> initialization -> core method and components -> pseudocode -> theoretical/complexity analysis
+If the problem/model chapter is also being planned and coordination would reduce repeated work, optionally use the [coordinated problem-method section workflow](problem-method-joint-writing.md). It is not a gate for drafting this section independently.
 
-Open with the computational or analytical need, the problem structure exploited, and the method class. Do not claim that direct solution is insufficient unless exact/reference experiments, complexity, scale, or a documented requirement supports that statement.
+## 1. Evidence and chapter-responsibility gate
+
+Before outlining or drafting, inspect the available sources in this order:
+
+1. abstract, introduction, or contribution statement;
+2. problem/model section and its equation labels;
+3. existing solution-method text and pseudocode;
+4. implementation source and tests;
+5. experimental-settings or result files.
+
+Treat the problem/model text as authority for problem definitions, the contribution statement as authority for novelty claims, and code as evidence of mechanics. Code does not by itself establish novelty, importance, or the manuscript outline.
+
+Classify each candidate item before placing it:
+
+- **Problem/model:** objective, feasibility relations, and standard schedule-construction or completion-time recurrences. Define and label them once in the problem/model section, then cross-reference them from the method.
+- **Solution method:** encoding/decoding, construction, repair, neighborhood operators, search control, adaptation, bounds, cuts, and learning interfaces. Explain them here to the detail required for correctness and reproduction.
+- **Computational study:** numerical parameter values, tuning ranges, budgets, seeds, hardware, and comparison protocols. Define mechanism symbols here, but report tested values and calibration there.
+- **Code-only implementation:** copying, generic guards, logging, library behavior, and defensive error handling. Omit them unless they change the algorithm definition, feasibility, fairness, reproducibility, or meaningful complexity.
+
+If the contribution hierarchy is absent or conflicts across sources, do not infer it from function length, naming, or sophistication. Ask one concise blocker only when a manuscript-ready novelty claim depends on the answer; otherwise mark novelty as unresolved and use neutral wording.
+
+## 2. Select the method branch and contribution hierarchy
+
+State the computational or analytical need, the exploited problem structure, and the method class. Do not claim that direct solution is insufficient unless complexity, scale, exact/reference experiments, or a documented requirement supports it.
 
 Select content by method type:
 
 - **Exact/decomposition:** formulation transformation, bounds, master/subproblem or pricing/separation logic, validity, convergence/termination, and implementation details needed for reproduction.
-- **Heuristic/metaheuristic:** solution representation/construction, feasibility handling, search components, acceptance/update logic, stopping conditions, and stochastic protocol.
-- **Approximation:** algorithm plus proved guarantee and its assumptions.
-- **Learning-assisted:** prediction/learning target, training data split, features, leakage controls, interface with optimization, feasibility safeguards, and evaluation against non-learning baselines.
-- **Hybrid/matheuristic:** which decisions each component owns, what information crosses interfaces, and how budgets are allocated.
+- **Heuristic/metaheuristic:** solution representation/construction, feasibility handling, initialization when material, candidate-generation operators, search-control logic, proposed mechanisms, stopping conditions, and stochastic protocol.
+- **Approximation:** algorithm plus a proved or verified guarantee and its assumptions.
+- **Learning-assisted:** learning target, data split, features, leakage controls, optimization interface, feasibility safeguards, and comparison with non-learning baselines.
+- **Hybrid/matheuristic:** decision ownership, interfaces, exchanged information, budget allocation, and the order or feedback loop among components.
 
-## 4.1 Overall framework
+Classify every component as one of:
 
-**Guide:** difficulty -> method class -> design idea -> modules -> interfaces -> output
+- **inherited/standard:** describe concisely but sufficiently for reproduction, and cite when a source is available;
+- **problem-adapted:** explain the modification, why the problem requires it, and how behavior differs from the base component;
+- **claimed core contribution:** give the most detail, including mechanism, interfaces, rationale, and the evidence needed to support its claimed role;
+- **unresolved:** describe mechanics neutrally and keep novelty language pending.
 
-State whether the method is exact, decomposition-based, approximate, heuristic, metaheuristic, hybrid, or learning-assisted. Describe inputs, modules, information flow, current/best solution updates, stopping logic, and outputs.
+Detail follows algorithmic responsibility, reproducibility risk, and supported contribution status—not code length.
 
-Use a framework figure only when module interfaces, iteration flow, or information exchange are not already clear from concise prose and pseudocode. A suitable caption is:
+## 3. Use a content-driven method architecture
 
-`Figure X. Overall framework of the proposed [method name].`
+Choose only the modules that exist; do not force fixed numbering or a fixed number of subsections.
 
-Alternative:
+1. **Opening and overall framework:** design motivation, method class, inputs/outputs, modules, information flow, and contribution map.
+2. **Representation, construction, or decomposition:** encoded decisions, decoded decisions, feasibility, objective interface; or truthful exact-method functions such as master/subproblem, pricing, separation, or cut generation.
+3. **Initialization:** only when it affects the method, performance, or reproducibility.
+4. **Candidate generation:** neighborhoods, destroy/repair, mutation, branching candidates, or other procedures that produce alternatives.
+5. **Search or solution control:** operator selection, acceptance, current/reference/best-state updates, tabu or neighborhood schedules, cooling/restarts, bounds, termination, and budget logic.
+6. **Proposed mechanisms:** adaptation, guidance, learning, intensification/diversification, or problem-specific procedures whose claimed contribution status is supported or explicitly unresolved.
+7. **Integrated pseudocode:** the end-to-end procedure after all required symbols and components are defined.
+8. **Properties or complexity:** correctness, feasibility preservation, bounds, termination, convergence, approximation, or meaningful dominant cost when justified.
 
-`Figure X. Overall workflow of the proposed [method name].`
+Not every module needs a top-level heading. However, when candidate generation and search control both exist, preserve their distinct responsibilities in headings or clearly bounded paragraphs; do not describe an operator as if it were the entire metaheuristic. For exact, decomposition, learning-assisted, and hybrid methods, use analogous responsibility boundaries rather than forcing neighborhood-search terminology.
 
-Source-derived example:
+Use a framework figure only when interfaces, iteration flow, or information exchange are not already clear from concise prose and pseudocode. A suitable caption is `Figure X. Overall framework of the proposed [method name].`
 
-`Figure X. Overall framework of the proposed two-phase solution approach.`
+## 4. Place formulas by what they define
 
-## 4.2 Solution representation or mathematical decomposition
+- A formula that defines the problem, feasible solution, objective, or standard schedule evaluation belongs in the problem/model section when already established there; cite its label in the method.
+- A formula that defines an algorithm-specific decoder, repair rule, score, acceptance probability, weight update, bound, cut, or incremental evaluator belongs in the method.
+- A formula should normally be defined once. Do not repeat it with new notation or numbering merely for local convenience.
+- Define parameter roles and symbols with the mechanism. Put numerical defaults, tuning grids, and selected values in the computational study unless a value is part of the algorithm's mathematical definition.
 
-**Guide:** decision information -> encoding -> decoding -> feasibility -> evaluation
+A standard evaluator implemented as a function is not automatically a method contribution. Conversely, a new decoder or repair procedure remains method content even if it computes the same model objective.
 
-For representation-based methods, explain what is directly encoded and what is determined during decoding. Show how feasibility is preserved or repaired and how the decoded solution maps to the model objective.
+## 5. Reconstruct method logic from code without transcribing it
 
-When no explicit encoding exists, use a truthful title such as `Solution construction`, `Master problem and subproblem`, `Pricing problem`, `Cut generation`, or another method-specific function. Do not force encoding/decoding language onto exact, decomposition, or direct mathematical procedures.
+Trace the main call path, state variables, data flow, and update order. Build a component ledger before drafting when the code contains multiple mechanisms. Do not map each function to a subsection or each assignment to an equation.
 
-## 4.3 Initialization
+Include code behavior only when it affects at least one of: algorithm definition, candidate set, feasibility, objective evaluation, stochastic behavior, tie handling with scientific consequences, fairness of comparison, reproducibility, or dominant complexity. Usually omit generic copying, defensive guards outside the intended domain, logging, container operations, and library-specific behavior. Mention a small-instance fallback or tie rule only if it changes the defined method or a fair/reproducible comparison.
 
-**Guide:** purpose -> candidate rules -> construction -> evaluation -> selected initializer
+For every included component, state:
 
-Describe initialization only when it is substantive, affects performance, or is needed for reproduction. Otherwise merge it into the core method or implementation settings.
+1. purpose and targeted failure mode;
+2. inputs, outputs, and owned state;
+3. procedure, formula, or decision rule;
+4. feasibility and interface with adjacent components;
+5. inheritance/adaptation/contribution status and supporting source;
+6. detail or evidence still missing.
 
-## 4.4 Core solution method and components
+## 6. Keep generation, control, and adaptation distinct
 
-Use the actual method name where appropriate. Give a whole-method paragraph before component subsections.
+- **Candidate-generation operators** answer how a neighboring or alternative solution is produced.
+- **Search control** answers which operator is called, whether a candidate is accepted, how current/reference/best states change, how the search schedule evolves, and when it stops.
+- **Proposed adaptive or guidance mechanisms** answer how information collected during search changes later decisions.
 
-For each actual component:
+Describe an adaptive operator-selection mechanism only after the operator set and baseline controller are clear. Define its observable state, reward/score rule, update timing, reaction or learning coefficient, safeguards, and how weights become selection probabilities. Numerical values and calibration evidence belong in the experiment section. Do not call adaptation novel unless the contribution statement and literature evidence support that claim.
 
-1. Purpose and targeted failure mode.
-2. Procedure, formula, score, or decision rule.
-3. Inputs, outputs, feasibility conditions, and interface with adjacent modules.
-4. Pseudocode, equations, or a precise protocol when they materially improve reproducibility.
+## 7. Write integrated pseudocode last
 
-Name components by function, never `Component A/B`.
+Before the integrated algorithm, define every symbol and component it invokes. Then align pseudocode with the actual execution order:
 
-### Complete pseudocode
+1. inputs, outputs, and initialization;
+2. current, candidate, reference/incumbent, and global-best states as applicable;
+3. component/operator selection and candidate construction;
+4. evaluation and feasibility handling;
+5. acceptance and state updates;
+6. learning/adaptation, bounds, or schedule updates;
+7. termination and returned output.
 
-Include the elements that exist: inputs/outputs, initialization, iteration/decomposition loop, component calls, candidate acceptance, incumbent/bound updates, and stopping condition. Cross-check symbols, direction of improvement, tie handling, feasibility logic, and termination against the implementation when available. Use component-level pseudocode only when the full procedure would otherwise be ambiguous.
+Cross-check improvement direction, tie handling, mutation versus copying, state aliases, temperature/budget update order, and stopping conditions against the implementation. Use component-level pseudocode only when the integrated procedure would otherwise be ambiguous or excessively dense.
 
-Source-derived algorithm caption patterns include:
+## 8. Separate method definition from experimental evidence
 
-- `Phase-I backward decoding`
-- `Non-final-stage left-shift compaction`
-- `Phase-II forward decoding`
-- `Destruction`
-- `Reconstruction`
-- `Local search`
-- `Acceptance criterion`
+The method section defines mechanisms, variables, interfaces, and stopping logic. The computational study reports numerical settings, tuning, budgets, instances, seeds/repetitions, baselines, ablations, timing, and statistical evidence. A default value in code is not proof that it is a principled method constant.
 
-## 4.5 Theoretical properties or complexity analysis
+For exact/decomposition methods, discuss correctness, validity, bounds, or finite convergence only with support. For approximation methods, state a guarantee only if proved or verified. For heuristic/metaheuristic methods, discuss feasibility preservation, termination, and time complexity only when meaningful. Define scale parameters and include solver calls or variable iteration counts in any complexity statement; do not add decorative Big-O expressions.
 
-Choose content by method type:
+## 9. Work LaTeX-first when LaTeX is the source or target
 
-- exact/decomposition: correctness, validity, bounds, finite convergence, cut/pricing logic;
-- approximation: approximation guarantee only if proved/cited;
-- heuristic/metaheuristic: feasibility preservation, termination, and time complexity where meaningful.
+Inspect the main file, included method and problem/model files, existing labels/references, macros, citation keys, and algorithm environments. Reuse `\ref`/`\eqref` and native environments, edit or generate `.tex` directly, and never invent displayed numbers. Apply the direct-LaTeX editing reference for compilation and cross-file checks.
 
-Define scale parameters and state whether complexity is worst-case, amortized, or empirical. Analyze only meaningful dominant operations; do not add a decorative Big-O expression that ignores solver calls or variable iteration counts. Do not state convergence, optimality, or approximation guarantees without formal support.
+## 10. Final method-section audit
+
+Confirm that:
+
+- every claimed contribution has an identified source and evidence path;
+- standard, adapted, proposed, and unresolved components are not conflated;
+- prior-chapter equations are cross-referenced and algorithm-specific mechanisms are not omitted;
+- candidate generation, search control, and proposed mechanisms have clear responsibility boundaries;
+- integrated pseudocode uses previously defined symbols and consistent state semantics;
+- experiment values and code-only details have not leaked into the method narrative;
+- claims of novelty, optimality, convergence, or complexity do not exceed the available evidence.

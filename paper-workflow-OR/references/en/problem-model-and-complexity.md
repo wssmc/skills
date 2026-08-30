@@ -92,3 +92,11 @@ known NP-hard problem P
 Do not claim NP-hardness because the formulation is large or commercial solvers are slow. To claim NP-completeness, define a decision version and also establish membership in NP.
 
 State every feature fixed, removed, or transformed in a special-case argument. Explain how the result motivates the selected solution method, without implying that NP-hardness alone proves the chosen heuristic is necessary or effective.
+
+## Handoff to the solution method
+
+When both chapters are being planned together and coordination would save work, optionally use the [coordinated problem-method section workflow](problem-method-joint-writing.md). It does not require a separate interface-ledger deliverable.
+
+Keep problem-defining schedule construction, completion-time recurrences, objectives, and feasibility relations in this chapter when they are part of the problem or model rather than an algorithmic choice. Give reusable equations stable labels and record the interface that the solution method needs: encoded decisions, decoded decisions, feasibility conditions, and evaluation output. The method chapter should cross-reference these definitions instead of restating them.
+
+An algorithm-specific decoder, repair operator, timing subproblem, incremental evaluator, or other procedure that changes how a candidate solution is constructed or evaluated belongs in the solution-method exposition even when it uses model notation. State that distinction explicitly when chapter ownership could otherwise be ambiguous.

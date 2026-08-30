@@ -33,6 +33,18 @@
 - Prefer narrow edits over global search/replace when commands, math, or citation keys could be affected.
 - Do not regenerate figures/tables from guessed data. Trace generated artifacts to their script/data source or report that regeneration was not verified.
 
+## Native-format section drafting
+
+When drafting or revising a manuscript section inside a LaTeX project:
+
+1. Trace the main file's `\input`/`\include` chain to the actual section file.
+2. Inspect adjacent section titles, equation/algorithm environments, custom macros, citation keys, and the existing label/reference scheme before writing.
+3. Reuse existing `\label` targets and cite earlier definitions with `\ref`, `\eqref`, or the template's established command. Do not duplicate equations solely to make a section self-contained.
+4. Edit or create the native `.tex` section. Do not deliver Markdown for later mechanical conversion, and do not invent equation, figure, table, or algorithm numbers.
+5. If no project exists but LaTeX is the requested deliverable, return a self-contained, insertable LaTeX fragment and identify unresolved labels/citations outside the fragment.
+
+For method sections reconstructed from code, inspect the problem/model file, contribution statement, existing method text, and implementation together. Preserve the boundary among prior-chapter definitions, method mechanisms, numerical experiment settings, and code-only details.
+
 ## Validation
 
 After editing, check:

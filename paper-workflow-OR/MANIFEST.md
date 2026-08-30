@@ -16,16 +16,21 @@ Both `references/en/` and `references/zh/` contain:
 2. `manuscript-architecture.md`
 3. `introduction-and-related-work.md`
 4. `problem-model-and-complexity.md`
-5. `solution-method.md`
-6. `computational-study.md`
-7. `figures-and-tables.md`
-8. `audit-and-integrity.md`
-9. `latex-project-editing.md`
-10. `polishing-and-translation.md`
-11. `abstract.md`
+5. `problem-method-joint-writing.md`
+6. `solution-method.md`
+7. `computational-study.md`
+8. `figures-and-tables.md`
+9. `audit-and-integrity.md`
+10. `latex-project-editing.md`
+11. `polishing-and-translation.md`
+12. `abstract.md`
 
 ## Templates
 
+- `chapter3-4-section-template.md`
+- `chapter4-architecture-checklist.md`
+- `chapter4-component-ledger.md`
+- `chapter5-computational-experiments-template.md`
 - `intake-questionnaire.md`
 - `contribution-ledger.md`
 - `literature-matrix.md`

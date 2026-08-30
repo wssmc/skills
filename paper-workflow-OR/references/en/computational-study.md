@@ -1,6 +1,6 @@
 # Computational study
 
-Design the section from validation questions, not from a fixed list of plots:
+Design the chapter from validation questions and source results:
 
 ```text
 claim or research question
@@ -11,116 +11,105 @@ claim or research question
 -> result, uncertainty, exception, and boundary
 ```
 
+For scheduling heuristics and metaheuristics, use the [fixed-title Chapter 5 template](../../templates/chapter5-computational-experiments-template.md) unless the target journal or existing manuscript fixes another structure. It is a house organization of experimental responsibilities, not a claim that published papers use identical numbers. Component and parameter evidence normally precedes the final full-method comparison because it explains why the evaluated configuration exists. Omit unsupported conditional modules and renumber only after the evidence plan is settled.
+
 ## Chapter opening
 
-**Guide:** validation purpose -> data roles -> implementation and computing environment -> chapter evidence map
+**Guide:** validation purpose -> research questions -> data roles -> implementation and computing environment -> evidence map
 
-State what the experiments validate and identify benchmark, generated/modified, and real-case data. Report enough implementation and computing information to interpret and reproduce the budgets: language/runtime, hardware, OS/container when relevant, solver/version/interface, threads, time limit, stopping tolerances, seeds, repetitions, and whether preprocessing/training is included. Do not fill in unavailable details from typical hardware descriptions.
+State what the experiments validate and identify benchmark, generated/modified, and real-case data. Report enough information to interpret and reproduce the budgets: language/runtime, hardware, relevant OS/container, solver/version/interface, threads, time limit or evaluation budget, stopping tolerances, seeds, repetitions, and whether preprocessing/training is included. Never fill unavailable details from a typical setup.
 
-Template:
+## 5.1 `Experimental Setup`
 
-`All algorithms were implemented in [programming language] and executed on a personal computer equipped with [CPU model and clock speed], [RAM capacity], and [operating system]. [Solver name and version] was used where applicable, with [thread setting], [time limit], and [optimality-gap setting].`
+Write in this order:
 
-## 5.1 Experimental design
+1. research questions and the role of each instance group;
+2. data provenance, problem structure, scale, generation/modification rules, and calibration/test separation;
+3. implementation and computing environment;
+4. comparator rationale and configuration source;
+5. matched stopping/computing budgets, seeds, repetitions, and failed-run policy;
+6. metric formulas, units, direction, denominators, reference status, and unit of analysis.
 
-### Data and settings
+Use a benchmark table and a protocol table rather than scattering settings across later sections. Prevent the same data from silently serving incompatible calibration and final-test roles. If algorithms use different languages, machines, or published results, do not describe their runtimes as directly comparable without a justified normalization or a clear limitation.
 
-**Guide:** data source -> instance structure -> scenarios/factors -> baselines -> budgets -> metrics
+## 5.2 `Parameter Calibration` (conditional)
 
-Explain why each dataset is used, instance scales, generation/modification rules, train/calibration/test separation when applicable, baseline rationale, budget fairness, fixed seeds/repetitions, and metric formulas/units/denominators. Identify the unit of analysis (run, instance, scenario, or dataset) and prevent the same data from serving incompatible calibration and final-test roles without disclosure.
+Omit this section when settings were fixed a priori or inherited; state their values and sources in 5.1. When calibration is performed, report factors, ranges/levels, calibration instances, experimental design, response, aggregation, interaction treatment, selection rule, and selected settings. Keep calibration instances separate from final evaluation when feasible and disclose any overlap.
 
-### Parameter calibration / DOE (conditional)
+Possible artifacts:
 
-Omit when parameters were fixed a priori or inherited. Report fixed settings and their source in the data/settings subsection. If calibration is performed, separate calibration instances from final evaluation when feasible and disclose the selection criterion.
+- `Parameter calibration design and selected settings for [algorithm name].`
+- `Main effects of [parameters] on [calibration response].`
 
-**Guide:** factors -> levels -> calibration instances -> DOE -> response -> main effects -> selected settings
+Use the actual design name; do not call a design orthogonal unless it is. Explain why a selected setting may differ from the single best observed combination. A small calibration set does not establish general robustness.
 
-Possible evidence when DOE is used:
+## 5.3 `Component Analysis` (conditional on component claims)
 
-- `Table X. Levels of the calibrated [algorithm name] parameters.`
-- `Table X. Orthogonal parameter combinations and average response values of [algorithm name].`
-- `Figure X. Main effects plot for the mean normalized objective.`
-- `Table X. Factor-response analysis for the mean normalized objective.`
-
-Use the actual design name; do not call a design orthogonal unless it is. Explain the response, aggregation, interactions considered, and why final settings may differ from the single best observed combination. Avoid overclaiming general robustness from a small calibration set.
-
-## 5.2 Overall performance and statistical comparison
-
-### Large-scale algorithm comparison
-
-Use one consolidated table or separate setting-specific tables.
-
-Caption patterns:
-
-- `Table X. Algorithm comparison on large-scale instances under [setting].`
-- `Table X. Algorithm comparison across different experimental settings.`
-
-Report central tendency, variability/uncertainty, runtime, and relevant domain metrics appropriate to the design. Use best-hit counts only with a defined tie rule and reference value. Explain performance by scale and scenario, including material ties, reversals, failures, and trade-offs rather than only stating winners.
-
-### Statistical significance
-
-When stochastic algorithms or multiple instances support comparative claims, choose tests from the experimental unit, pairing, distribution, number of methods, and multiplicity structure. Preserve run-level data when available and avoid treating repeated runs on one instance as independent problem instances.
-
-Caption patterns:
-
-- `Table X. Statistical comparison of the proposed and benchmark algorithms.`
-- `Table X. Friedman rankings and Holm-adjusted pairwise comparisons of the compared algorithms.`
-- `Table X. Pairwise Wilcoxon signed-rank test results for the compared algorithms.`
-
-Report hypotheses, unit of analysis, pairing, statistic, sample size, raw/adjusted p-values where applicable, and effect size or confidence interval. Separate statistical from practical significance. Do not select a test after inspecting which one yields significance, and do not call a difference significant without the reported analysis.
-
-### Convergence
-
-Caption patterns:
-
-- `Figure X. Representative convergence behavior under [selected scenario combinations].`
-- `Figure X. Time-normalized convergence profiles of the compared algorithms.`
-
-Use a fair x-axis: equal wall-clock time or clearly justified effort units. State how representative instances were selected; do not cherry-pick only favorable curves. Discuss initial quality, early improvement, late search, stagnation, variability across runs, and consistency or reversals across scales/settings.
-
-### Small-scale exact/reference comparison
-
-This block may appear before large-scale results, after them, or be merged with the main comparison depending on the paper's logic and journal space.
-
-Caption:
-
-`Table X. Small-scale comparison between [exact model or reference method] and [proposed algorithm].`
-
-Report incumbent, bound, gap definition, proven-optimum status, runtime, and domain metrics. Distinguish exact optimum, best-known solution, and experiment-best result. For minimization and maximization, ensure the bound direction and relative-gap denominator are stated or unambiguous.
-
-## 5.3 Method-component analysis
-
-Use actual component names. Each claimed algorithmic contribution should have a corresponding controlled comparison when feasible; if isolation is impossible, narrow the causal wording and explain the confounding.
-
-Design:
+Use actual component names. Compare the full method with variants that remove, replace, or change one interpretable component while holding the remaining protocol constant, or disclose a factorial design when interactions matter. Assess quality, uncertainty, runtime, and conditions of benefit. If a component cannot be isolated, narrow the causal wording and explain the confounding.
 
 ```text
-full method
--> remove/replace/change one component
--> hold other settings constant
--> compare quality, variability, hits, and runtime
--> explain conditions, mechanism, and boundary
+claimed component
+-> controlled variant
+-> same data and budget
+-> quality, variability, and cost
+-> mechanism supported by the design
+-> scope and exception
 ```
 
-Caption patterns:
+Typical artifact: `Comparison of [component name] strategies under [budget and instance scope].`
 
-- `Table X. Comparison of [method, rule, or component] alternatives.`
-- `Table X. Comparison of [component name] strategies.`
-- `Figure X. [Performance metric] improvement of different [component] strategies over [ablation baseline].`
-- `Figure X. Performance contribution of [component name] across instance groups.`
+## 5.4 `Comparison with Benchmark Algorithms`
 
-## 5.4 Real case or application validation (conditional)
+Use a consolidated table that exposes the full method's objective quality, dispersion, runtime, failures, ties, and behavior by instance scale or setting. Baselines need a technical rationale, credible implementation/configuration source, and fair budgets. Rename this section `Comparison with State-of-the-Art Methods` only when the selected methods' status is verified.
 
-**Guide:** case setting -> data provenance -> parameterization -> policy baselines -> results/trade-offs -> practical meaning -> limitations
+Do not merely announce a winner. Explain dominant results, material ties, reversals, subgroup effects, failures, and quality-time trade-offs. Best-hit counts require a defined reference and tie rule.
 
-Do not describe constructed instances as real cases. State data provenance, anonymization/aggregation, operational baseline, and any deployment-versus-offline-evaluation boundary.
+Place a small-scale exact/reference comparison here when applicable. Report incumbent, bound, relative-gap formula, proven-optimum status, runtime, and time-limit status. Distinguish exact optimum, best-known solution, published reference, and experiment-best result; verify bound direction for minimization or maximization.
 
-## 5.5 Sensitivity and robustness (conditional)
+## 5.5 `Statistical Analysis` (conditional)
 
-**Guide:** factor -> range -> controlled experiment -> outcome trend -> explanation -> model/managerial implication -> boundary
+Choose inference from the experimental unit, pairing, distribution, number of methods, and multiplicity structure—not from which test yields significance. Preserve run-level data, but do not treat repeated runs on one instance as independent problem instances in an across-instance claim.
 
-Analyze model parameters, weights, constraint tightness, uncertainty, problem scale, time budget, or data perturbation. Do not duplicate algorithm-parameter calibration unless it answers a distinct robustness question. Report non-monotonic, neutral, and adverse responses that change interpretation.
+Report hypotheses, analysis unit, pairing, statistic, sample size, raw/adjusted p-values when applicable, and an effect size or confidence interval. Separate statistical significance from practical importance. Friedman/Holm or paired Wilcoxon procedures are examples only when their assumptions and comparison structure match the design.
 
-## Completeness check
+## 5.6 `Search Behavior and Computational Efficiency` (conditional)
 
-For every conclusion drawn from the experiments, identify the exact table/figure/result artifact and the population of instances/runs it covers. Check all reported numbers against the source result file, including direction of better performance, denominators, rounding, tie rules, and missing/failed runs. Never silently drop failed runs or unfavorable instance groups.
+Use equal wall-clock time or a clearly justified effort unit. State the instance/profile selection and aggregation rule; do not select only favorable curves. Discuss initial quality, early and late improvement, stagnation, between-run uncertainty, scalability, and quality-time trade-offs. A convergence figure is unnecessary when effort is not comparable or no search-behavior claim is made.
+
+Typical artifacts:
+
+- `Time-normalized convergence profiles of the compared algorithms on [scope].`
+- `Runtime and scalability of [algorithm] by instance size.`
+
+## 5.7 `Sensitivity and Robustness Analysis` (conditional)
+
+Vary a model parameter, algorithm parameter, constraint tightness, uncertainty level, problem scale, time budget, or data perturbation under a controlled design. This section answers stability or boundary questions; it must not duplicate parameter selection in 5.2. Report non-monotonic, neutral, and adverse responses when they change interpretation.
+
+## Optional `Real-World Case Study`
+
+Insert this before the discussion only when genuine case data, provenance/anonymization, a relevant operational comparator, and the offline-versus-deployment boundary are available. In the full branch it becomes 5.8 and shifts `Discussion` to 5.9. Constructed benchmark instances are not real cases.
+
+**Guide:** operational setting -> provenance -> parameterization -> policy baseline -> results and trade-offs -> practical meaning -> limitation
+
+## 5.8 `Discussion`
+
+Answer the research questions using the preceding evidence. Connect component findings to complete-method performance, reconcile statistical and practical importance, explain exceptions and computational costs, and state the tested scope. Introduce no new result or unsupported mechanism here.
+
+## Result-discussion pattern
+
+For each retained artifact:
+
+```text
+question answered
+-> displayed data, comparator, and metric
+-> dominant result with uncertainty
+-> material exception, reversal, or failure
+-> supported explanation or trade-off
+-> bounded implication
+```
+
+Do not narrate every cell or infer causality from an uncontrolled comparison.
+
+## Completeness and integrity check
+
+For every conclusion, identify the exact result artifact and population of instances/runs it covers. Check source files for direction of better performance, denominators, rounding, tie rules, missing/failed runs, and metric/reference definitions. Ensure that parameter settings in the paper match those used to produce the result files. Never fabricate or silently drop unfavorable results.

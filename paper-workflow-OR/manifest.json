@@ -1,8 +1,8 @@
 {
   "name": "paper-workflow-or",
-  "version": "2026.08.30.1",
-  "updated_at": "2026-08-30T00:00:00+08:00",
-  "description": "Draft, revise, translate, or audit method-driven operations-research manuscripts and LaTeX projects with explicit problem-model-method-evidence traceability.",
+  "version": "2026.08.31.7",
+  "updated_at": "2026-08-31T00:00:00+08:00",
+  "description": "Draft, revise, translate, or audit method-driven operations-research manuscripts with explicit problem-model-method-evidence traceability, including fixed-title scheduling Chapters 3–5 planning and method reconstruction from code.",
   "languages": [
     "en",
     "zh-CN"
@@ -26,7 +26,10 @@
   "upstream_skills": [],
   "downstream_skills": [],
   "outputs": [
-    "manuscript architecture or paragraph plan",
+    "manuscript architecture or section plan",
+    "structured problem-model and solution-method chapter blueprint",
+    "fixed-title computational-experiments chapter blueprint",
+    "method-section architecture and component ledger",
     "manuscript-ready prose",
     "direct LaTeX revisions",
     "gap-contribution-evidence ledger",

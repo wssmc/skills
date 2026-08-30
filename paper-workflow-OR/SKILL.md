@@ -2,7 +2,7 @@
 name: paper-workflow-or
 description: Draft, revise, or audit method-driven operations-research manuscripts and LaTeX projects while keeping the problem-model-method-evidence chain consistent. Use for OR paper architecture, formulation and algorithm exposition, computational-study reporting, evidence-grounded literature synthesis, bilingual academic polishing, or manuscript integrity checks; do not use for generic prose without an optimization or decision-model core.
 metadata:
-  version: "2026.08.30.1"
+  version: "2026.08.31.7"
 ---
 
 # Paper workflow for operations research
@@ -32,6 +32,12 @@ Inspect supplied files and context before asking questions. Determine only what 
 - For polishing, use the source text as the semantic authority and ask only about genuine technical ambiguity.
 - For direct edits, identify the exact project scope, main file, template, included files, bibliography, result sources, and feasible validation command.
 
+For method-section drafting or revision from source code, establish the source roles before outlining: the problem/model section is authoritative for problem definitions and existing equation labels; the abstract or contribution statement is authoritative for the claimed novelty hierarchy; code and pseudocode are evidence of mechanics. Inspect all available sources in those roles. Classify each relevant item as a prior-chapter definition, method mechanism, experimental setting, or code-only implementation detail. Do not infer novelty from code complexity, function names, or the mere presence of a mechanism. If the source is a LaTeX project or the requested deliverable is LaTeX, load both the solution-method and LaTeX-editing references and work in native `.tex`.
+
+When the problem/model and solution-method chapters are both in scope, the [optional coordinated chapter-planning workflow](references/en/problem-method-joint-writing.md) may reduce duplicate inspection and notation drift; it is not a prerequisite or mandatory writing order. For a planning request, default to a readable section-level blueprint rather than a paragraph inventory. For scheduling heuristic/metaheuristic papers, use the routed fixed-title branch: Chapter 3, `Problem Description and Mathematical Formulation`, contains `Problem Description` (setting, explicit assumptions, and one data-plus-Gantt illustrative example) and `Notation and Mathematical Formulation` (symbols, formulas, and formula-by-formula interpretation). Chapter 4, `Proposed Solution Method`, covers `Overall Framework`, `Solution Representation and Decoding`, `Initialization`, `Neighborhood Structures`, the named baseline search framework, the named method-specific mechanism(s), `Complete Algorithm`, and `Feasibility and Computational Complexity Analysis`. Expand to paragraphs only when requested. Keep any interface ledger internal unless the user requests it or a conflict must be shown. Do not append experiment-input questions to a Chapter 3/4 architecture answer. Do not output raw LaTeX unless the user explicitly requests LaTeX or direct source editing; create Word or PDF only when requested.
+
+When computational evaluation is in scope for a scheduling heuristic/metaheuristic, use the fixed-title Chapter 5 house branch, `Computational Experiments`: `Experimental Setup`, conditional `Parameter Calibration`, contribution-driven `Component Analysis`, `Comparison with Benchmark Algorithms`, conditional `Statistical Analysis`, `Search Behavior and Computational Efficiency`, conditional `Sensitivity and Robustness Analysis`, and `Discussion`. Put parameter/component evidence before the full-method comparison so the evaluated configuration is justified. Insert `Real-World Case Study` only for genuine case data. These titles assign experimental responsibilities; a supplied journal or manuscript structure still takes precedence, unsupported modules are omitted, and `State-of-the-Art` is used only when verified. For architecture work, mark unavailable experiment inputs as planned or missing without interrogating the user for every value; manuscript-ready result claims still require source results.
+
 Track factual readiness with these evidence states:
 
 `provided` · `verified externally` · `directly derivable` · `planned but not executed` · `missing` · `not permitted to infer`
@@ -47,7 +53,8 @@ Use the English reference by default. For Chinese manuscript output or Chinese-f
 | Whole-paper argument and section architecture | [Manuscript architecture](references/en/manuscript-architecture.md) |
 | Introduction, related work, or literature matrix | [Introduction and related work](references/en/introduction-and-related-work.md) |
 | Problem definition, formulation, notation, or complexity claim | [Problem, model, and complexity](references/en/problem-model-and-complexity.md) |
-| Exact/decomposition/heuristic/learning-assisted method exposition | [Solution method](references/en/solution-method.md) |
+| Optional coordinated section planning for problem/model and solution-method chapters | [Coordinated problem-method planning](references/en/problem-method-joint-writing.md) |
+| Method architecture, exact/decomposition/heuristic/learning-assisted exposition, or reconstruction from code | [Solution method](references/en/solution-method.md) |
 | Experimental design, comparison, statistics, ablation, case, or sensitivity | [Computational study](references/en/computational-study.md) |
 | Evidence-driven figure/table selection, captions, and discussion | [Figures and tables](references/en/figures-and-tables.md) |
 | Abstract drafting or audit | [Abstract](references/en/abstract.md) |
@@ -58,6 +65,10 @@ Use the English reference by default. For Chinese manuscript output or Chinese-f
 Available reusable artifacts:
 
 - [Gap-contribution-evidence ledger](templates/contribution-ledger.md)
+- [Chapter 3–4 scheduling section template](templates/chapter3-4-section-template.md)
+- [Chapter 5 computational-experiments template](templates/chapter5-computational-experiments-template.md)
+- [Method-section architecture checklist](templates/chapter4-architecture-checklist.md)
+- [Method component ledger](templates/chapter4-component-ledger.md)
 - [Literature matrix](templates/literature-matrix.md)
 - [Figure/table plan](templates/figure-table-plan.md)
 - [Audit report](templates/audit-report.md)
@@ -102,8 +113,8 @@ If verification is unavailable, weaken the claim, retain a clearly marked citati
 
 ## 7. Deliver by mode
 
-- **Architecture:** state the selected paper route and why, then provide the argument/section/paragraph map, contribution-evidence mapping, and unresolved decisions.
-- **Drafting:** provide coherent manuscript-ready prose from supported facts; keep assumptions or missing evidence outside the prose.
+- **Architecture:** state the selected paper route and why, then provide the section map, what each section must explain, required formulas/algorithms/visuals, contribution-evidence mapping, and unresolved decisions. When experiments are in scope, attach each experiment section to a research question, protocol, comparison, metric, and evidence artifact. Use paragraph-level expansion only when requested or needed to resolve a local ambiguity.
+- **Drafting:** provide coherent manuscript-ready prose from supported facts in the requested or source-native format; keep assumptions or missing evidence outside the prose.
 - **Revision/direct edit:** make only the requested changes, then summarize affected files or sections, validation performed, and unresolved risks.
 - **Polishing/translation:** return the revised text in the requested format; explain changes only when useful or requested. Flag ambiguities instead of silently guessing.
 - **Audit:** lead with prioritized findings, each with location, severity, evidence, consequence, and concrete correction. Separate observed defects from optional improvements.
@@ -113,6 +124,8 @@ If verification is unavailable, weaken the claim, retain a clearly marked citati
 
 - Local prose: terminology, notation, cross-references, factual support, and claim strength.
 - One section: local logic plus consistency with the problem, method, evidence, and contribution it serves.
+- Problem/model and method chapters planned together: lightly cross-check shared symbols, representation, objective, feasibility, and experiment handoff without turning coordination into an extra deliverable.
+- Computational-study chapter: cross-check data roles, calibration/test separation, budget fairness, metric definitions, analysis units, source-result traceability, and whether every comparative or causal claim has the required design.
 - Full manuscript: argument trace, model-method consistency, evidence coverage, citation integrity, numerical consistency, and publication boundaries.
 - LaTeX project: compile when feasible; inspect undefined references/citations, duplicate labels, missing files, stale generated results, and layout warnings relevant to the edit.
 
