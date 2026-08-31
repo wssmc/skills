@@ -1,8 +1,8 @@
 {
   "name": "paper-workflow-or",
-  "version": "2026.08.31.7",
+  "version": "2026.08.31.8",
   "updated_at": "2026-08-31T00:00:00+08:00",
-  "description": "Draft, revise, translate, or audit method-driven operations-research manuscripts with explicit problem-model-method-evidence traceability, including fixed-title scheduling Chapters 3–5 planning and method reconstruction from code.",
+  "description": "Draft, revise, translate, or audit method-driven operations-research manuscripts with explicit problem-model-method-evidence traceability, including fixed-title scheduling Chapters 3–5 planning, method reconstruction from code, and evidence-bound defensive-writing audits.",
   "languages": [
     "en",
     "zh-CN"

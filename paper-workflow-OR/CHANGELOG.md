@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026.08.31.8
+
+- Added a bilingual defensive-writing audit reference for evidence-bound OR manuscript drafting, polishing, and auditing.
+- Routed reviewer-facing, disclaimer-heavy, result-defensive, and contribution-by-relabeling checks through the existing audit and polishing modes.
+- Added a lightweight defensive-writing validation pass without making the audit a default full-paper requirement.
+
 ## 2026.08.31.7
 
 - Added a fixed-English-title Chapter 5 branch for scheduling heuristic and metaheuristic papers.

@@ -24,6 +24,7 @@ Both `references/en/` and `references/zh/` contain:
 10. `latex-project-editing.md`
 11. `polishing-and-translation.md`
 12. `abstract.md`
+13. `defensive-writing-audit.md`
 
 ## Templates
 
