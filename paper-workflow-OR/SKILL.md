@@ -1,139 +1,300 @@
 ---
 name: paper-workflow-or
-description: Draft, revise, or audit method-driven operations-research manuscripts and LaTeX projects while keeping the problem-model-method-evidence chain consistent. Use for OR paper architecture, formulation and algorithm exposition, computational-study reporting, evidence-grounded literature synthesis, bilingual academic polishing, defensive-writing audits, or manuscript integrity checks; do not use for generic prose without an optimization or decision-model core.
-metadata:
-  version: "2026.08.31.8"
+description: "Use this skill to plan, draft, revise, translate, audit, peer-review, and prepare submission materials for scheduling-oriented operations-research manuscripts centered on problem formulation, heuristic/metaheuristic solution methods, and computational experiments. It enforces a fixed manuscript structure, evidence fidelity, code-to-method mapping, pseudocode conversion, figure/table narrative, multi-reviewer workflows, revision-response analysis, concise naming, and terminology consistency."
 ---
 
-# Paper workflow for operations research
+# Paper Workflow for Scheduling-Oriented Operations Research
 
-Support the requested manuscript task without expanding its scope. Discussion follows the user's language; manuscript-ready text follows the requested language and otherwise defaults to English. The target journal, article type, and supplied template take precedence over this skill's structural defaults.
-
-## 1. Route the request before acting
-
-Identify the primary mode and requested deliverable:
-
-- **Architecture:** argument map, section structure, paragraph plan, contribution/evidence plan, or figure/table plan.
-- **Drafting:** manuscript-ready prose based on supplied, verified, or directly derivable material.
-- **Revision:** restructure content or directly edit an existing manuscript/LaTeX project.
-- **Polishing/translation:** improve language while preserving mathematics, terminology, cross-references, and claim strength.
-- **Audit:** inspect scientific argument, model, method, evidence, citations, figures/tables, or LaTeX integrity. An audit is read-only unless the user also asks for edits.
-- **Literature/evidence work:** search, screen, synthesize, build a matrix, verify novelty/theory/baselines, or map claims to sources.
-
-Do not turn a sentence-level edit into a paper redesign or a diagnosis into an unsolicited rewrite.
-
-When a request explicitly concerns defensive, reviewer-facing, disclaimer-heavy, overly self-protective, or over-explanatory academic prose, activate the defensive-writing branch of **Audit** or **Polishing/translation**. This branch audits rhetorical posture and evidence boundaries; it does not replace the scientific, mathematical, or empirical audit and should not be run as a full audit unless requested or materially needed.
-
-## 2. Establish readiness with the minimum necessary intake
-
-Inspect supplied files and context before asking questions. Determine only what the requested deliverable requires. Typical decision variables are the target outlet/template, problem and objective, formulation status, method status, evidence status, output language, and edit scope.
-
-- Proceed when a bounded assumption or an explicitly labelled planning gap is sufficient.
-- Ask one concise grouped question only when missing information would materially change the requested manuscript-ready text, mathematical meaning, claims, or required format.
-- For planning work, mark unknown work as `planned`, `missing`, or `decision required`; do not present it as completed.
-- For polishing, use the source text as the semantic authority and ask only about genuine technical ambiguity.
-- For direct edits, identify the exact project scope, main file, template, included files, bibliography, result sources, and feasible validation command.
-
-For method-section drafting or revision from source code, establish the source roles before outlining: the problem/model section is authoritative for problem definitions and existing equation labels; the abstract or contribution statement is authoritative for the claimed novelty hierarchy; code and pseudocode are evidence of mechanics. Inspect all available sources in those roles. Classify each relevant item as a prior-chapter definition, method mechanism, experimental setting, or code-only implementation detail. Do not infer novelty from code complexity, function names, or the mere presence of a mechanism. If the source is a LaTeX project or the requested deliverable is LaTeX, load both the solution-method and LaTeX-editing references and work in native `.tex`.
-
-When the problem/model and solution-method chapters are both in scope, the [optional coordinated chapter-planning workflow](references/en/problem-method-joint-writing.md) may reduce duplicate inspection and notation drift; it is not a prerequisite or mandatory writing order. For a planning request, default to a readable section-level blueprint rather than a paragraph inventory. For scheduling heuristic/metaheuristic papers, use the routed fixed-title branch: Chapter 3, `Problem Description and Mathematical Formulation`, contains `Problem Description` (setting, explicit assumptions, and one data-plus-Gantt illustrative example) and `Notation and Mathematical Formulation` (symbols, formulas, and formula-by-formula interpretation). Chapter 4, `Proposed Solution Method`, covers `Overall Framework`, `Solution Representation and Decoding`, `Initialization`, `Neighborhood Structures`, the named baseline search framework, the named method-specific mechanism(s), `Complete Algorithm`, and `Feasibility and Computational Complexity Analysis`. Expand to paragraphs only when requested. Keep any interface ledger internal unless the user requests it or a conflict must be shown. Do not append experiment-input questions to a Chapter 3/4 architecture answer. Do not output raw LaTeX unless the user explicitly requests LaTeX or direct source editing; create Word or PDF only when requested.
-
-When computational evaluation is in scope for a scheduling heuristic/metaheuristic, use the fixed-title Chapter 5 house branch, `Computational Experiments`: `Experimental Setup`, conditional `Parameter Calibration`, contribution-driven `Component Analysis`, `Comparison with Benchmark Algorithms`, conditional `Statistical Analysis`, `Search Behavior and Computational Efficiency`, conditional `Sensitivity and Robustness Analysis`, and `Discussion`. Put parameter/component evidence before the full-method comparison so the evaluated configuration is justified. Insert `Real-World Case Study` only for genuine case data. These titles assign experimental responsibilities; a supplied journal or manuscript structure still takes precedence, unsupported modules are omitted, and `State-of-the-Art` is used only when verified. For architecture work, mark unavailable experiment inputs as planned or missing without interrogating the user for every value; manuscript-ready result claims still require source results.
-
-Track factual readiness with these evidence states:
-
-`provided` · `verified externally` · `directly derivable` · `planned but not executed` · `missing` · `not permitted to infer`
-
-Only the first three states may be written as completed facts. Use the [intake and routing reference](references/en/intake-and-routing.md) when the request spans multiple sections or its route is unclear. Use the [intake worksheet](templates/intake-questionnaire.md) internally; never force the user to fill every field.
-
-## 3. Load only the references needed for the task
-
-Use the English reference by default. For Chinese manuscript output or Chinese-first planning, use the matching file under `references/zh/`. Do not load both language versions unless translating, comparing, or synchronizing them.
-
-| Need | Reference |
-|---|---|
-| Whole-paper argument and section architecture | [Manuscript architecture](references/en/manuscript-architecture.md) |
-| Introduction, related work, or literature matrix | [Introduction and related work](references/en/introduction-and-related-work.md) |
-| Problem definition, formulation, notation, or complexity claim | [Problem, model, and complexity](references/en/problem-model-and-complexity.md) |
-| Optional coordinated section planning for problem/model and solution-method chapters | [Coordinated problem-method planning](references/en/problem-method-joint-writing.md) |
-| Method architecture, exact/decomposition/heuristic/learning-assisted exposition, or reconstruction from code | [Solution method](references/en/solution-method.md) |
-| Experimental design, comparison, statistics, ablation, case, or sensitivity | [Computational study](references/en/computational-study.md) |
-| Evidence-driven figure/table selection, captions, and discussion | [Figures and tables](references/en/figures-and-tables.md) |
-| Abstract drafting or audit | [Abstract](references/en/abstract.md) |
-| Academic English, Chinese-English translation, or local polishing | [Polishing and translation](references/en/polishing-and-translation.md) |
-| Full-paper, claim, and reproducibility audit | [Audit and integrity](references/en/audit-and-integrity.md) |
-| Defensive-writing detection, necessity classification, and evidence-preserving rewrite | [Defensive-writing audit](references/en/defensive-writing-audit.md) or [中文防御性写作审计](references/zh/defensive-writing-audit.md) |
-| Direct `.tex` project edits and build checks | [LaTeX project editing](references/en/latex-project-editing.md) |
-
-Available reusable artifacts:
-
-- [Gap-contribution-evidence ledger](templates/contribution-ledger.md)
-- [Chapter 3–4 scheduling section template](templates/chapter3-4-section-template.md)
-- [Chapter 5 computational-experiments template](templates/chapter5-computational-experiments-template.md)
-- [Method-section architecture checklist](templates/chapter4-architecture-checklist.md)
-- [Method component ledger](templates/chapter4-component-ledger.md)
-- [Literature matrix](templates/literature-matrix.md)
-- [Figure/table plan](templates/figure-table-plan.md)
-- [Audit report](templates/audit-report.md)
-
-Use a template only when it improves the requested deliverable; do not emit blank templates as the answer.
-
-## 4. Preserve the OR argument and its evidence trace
-
-For section- or paper-level work, maintain this chain:
+Use this skill for manuscripts built around the following research pattern:
 
 ```text
-decision or optimization problem
--> unresolved limitation or question
--> formulation / theory / solution method
--> computational or analytical evidence
--> supported implication and boundary
+scheduling problem
+→ mathematical formulation
+→ heuristic / metaheuristic solution method
+→ computational experiments
+→ conclusions
 ```
 
-Build a gap-contribution-evidence ledger when contributions or claims are in scope. The mapping need not be one-to-one, but every advertised contribution must have a visible evidence path, and every major experiment should answer a stated research question or reviewer-risk question.
+The default manuscript language is English. The conversation language may follow the user.
 
-Choose sections and evidence modules by paper type, claim, outlet, and available material. The familiar six-section model-algorithm-experiment structure is a fallback, not a mandate. Do not require a literature matrix, illustrative instance, notation table, framework figure, DOE, convergence plot, ablation, case study, or sensitivity analysis unless it materially supports the argument or reproducibility.
+## 1. Core task modes
 
-## 5. Apply non-negotiable integrity rules
+### Architecture
+Plan the manuscript structure, section responsibilities, figures/tables, and required research inputs.
 
-- Never invent an application setting, decision maker, equation, assumption, algorithm component, parameter, dataset, result, statistic, hardware detail, citation, theorem, benchmark, or real-case claim.
-- Preserve mathematical meaning, variable definitions, objective direction, units, numerical values, labels, citations, and algorithm semantics unless the user asks to change them and the change is justified.
-- Calibrate wording to evidence. Claims such as `first`, `novel`, `optimal`, `convergent`, `significantly better`, `real-world`, and `generalizable` require the corresponding search, proof, test, provenance, or scope evidence.
-- Prefer a direct evidence-bound structure: technical claim -> supporting evidence -> concise necessary boundary. Do not lead with an imagined reviewer objection, apology, or disclaimer when the underlying fact can be stated directly.
-- Preserve caveats that materially affect model validity, feasible-set interpretation, experimental scope, statistical interpretation, reproducibility, or the strength of a conclusion. Remove or consolidate caveats whose primary function is to pre-empt criticism, excuse a result, or repeatedly weaken a supported claim.
-- State the actual technical delta of a contribution directly. Do not create novelty through relabeling a standard operation or through repeated statements about what the paper does not claim.
-- Report material favorable, neutral, adverse, and inconsistent evidence where readers need it to interpret the method. Do not hide negative results or move all limitations to the conclusion.
-- Keep planned studies and placeholder values out of manuscript-ready prose. If evidence is missing, draft only the supported portion and list the unresolved evidence separately.
-- Synthesize literature by concepts, assumptions, formulations, methods, and evidence; do not produce an author-year inventory. Verify each technical attribution against the source.
-- State the solution-method class accurately. Describe encoding, decoding, initialization, learning, bounds, convergence, or approximation guarantees only when they actually exist.
-- Claim NP-hardness only through a valid special-case argument, polynomial reduction, or a verified result for a genuinely matching case. NP-completeness additionally requires a decision version and membership in NP.
-- For computational comparisons, disclose applicable data provenance, implementation environment, budgets, solver status, seeds/repetitions, metrics, and statistical design. Distinguish optimum, best known, incumbent, bound, gap, and time-limit status.
-- Use publication-ready section titles and captions. Planning placeholders such as `Component A`, `Method 1`, and `TBD` must not survive into submission-ready output.
-- Respect the journal template and preserve unrelated user work when editing `.tex` files.
+### Drafting
+Write new manuscript content from supplied or verified research material.
 
-## 6. Research and citation boundary
+### Revision
+Restructure or rewrite an existing draft while preserving verified scientific content.
 
-Search external literature when the user requests it or when the requested output depends on verifying novelty, prior theory, benchmark provenance, baseline credibility, or journal requirements. Prefer primary papers and official journal or dataset documentation. Verify bibliographic metadata and the exact technical claim; a search snippet or an inaccessible abstract is not enough for a detailed attribution. State the search and access boundary when coverage is incomplete.
+### Polishing
+Harmonize terminology, phrasing, transitions, and sentence quality without changing scientific meaning or claim strength.
 
-If verification is unavailable, weaken the claim, retain a clearly marked citation need in planning output, or report the blocker. Never manufacture a plausible reference.
+### Translation
+Translate scheduling/OR academic content while preserving equations, symbols, terminology, references, and scientific scope.
 
-## 7. Deliver by mode
+### Audit
+Check an existing manuscript for structural completeness, consistency, evidence fidelity, naming, reproducibility, and claim calibration.
 
-- **Architecture:** state the selected paper route and why, then provide the section map, what each section must explain, required formulas/algorithms/visuals, contribution-evidence mapping, and unresolved decisions. When experiments are in scope, attach each experiment section to a research question, protocol, comparison, metric, and evidence artifact. Use paragraph-level expansion only when requested or needed to resolve a local ambiguity.
-- **Drafting:** provide coherent manuscript-ready prose from supported facts in the requested or source-native format; keep assumptions or missing evidence outside the prose.
-- **Revision/direct edit:** make only the requested changes, then summarize affected files or sections, validation performed, and unresolved risks.
-- **Polishing/translation:** return the revised text in the requested format; explain changes only when useful or requested. Flag ambiguities instead of silently guessing. When defensive-writing concerns are in scope, put the technical fact first, preserve necessary scientific caveats, and remove reviewer-facing or self-protective framing without strengthening the claim.
-- **Audit:** lead with prioritized findings, each with location, severity, evidence, consequence, and concrete correction. Separate observed defects from optional improvements. For a defensive-writing audit, use the routed reference's detection, necessity classification, reviewer-perception, and rewrite fields; provide a paper-level score only when the available manuscript scope supports it or the user requests it.
-- **Literature/evidence:** report search scope and access limits, synthesize rather than list, and connect each source-backed gap to a manuscript decision.
+### Peer Review
+Evaluate a complete manuscript using multiple independent external-reviewer roles. Reviewer roles do not assume access to private source code.
 
-## 8. Validate in proportion to the task
+### Revision Analysis
+Analyze reviewer comments, identify the real concern, and design a revision plan before drafting the response letter.
 
-- Local prose: terminology, notation, cross-references, factual support, and claim strength.
-- Defensive-writing pass: check for reviewer-facing prebuttals, repeated non-claim disclaimers, caveat stacking, result excuses, defended omissions, promotional compensation, and evidence-boundary over-signaling; retain limitations that change scientific interpretation.
-- One section: local logic plus consistency with the problem, method, evidence, and contribution it serves.
-- Problem/model and method chapters planned together: lightly cross-check shared symbols, representation, objective, feasibility, and experiment handoff without turning coordination into an extra deliverable.
-- Computational-study chapter: cross-check data roles, calibration/test separation, budget fairness, metric definitions, analysis units, source-result traceability, and whether every comparative or causal claim has the required design.
-- Full manuscript: argument trace, model-method consistency, evidence coverage, citation integrity, numerical consistency, and publication boundaries.
-- LaTeX project: compile when feasible; inspect undefined references/citations, duplicate labels, missing files, stale generated results, and layout warnings relevant to the edit.
+### Revision Response
+Draft point-by-point responses after reviewer comments have been analyzed and the corresponding manuscript changes are known.
 
-Run a full audit only for a full-paper deliverable, a direct project revision whose scope warrants it, or an explicit audit request. Never claim compilation, literature verification, statistical support, or cross-file consistency that was not actually checked.
+### Literature / Evidence
+Verify original literature, closest-study positioning, literature matrices, and evidence status.
+
+### Submission Materials
+Prepare Highlights, Cover Letters, and future journal-specific submission materials.
+
+## 2. Progressive loading
+
+Load only the files relevant to the current task.
+
+### Manuscript structure
+Always use:
+
+```text
+structures/scheduling-metaheuristic.md
+```
+
+when planning or validating the paper topology.
+
+### Chapter-level writing
+Load the relevant file under:
+
+```text
+writing-specification/
+```
+
+These files explain difficult **How** problems. They do not redefine the structure.
+
+### Scientific elements
+Load relevant files under:
+
+```text
+element-guidance/
+```
+
+Use `element-guidance/naming.md` whenever creating or revising:
+- manuscript titles;
+- section/subsection titles;
+- figure captions;
+- table titles;
+- algorithm captions;
+- mechanism names and acronyms.
+
+### Evidence fidelity
+Apply relevant files under:
+
+```text
+truthfulness/
+```
+
+### Reusable forms
+Use:
+
+```text
+templates/
+```
+
+for fixed shells and working sheets.
+
+### Checks
+Use:
+
+```text
+checks/section-check.md
+```
+
+for a local chapter/section task, and:
+
+```text
+checks/full-manuscript-check.md
+```
+
+for complete-paper consistency.
+
+### Roles and task prompts
+
+```text
+roles/   = who is acting
+prompts/ = how the task is executed
+checks/  = what standards are used
+SKILL.md = when each module is loaded
+```
+
+These are peer-level modules. A role cannot override verified evidence or the manuscript structure.
+
+## 3. Mode-specific routing
+
+### Drafting
+Load:
+1. the Structure Specification;
+2. the relevant Writing Specification;
+3. relevant Element Guidance;
+4. relevant Truthfulness rules;
+5. a template only when a fixed shell is useful.
+
+### Revision
+Compare the draft against the Structure Specification and relevant Writing Specification. Preserve all verified research content unless the user explicitly requests a scientific change.
+
+### Polishing
+Load:
+
+```text
+prompts/full-manuscript-polishing.md
+element-guidance/prose.md
+element-guidance/naming.md
+templates/terminology-glossary.md      # when supplied/filled
+```
+
+Polishing must not independently strengthen or weaken scientific claims. Overclaiming and unnecessary defensiveness are handled by Audit.
+
+### Translation
+Load:
+
+```text
+roles/translator/academic-translator.md
+roles/translator/scheduling-terminology-zh-en.md
+prompts/translation.md
+templates/terminology-glossary.md      # if the user provides project-specific terms
+```
+
+Project-specific terminology supplied by the user has priority over the general glossary when the two conflict, unless that would contradict a formal definition.
+
+### Audit
+Use Section Check or Full-Manuscript Check plus relevant Truthfulness files. Full-manuscript audit also checks naming and claim calibration, including unnecessary defensiveness.
+
+### Peer Review
+Load:
+
+```text
+roles/reviewers/
+prompts/multi-reviewer-full-review.md
+checks/peer-review-criteria.md
+```
+
+Default reviewers:
+- Problem and Modeling Reviewer;
+- Method Reviewer;
+- Experimental Design Reviewer;
+- Language and Consistency Reviewer;
+- General Reviewer;
+- Editor-in-Chief / Senior OR Editor.
+
+Activate Theory Reviewer only when formal theory is a material contribution. Activate Reproducibility Reviewer only when a separate manuscript-level reproducibility assessment is useful.
+
+External reviewers normally see only the manuscript, references, appendices, and supplied review materials. They must not pretend to inspect private source code.
+
+### Revision Analysis
+Load:
+
+```text
+roles/revision/revision-expert.md
+prompts/revision-analysis.md
+```
+
+### Revision Response
+Prefer this sequence:
+
+```text
+Revision Analysis
+→ manuscript changes / author decisions
+→ prompts/revision-response.md
+```
+
+Never claim that an experiment, manuscript change, or verification has already been completed unless evidence confirms it.
+
+### Submission Materials
+
+Highlights:
+
+```text
+prompts/highlights.md
+templates/highlights-template.md
+```
+
+Cover Letter:
+
+```text
+prompts/cover-letter.md
+templates/cover-letter-template.md
+```
+
+Apply a journal profile when one exists under `journal-profiles/`.
+
+## 4. Recommended peer-review workflow
+
+```text
+Problem and Modeling Reviewer
+Method Reviewer
+Experimental Design Reviewer
+Language and Consistency Reviewer
+General Reviewer
+[optional Theory / Reproducibility Reviewer]
+↓
+Editor-in-Chief synthesis
+↓
+Revision Expert
+↓
+Prioritized revision plan
+↓
+Revision Response
+```
+
+Each reviewer first provides an overall evaluation, then Major and Minor Comments.
+
+## 5. Rule precedence
+
+```text
+verified evidence and truthfulness
+> user's explicit instructions and current journal requirements
+> structure specification
+> writing specification
+> element guidance
+> templates
+> role/prompt preferences
+```
+
+## 6. Minimal intake
+
+Inspect supplied materials before asking questions. Ask only for information that blocks the current task.
+
+When the user supplies a terminology glossary, it governs drafting, polishing, translation, and language-consistency review unless it conflicts with a formal problem/model definition.
+
+## 7. Global non-negotiable rules
+
+- Do not invent application settings, formulations, algorithms, parameters, experiments, results, statistical significance, references, code behavior, or industrial claims.
+- Treat user-supplied manuscripts, source code, experimental data, reviewer comments, and unpublished research as confidential research material.
+- Preserve problem terminology, objective, symbols, numerical values, citations, and claim boundaries unless scientific change is explicitly authorized.
+- Source code is authoritative for implementation mechanics, not novelty.
+- Primary literature is authoritative for technical attribution.
+- Raw results, logs, and aggregation scripts are authoritative for numerical claims.
+- Do not create a competing chapter topology. The Structure Specification defines where content belongs.
+- Truthfulness does not require excessive hedging. When evidence is verified, state the supported conclusion directly.
+- Do not run a full-manuscript check after every local task.
+- Do not create a contribution ledger unless explicitly requested.
+- Names and captions identify objects; they must not contain the analysis that belongs in the manuscript body.
+
+## 8. Current scope boundary
+
+The current Structure Specification is intentionally limited to:
+
+```text
+scheduling problem
++ mathematical formulation
++ heuristic/metaheuristic
++ computational experiments
+```
+
+Exact/decomposition-centered and learning-centered scheduling papers require different future Structure Specifications and are outside the current core scope.
+
+## 9. Journal profiles
+
+`journal-profiles/` is currently a placeholder. If a profile does not exist, use the target journal's current author guidelines and do not infer submission requirements from another journal.
