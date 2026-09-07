@@ -1,301 +1,102 @@
 # 模块：项目结构规范
 
-## 导航
+## 0. 语言边界（必须先读）
 
-- §1 顶层结构
-- §2 数据层与种子
-- §3 源代码层
-- §4 configs 与约定
-- §5 outputs
-- §6 docs
-- §7 LaTeX
-- §8 AGENTS.md
+生成项目采用“双语言、单方向依赖”架构：
+
+| 内容 | 唯一实现语言 | 规则 |
+|---|---|---|
+| 领域模型、编码、解码、可行性检查、目标函数、EvalCache、SA/MA/IG/GA/TS、MIP 适配器 | C++17 | 编译为 `hfsp_core`；算法状态和求解结果只能在 C++ 中产生 |
+| 算例生成、结果汇总、统计、绘图、报告 | Python 3 | 只能读写约定的 txt/JSON/CSV 产物，不实现第二套求解器或解码器 |
+| 编排 | CMake + shell/轻量 Python CLI | 只传递参数，不复制算法逻辑 |
+
+Python 不能为了“方便分析”重新实现 C++ 的 decoder、feasibility checker、objective 或算法。C++ 求解器必须输出稳定的 `result.json`、`schedule.csv`、`trace.csv` 与 `best_seq.json`，Python 分析工具只消费这些文件。
 
 ## 1. 顶层目录结构
 
 ```text
 project_name/
-├── configs/                    # 自然语言项目规范与要求
-├── data/                       # 数据层：生成、读取、算例
-│   ├── generate.py
-│   ├── loader.py
-│   ├── demo/
-│   ├── small/
-│   ├── large/
-│   └── batch_seeds/
-├── docs/                       # 文档（前缀加日期：YYYY-M-Dxxx.md）
-├── src/
-│   ├── core/                   # 领域模型
-│   ├── math_models/            # MIP / CP 建模（Gurobi）
-│   ├── metaheuristics/         # 元启发式算法
-│   │   ├── base_solver/
-│   │   ├── initial/
-│   │   ├── encoding/
-│   │   ├── decoding/
-│   │   ├── neighborhood/
-│   │   ├── baselines/
-│   │   ├── sa/
-│   │   ├── ma/
-│   │   ├── ig/
-│   │   ├── ga/
-│   │   └── ts/
-│   └── visualization/
+├── CMakeLists.txt
+├── cmake/                         # 可选：Gurobi C++ API 检测和平台配置
+├── cpp/
+│   ├── include/hfsp/
+│   │   ├── core/domain.hpp        # Instance / Operation / Schedule / Result
+│   │   ├── io/instance_loader.hpp
+│   │   ├── encoding/              # 编码契约
+│   │   ├── decoding/              # decoder / checker / metrics / EvalCache
+│   │   ├── metaheuristics/        # C++17 solver、SA/MA/IG/GA/TS
+│   │   ├── math_models/            # Gurobi C++ MIP 接口
+│   │   └── registry.hpp            # 唯一算法注册入口
+│   ├── src/                       # 与 include 对应的实现
+│   ├── apps/hfsp_run.cpp          # 求解 CLI
+│   └── tests/smoke_test.cpp       # C++ 冒烟测试
+├── python/
+│   ├── tools/generate_instances.py # 只负责 txt 算例生成/索引
+│   ├── analysis/analyze_results.py # 结果汇总、统计入口
+│   ├── statistics/                 # Friedman/Wilcoxon 等
+│   └── visualization/              # 甘特图、收敛曲线、对比图
 ├── scripts/
-│   ├── run_baselines.py
-│   ├── audit_project.py
-│   ├── sh_single_instance.sh
-│   ├── sh_bench_instance.sh
-│   ├── sh_batch_instances_algorithms.sh
-│   ├── sh_analysis.sh
-│   ├── mip/
-│   ├── doe/
-│   ├── ablation/
-│   └── statistics/
-├── tests/
-├── outputs/
+│   ├── build.sh / build.ps1
+│   ├── run_single.sh
+│   ├── run_batch.sh
+│   ├── analyze_results.py          # Python 分析 CLI 薄包装
+│   └── audit_project.py            # 只审计，不实现算法
+├── data/                           # txt 算例、index.json、batch_seeds
+├── configs/                         # 自然语言规范；仅 fingerprint 用 JSON
+├── docs/                            # 决策、假设、算法和实验记录
+├── outputs/                         # 唯一实验输出根目录
 ├── latex/
-├── requirements.txt
+├── requirements.txt                # 仅 Python 辅助依赖
 ├── AGENTS.md
 ├── IMPLEMENTATION_STATUS.md
 ├── PROJECT_AUDIT.md
 └── README.md
 ```
 
----
+`src/`、`gurobipy`、Python 元启发式目录不是默认生成路径。仓库内的旧 Python 模板如需参考，必须明确标为非默认参考，不能被物化到新项目。
 
-## 2. 数据层（`data/`）
+## 2. 数据层
 
-### 2.1 目录结构
+- 主体数据仍使用 txt；`index.json` 只串联文件、规模、种子和元信息。
+- `python/tools/generate_instances.py --master-seed N` 生成 `instance_seed`；算法运行 seed 单独保存于 `data/batch_seeds/`。
+- C++ `instance_loader` 读取规范化 txt，并把数据转成唯一的 `hfsp::Instance`。Python 不得创建第二个运行时 `Instance`。
+- demo 必须包含可由 C++ runner 直接加载的小算例；生成后先运行 C++ smoke。
 
-```text
-data/
-├── generate.py             # 数据生成入口
-├── loader.py               # 数据读取（load_instance）
-├── demo/                   # 展示用算例
-│   └── demo_01_n_m/        # 命名: demo_0x_n_m
-│       ├── *.txt
-│       ├── index.json
-│       └── *.png / *.pdf   # 可视化图（demo 专属）
-├── small/                  # 小规模基准算例
-│   └── inst_xxx_n_m_yy/
-├── large/                  # 大规模基准算例
-└── batch_seeds/            # 统一种子文件
-    ├── small/
-    │   ├── seed_table.json
-    │   └── round{r}.json
-    └── large/
-        ├── seed_table.json
-        └── round{r}.json
-```
+## 3. C++ 核心层
 
-### 2.2 数据生成 — `data/generate.py`
+### 3.1 领域模型
 
-- 定义 demo / small / large 三种规模的参数组合
-- 算例命名：demo 用 `demo_0x_n_m`，正式算例用 `inst_xxx_n_m_yy`
-- `data/generate.py --master-seed N` 使用主种子派生每个算例的独立 `instance_seed`
-- `index.json` 记录 `instance_seed`、文件索引和问题元信息，以便单个算例独立再生成
-- 算例生成 seed 与算法运行 seed 分离；后者只存放在 `data/batch_seeds/`
+`cpp/include/hfsp/core/domain.hpp` 至少定义 `Instance`、`Operation`、`Schedule`、`Result` 和 `TracePoint`，并在边界处校验维度、正加工时间和机器数量。
 
-### 2.3 数据读取 — `data/loader.py`
+### 3.2 解码、可行性与缓存
 
-统一接口：`load_instance(dir) -> Instance`
+`cpp/include/hfsp/decoding/` 是唯一评估入口。decoder 必须维护作业前序、阶段资源和机器不重叠；checker 与 decoder 使用同一套资源键 `(stage_id, machine_id)`。每个“算例 × 算法 × 轮次”独立创建 `EvalCache(500)`，FIFO 淘汰，键包含算例身份、作业序列和机器分配。
 
-### 2.4 demo 算例特殊性
+### 3.3 元启发式与 MIP
 
-1. 额外生成可视化
-2. 运行时输出甘特图 + 排程 JSON + 详细日志
-3. 不参与批量统计
-4. 规模小，便于人工验证
+- `cpp/include/hfsp/metaheuristics/` 和 `cpp/src/metaheuristics/` 实现 SA、MA、IG、GA、TS 及基线；`Solver` 返回统一的 `SolveResult`。
+- `cpp/include/hfsp/registry.hpp` / `cpp/src/registry.cpp` 是唯一算法注册入口；只有实际通过 C++ smoke 的算法才能标为 runnable。
+- MIP 使用 Gurobi C++ API。若本机未配置 `GUROBI_HOME`，MIP 模块必须标为 `not_verified` 或 `placeholder`，不能用 Python `gurobipy` 冒充核心实现。
 
-### 2.5 统一种子管理
+## 4. Python 辅助层
 
-- `data/batch_seeds/{scale}/seed_table.json` — 种子主表
-- `data/batch_seeds/{scale}/round{r}.json` — 每轮种子映射
-- 种子源：`random.Random(20260616 + sum(ord(c) for c in scale))`
-- 单次算法运行默认 seed 为 `0`；正式实验必须从轮次种子表读取
+Python 只做四类工作：txt 算例与索引生成、结果 JSON/CSV 汇总、统计检验、图表/报告。辅助脚本必须拒绝路径穿越，失败返回非零状态，并把产物写入 `outputs/`。不得在 Python 中再次计算 makespan 或修复不可行排程；如发现核心结果错误，应回到 C++ 根因修复。
 
----
+## 5. configs、outputs、docs 和 LaTeX
 
-## 3. 源代码层（`src/`）
+- `configs/` 存放自然语言项目规范；`problem_fingerprint.json` 是唯一默认 JSON 配置。
+- `outputs/` 是唯一实验输出根目录，禁止写项目外路径。
+- `docs/` 记录问题澄清、建模假设、C++ 算法设计、实验计划和根因修复。
+- `latex/` 只引用已生成并审计的结果，不把 Python 图表脚本当作求解实现。
 
-### 3.1 `src/core/` — 领域模型
+## 6. AGENTS.md：项目级系统提示词
 
-```python
-@dataclass
-class Instance:          # 算例数据
-@dataclass
-class Schedule:          # 排程结果
-@dataclass
-class Result:            # 完整结果
-@dataclass
-class Operation:         # 单个操作
-@dataclass
-class PrecedenceArc:     # 前序弧
-```
+每个生成项目根目录必须有 `AGENTS.md`。它不是普通 README，也不是可选的“记忆笔记”，而是该项目范围内优先级最高的本地工程指令：
 
-### 3.2 `src/math_models/` — MIP / CP 建模（Gurobi）
+1. 修改或生成任何代码前，先读取根目录及当前子目录适用的 `AGENTS.md`。
+2. 它明确 C++/Python 语言边界、CMake 构建命令、算法注册入口、输出目录、禁止路径、状态语义和质量红线。
+3. 当本文件与通用默认约定冲突时，以项目 `AGENTS.md` 为准；但不能违反上游安全约束。
+4. 每次用户作出新的实现约定，立即同步 `AGENTS.md`、`configs/conventions.md` 或 `docs/`，避免依赖对话记忆。
+5. 架构变化后必须同步更新 `AGENTS.md`、`README.md`、`IMPLEMENTATION_STATUS.md` 和项目树。
 
-- **MIP**：Gurobi 实现，建模文件 `gurobi_model.py`
-- **下界计算**：`lower_bound.py`（快速解析下界 + Gurobi 时限内 best bound；不把整数模型早停误称为 LP 精确下界）
-- **结果校核**：MIP 求解后必须调用 `check_feasibility(instance, schedule)`
-- 默认时限 **3600 秒**（正式实验），60s（小规模测试）
-- 输出 `result.json` + `schedule.csv` + `gantt.png`
-
-### 3.3 `src/metaheuristics/`
-
-```text
-src/metaheuristics/
-├── base_solver/           # basic 算法统一生命周期、评估、日志和结果记录
-├── initial/              # 初始化方法（严格区分单解 / 种群）
-│   ├── single/           # 单解生成器（SA/IG/TS 用）：SPT/LPT/NEH/random
-│   └── population/       # 种群生成器（GA/MA 用）：random_pop/neh_pop
-├── encoding/             # 编码方案（多套）
-├── decoding/             # 解码、缓存、指标、可行性与结果复现
-│   ├── list_decoder.py
-│   ├── eval_cache.py     # FIFO 队列，限制大小 500
-│   ├── feasibility_checker.py
-│   ├── metrics.py
-│   └── result_reproducer.py
-├── neighborhood/         # 邻域算子（详见算法模块）
-├── baselines/            # 论文正式对比算法
-├── sa/                   # 模拟退火
-├── ma/                   # 模因算法
-├── ig/                   # 迭代贪心
-├── ga/                   # 遗传算法
-├── ts/                   # 禁忌搜索
-└── registry.py           # 算法注册表
-```
-
-> 评估逻辑（feasibility_checker, metrics, eval_cache, result_reproducer）放在 `decoding/` 下，与解码器紧密耦合。
-
-### 3.4 `src/visualization/`
-
-| 文件 | 职责 |
-|------|------|
-| `plot_utils.py` | 共享样式常量（配色、线型、字体、导出参数），所有可视化文件共用 |
-| `gantt.py` | 发表级甘特图（按 Machine / Stage 两种布局），颜色按 `plot_utils` 分配 |
-| `convergence.py` | 发表级收敛曲线（支持 12+ 曲线 + 置信区间） |
-| `comparison.py` | 对比图（ARPD 柱状图、多算例分组柱状图、消融实验汇总图） |
-
-### 3.5 可选扩展目录
-
-只在用户提供实现或需求明确时创建额外扩展目录。不得为追求目录完整而生成空壳；共享绘图样式统一放在 `src/visualization/plot_utils.py`，其他工具按领域归入现有模块。
-
----
-
-## 4. `configs/` — 项目规范与要求
-
-自然语言文档（不放 JSON，`problem_fingerprint.json` 除外）：
-
-| 文件 | 内容 |
-|------|------|
-| `problem_statement.md` | 问题描述 |
-| `constraints_spec.md` | 约束规范 |
-| `algorithm_requirements.md` | 算法要求 |
-| `experiment_plan.md` | 实验计划 |
-| `conventions.md` | **用户交互过程的约定记录**（求解器偏好、输出格式、命名调整等） |
-| `problem_fingerprint.json` | 问题特征（根据问题描述生成） |
-
-> `conventions.md` 是**关键文件**：使用 Skill 生成项目过程中，用户提出的所有额外约定都必须写入此文件，避免对话上下文丢失后无法追溯。详见 `modules/quality.md` §3。
-
----
-
-## 5. 输出目录规范（`outputs/`）
-
-```
-outputs/
-├── single/{instance}/
-├── bench/{instance}/
-├── batch/{batch_name}/
-│   ├── round{r}/{scale}/
-│   └── round{r}/{scale}/{instance}/{algo}.txt  # 保存 best_seq
-├── mip/
-├── doe/{algo}/
-├── ablation/{algo}/{ablation_name}/
-│   ├── raw/{instance}_{seed}_{repeat}/
-│   ├── comparison.xlsx
-│   └── arpd.png
-└── statistics/{experiment_name}/
-```
-
----
-
-## 6. 文档规范（`docs/`）
-
-- 文件名前缀加日期：`YYYY-M-D主题.md`
-- 最低文档集合：problem_description, modeling_assumptions, instance_design, algorithm_design, experiment_plan, project_audit
-
----
-
-## 7. 论文写作（`latex/`）
-
-```
-latex/
-├── paper/
-│   ├── main.tex                          # 正式论文入口
-│   ├── sections/
-│   │   ├── 01_introduction.tex           # 引言
-│   │   ├── 02_related_work.tex           # 相关工作
-│   │   ├── 03_problem_formulation.tex    # 问题建模
-│   │   ├── 04_solution_approaches.tex    # 求解方法
-│   │   ├── 05_computational_experiments.tex # 实验分析
-│   │   └── 06_conclusion.tex             # 结论
-│   ├── figures/                          # 甘特图、网络图、算法框架图
-│   ├── tables/                           # 实验结果表、参数表
-│   ├── algorithms/                       # 伪代码（GA, SA, IG, 本文算法等）
-│   ├── bib/
-│   │   └── references.bib                # 参考文献
-│   └── appendices/                       # MIP 模型、补充实验、参数表
-├── templates/
-│   └── els-cas-templates/                # 期刊模板原文件（不混入正文工程）
-└── README.md
-```
-
-### 7.1 各文件职责
-
-| 文件 | 内容 |
-|------|------|
-| `main.tex` | 论文入口，引用所有 sections |
-| `01_introduction.tex` | 工业背景、问题动机、研究贡献 |
-| `02_related_work.tex` | 文献综述，按主题组织 |
-| `03_problem_formulation.tex` | 数学符号、约束、目标函数 |
-| `04_solution_approaches.tex` | 算法设计（编码/解码/邻域/元启发式） |
-| `05_computational_experiments.tex` | 实验设置、结果表、消融分析、统计检验 |
-| `06_conclusion.tex` | 总结、未来工作 |
-
-### 7.2 写作 Skill 调用
-
-论文写作应调用项目中的写作 Skill（位于 `thirdPartSkills.md`）来生成初稿：
-
-| 章节 | 撰写方式 |
-|------|---------|
-| 引言 | 调用写作 Skill，基于问题描述和文献矩阵生成 |
-| 相关工作 | 调用写作 Skill，基于文献矩阵组织综述 |
-| 问题建模 | 调用写作 Skill，基于 `configs/` 文档生成 |
-
-### 7.3 文献矩阵要求
-
-使用 `literature-matrix-review-skill-v2.1`，生成**两类文献矩阵**：
-
-| 类型 | 说明 | 用途 |
-|------|------|------|
-| **广泛搜索矩阵** | 现有文献的广泛搜索，包含关联度等级 | 引言和相关工作综述 |
-| **紧密相关矩阵** | 与本问题紧密相关的文献 | 可直接放入论文中的**比较表格** |
-
----
-
-## 8. AGENTS.md
-
-每个项目根目录必须有 `AGENTS.md`，包含：
-
-| 章节 | 内容 |
-|------|------|
-| 项目目的 | 问题描述摘要 |
-| 问题类型 | 问题类型判定 |
-| 核心假设 | 默认假设列表 |
-| 脚本约定 | 核心脚本关键词映射表，使用规则 |
-| 算法注册表 | 注册入口 `registry.py`，注册步骤 |
-| 占位策略 | 占位模块规则 |
-| 禁止路径 | 旧版路径清单 |
-| 输出策略 | 输出隔离 + 审计 |
-| 维护规则 | 新增约定时同步更新 |
+这就是“系统提示词遗忘”问题的解决办法：把可执行规则写入项目内的 AGENTS 文件，并在生成、修改、审计三处设置读取门禁。

@@ -1,13 +1,21 @@
 ---
 name: mip-hfsp-project-generator-skill
-description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水车间）研究工程，包括可复现 txt 算例、统一领域模型、解码与可行性检查、SA/MA/IG/GA/TS、MIP、批量实验和论文产物。用于用户要求创建 HFSP 调度项目、补全 HFSP 算法实验框架、把问题分解与文献矩阵结果落地为代码，或审计现有 HFSP 工程时；FJSP、JSP、重入、机器相关工时及额外资源约束必须先增加显式问题适配层，不得直接套用基础 HFSP 模板。
+description: 生成、修复和验证以 C++17 为核心、Python 为辅助的 Gurobi 基础 HFSP（混合流水车间）研究工程：C++ 实现领域模型、解码、可行性检查、EvalCache、SA/MA/IG/GA/TS 与 MIP 适配器，Python 只负责算例生成、结果分析、统计和可视化。用于创建 HFSP 项目、补全算法实验框架、把上游问题分解与文献矩阵落地为代码或审计现有工程；FJSP、JSP、重入、机器相关工时及额外资源约束必须先增加显式适配层。
 ---
 
 # MIP / HFSP 项目生成器 Skill
 
 ## 1. Skill 定位
 
-本 Skill 用于根据用户提供的调度、排产、资源分配或组合优化问题描述，生成一套可运行、可验证、可扩展、面向论文的 Python 研究工程。
+本 Skill 用于根据用户提供的调度、排产、资源分配或组合优化问题描述，生成一套可运行、可验证、可扩展、面向论文的 C++17 核心 + Python 辅助研究工程。
+
+### 1.1 语言边界与项目规则
+
+- **C++ 是主体实现**：领域模型、编码/解码、可行性检查、目标函数、EvalCache、SA/MA/IG/GA/TS、注册表和 Gurobi MIP 适配器必须在 `cpp/` 中实现并由 CMake 构建。
+- **Python 是辅助实现**：只能放在 `python/tools/`、`python/analysis/`、`python/statistics/`、`python/visualization/`，用于算例生成、结果汇总、统计、绘图和报告；不得在 Python 中重复实现 solver、decoder、checker 或 objective。
+- **产物边界**：C++ 输出 `result.json`、`schedule.csv`、`trace.csv`、`best_seq.json`；Python 只读取这些产物并写入 `outputs/`。
+- **AGENTS.md 是项目级系统提示词**：生成、修改、审计前必须读取根目录及当前目录适用的 `AGENTS.md`。它记录语言边界、构建命令、注册入口、输出路径、状态语义和质量红线；架构变化后必须同步更新。
+- **旧 Python 核心模板不得默认物化**：仓库中已有的 Python 模板只能作为参考，不能改变上述边界。
 
 本 Skill 不应只输出单个脚本，而应输出结构化项目工程。
 
@@ -25,7 +33,7 @@ description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水
 
 当用户提出以下任一需求时，应使用本 Skill：
 
-- 根据问题描述生成调度 / 排产 / 资源分配 Python 项目
+- 根据问题描述生成调度 / 排产 / 资源分配 C++/Python 项目
 - 需要 MIP 模型代码（Gurobi）
 - 需要 demo / small / large 算例生成
 - 需要编码、解码、元启发式算法
@@ -41,10 +49,10 @@ description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水
 ## 3. 总体执行原则
 
 1. **可复现**：确定性种子、确定性输出、结果可从 best_seq 复现并校验
-2. **可扩展**：算法注册制，新增算法只需注册到 `registry.py`
-3. **分层清晰**：数据层、求解层、评估层、输出层、分析层各自独立
+2. **可扩展**：算法注册制，新增 C++ 算法只需实现统一接口并注册到 `cpp/include/hfsp/registry.hpp` / `cpp/src/registry.cpp`
+3. **分层清晰**：C++ 数据/求解/评估层与 Python 输出分析层单向分离
 4. **面向论文**：实验设计围绕对比、消融、已验证参数网格和统计检验；不把未实现的正交设计、响应面或 CD 图写成现成功能
-5. **禁止随意生成脚本**：优先复用核心脚本（single / bench / batch / analysis）
+5. **禁止随意生成脚本**：优先复用 CMake、single / bench / batch / analysis 入口
 6. **加速评估**：所有元启发式算法**必须**使用各自独立的 `EvalCache`，上限 500，FIFO 弹出最旧条目。缓存键必须包含算例身份、作业序列和机器分配；评估时先查缓存，未命中再解码。禁止跨算法或跨算例共享缓存。此约定必须写入生成项目的 `docs/YYYY-M-D_algorithm_design.md`
 7. **改进必须消融**：每次算法组件改进都必须消融，撰写完整消融记录文档
 8. **输出隔离**：所有实验输出仅限项目内 `outputs/` 目录
@@ -52,12 +60,12 @@ description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水
 10. 代码优先，解释为辅
 11. demo 算例必须能够跑通
 12. 主体数据优先保存为 txt，json 只用于索引、配置或结构化结果
-13. **MIP 默认使用 Gurobi**（`gurobipy`）
+13. **MIP 默认使用 Gurobi C++ API**；Python `gurobipy` 不能冒充 C++ 核心
 14. 项目必须模块化
 15. 所有算法输出必须统一为 Schedule / Result 格式
 16. 所有结果必须经过 `check_feasibility` 和 metrics evaluation
 17. **占位允许，但必须透明**：占位目录必须有 `PLACEHOLDER.md`，占位代码必须 raise NotImplementedError
-18. **所有可运行算法必须默认注册**到 `registry.py`
+18. **所有可运行算法必须默认注册**到 C++ registry；Python 不得建立第二个注册表
 19. **结构完整不等于功能完整，必须标记实现状态**
 20. **生成项目后必须自检**：生成 `PROJECT_AUDIT.md` 和 `IMPLEMENTATION_STATUS.md`
 21. **最终交付必须给出测试、审计和实现状态摘要**
@@ -125,23 +133,18 @@ description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水
    - 编码方式（如已有）
    - 参数策略
 
-2. **提取初始化方法到 `src/metaheuristics/initial/`**，**严格区分单解 / 种群**：
-   - **单解生成器** → `initial/single/{方法名}.py`，供 SA/IG/TS 使用，返回 `list[int]`
-   - **种群生成器** → `initial/population/{方法名}_pop.py`，供 GA/MA 使用，返回 `list[list[int]]`
+2. **提取初始化方法到 `cpp/include/hfsp/metaheuristics/initial/` 与 `cpp/src/metaheuristics/initial/`**，**严格区分单解 / 种群**：
+   - **单解生成器** → `initial/single/{方法名}.hpp/.cpp`，供 SA/IG/TS 使用，返回 C++ permutation 类型
+   - **种群生成器** → `initial/population/{方法名}_pop.hpp/.cpp`，供 GA/MA 使用，返回 `std::vector<Permutation>`
    - **严禁混用**：单解生成器直接用于种群会导致所有个体相同，种群丧失多样性
-   - 函数签名：
-     - 单解：`init_xxx(instance, **kwargs) -> list[int]`
-     - 种群：`generate_xxx_population(instance, pop_size, seed=None, **kwargs) -> list[list[int]]`
-   - **原算法主体不重复实现初始化逻辑，而是 import 并调用**
+   - 函数签名由 C++ `Instance`、`SolveConfig` 和 `std::mt19937_64&` 组成；不得隐式使用全局随机状态。
+   - **原算法主体不重复实现初始化逻辑，而是调用共享 C++ 组件**
 
 3. **原算法主文件放在对应目录**
-   - 如 `src/metaheuristics/ig/ig_author2020.py`
-   - 顶部 import 提取出的初始化：
-     ```python
-     from metaheuristics.initial.single.neh_author2020 import init_neh_author2020
-     ```
+   - 如 `cpp/src/metaheuristics/ig/ig_author2020.cpp`
+   - 通过 C++ 头文件调用提取出的初始化组件，不在算法文件中复制实现。
 
-4. **注册到 `registry.py`**（详见 `modules/algorithms.md` §1.4）
+4. **注册到 C++ `registry.hpp/.cpp`**（详见 `modules/algorithms.md` §1）
 
 **目的**：
 - 初始化方法**跨算法复用**（不同元启发式可共用同一初始化）
@@ -150,7 +153,7 @@ description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水
 
 ### 4.5 批量对比时的一致性要求
 
-> 使用 `sh_batch_instances_algorithms.sh` 进行多算法批量对比时，默认要求同类算法使用相同的初始化方法、相同的时间预算和相同的缓存策略。每次算法运行必须创建独立缓存，避免运行顺序污染结果。
+> 使用批量脚本进行多算法对比时，默认要求同类算法使用相同的初始化方法、相同的时间预算和相同的缓存策略。每次 C++ 算法运行必须创建独立缓存，避免运行顺序污染结果。
 
 **脚本必须支持初始化控制开关**：
 
@@ -243,29 +246,29 @@ description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水
 1. 问题描述结构化分析（§4）
 2. `configs/` 项目规范文档 + `problem_fingerprint.json`
 3. 项目结构（顶层目录树）
-4. `data/generate.py` + `data/loader.py`
+4. `python/tools/generate_instances.py` + C++ `cpp/src/io/instance_loader.cpp`
 5. demo 算例数据
-6. `src/core/domain.py` 领域模型
-7. `src/metaheuristics/encoding/` 编码方案
-8. `src/metaheuristics/decoding/` 解码 + feasibility_checker + metrics + eval_cache + result_reproducer
-8.5. `tests/smoke_test.py` 冒烟测试（生成后立即运行）
-9. `src/metaheuristics/initial/` 初始化方法
-10. `src/metaheuristics/neighborhood/` 邻域算子
+6. `cpp/include/hfsp/core/domain.hpp` 领域模型
+7. `cpp/include/hfsp/encoding/` 编码方案
+8. `cpp/include/hfsp/decoding/` 解码 + feasibility_checker + metrics + eval_cache + result_reproducer
+8.5. `cpp/tests/smoke_test.cpp` 冒烟测试（生成后立即运行）
+9. `cpp/include/hfsp/metaheuristics/initial/` 初始化方法
+10. `cpp/include/hfsp/metaheuristics/neighborhood/` 邻域算子
 11. 5 个 basic 算法（SA, MA, IG, GA, TS）——**每次运行使用独立的 EvalCache(max_size=500, FIFO)**
-12. `src/math_models/gurobi_model.py` + `lower_bound.py`
-13. `src/visualization/` 可视化
-14. `src/metaheuristics/registry.py` 算法注册表
-15. `scripts/run_baselines.py` + sh 脚本
-16. `scripts/mip/run_gurobi_mip.py`
-17. `scripts/ablation/quick_test_config.py`
-18. `tests/` 单元测试
+12. `cpp/include/hfsp/math_models/` Gurobi C++ MIP + lower bound
+13. `python/visualization/` 可视化
+14. `cpp/include/hfsp/registry.hpp` + `cpp/src/registry.cpp` 算法注册表
+15. `scripts/run_single.sh` + `scripts/run_batch.sh`
+16. C++ MIP app（使用 Gurobi C++ API）
+17. `python/statistics/` 与消融分析脚本
+18. `cpp/tests/` 单元测试
 19. `AGENTS.md`
 19.5. `docs/YYYY-M-D_algorithm_design.md`（**必须记录 EvalCache 强制约定**）
 19.6. `docs/root_cause_fix_log.md`（**严禁补丁，见 §8；生成时创建空模板供后续填写**）
 20. `IMPLEMENTATION_STATUS.md`
 21. `PROJECT_AUDIT.md`
 22. `README.md`
-23. 运行命令
+23. CMake、CTest 与 Python 分析运行命令
 24. 审计摘要
 
 ---
@@ -389,13 +392,13 @@ description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水
 ## 9. 不应做的事
 
 1. 不要把所有代码写在一个文件中
-2. 不要使用 CPLEX/docplex，默认使用 Gurobi
+2. 不要使用 CPLEX/docplex，默认使用 Gurobi C++ API；Python `gurobipy` 不能替代核心 MIP
 3. 不要让 MIP、decoder、baseline 各自读取不同格式的数据
 4. 不要只输出数学模型而不输出代码
 5. 不要只输出代码而没有 demo 算例
 6. 不要在 `configs/` 放 JSON 配置文件（改为自然语言文档，`problem_fingerprint.json` 除外）
 7. 不要隐式使用全局随机状态：算例生成必须显式接受 `master_seed`，并在每个 `index.json` 记录派生的 `instance_seed`
-8. 不要在 `run_baselines.py` 中设置算法内部开关参数
+8. 不要在批处理脚本中设置算法内部开关参数；算法参数由 C++ `SolveConfig` 和项目配置传入
 9. 不要跳过消融实验直接纳入未验证的改进
 10. 不要将实验输出写到项目外路径
 11. 不要随意生成脚本，优先复用核心脚本
@@ -406,7 +409,7 @@ description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水
 16. **不要在循环内频繁打印日志**，每行至少间隔 N 次迭代
 17. **不要声称内置模板自动支持问题特定内容**：应从问题描述提取特征并标记 `adapter_required`，完成全链适配和回归测试后才可宣称支持
 18. **不要让对话约定停留在上下文中**：任何澄清、决策、默认假设、用户额外要求都必须持久化到 `docs/` 或 `configs/`
-19. **不要在算法适配时把初始化写在算法主文件中**：初始化必须提取到 `src/metaheuristics/initial/single/` 或 `src/metaheuristics/initial/population/`（按用途）独立文件，主文件通过 import 调用
+19. **不要在算法适配时把初始化写在算法主文件中**：初始化必须提取到 `cpp/include/hfsp/metaheuristics/initial/single/` 或 `cpp/include/hfsp/metaheuristics/initial/population/`（按用途）独立组件，主算法调用共享实现
 20. **不要混用单解生成器与种群生成器**：单解生成器（`initial/single/`，返回 `list[int]`）严禁用于 GA/MA 种群初始化；种群生成器（`initial/population/`，返回 `list[list[int]]`）严禁用于 SA/IG/TS
 21. **不要跨算法或跨算例共享 EvalCache**：批量对比应统一缓存配置，但每次运行使用独立实例；初始化方法在单解/种群两类内部统一
 22. **严禁为特殊情况打补丁**（红线，详见 §8）：遇到 bug 必须找根因修复，禁止用特殊值特判、异常静默、临时 workaround、注释掉失败代码、pytest.skip 等方式绕过
@@ -414,5 +417,5 @@ description: 生成、修复和验证基于 Gurobi 的基础 HFSP（混合流水
 24. **禁止在注释中使用"临时"、"暂时"、"绕过"、"待重构"字样**留下技术债——要么现在修根因，要么明确 `raise NotImplementedError` 并记录到 `docs/`
 25. **严禁兼容层**（红线，详见 §8.2）：接口变更必须一次性删除旧接口并全项目替换调用点。禁止保留旧函数名 shim、`DeprecationWarning` 包装、旧参数/新参数并存、模块 alias（`OldClass = NewClass`）、格式版本判断分支、旧路径 fallback 等
 26. **禁止在注释中使用"兼容"、"legacy"、"deprecated"、"保留旧接口"、"过渡期"、"两版本共存"字样**——一旦出现即意味着建立了兼容层
-27. **在 basic 元启发式模板中使用 OOP，在工具/算子/初始化中使用平级函数**：SA/IG/TS/GA/MA 的 basic 模板建议使用 `BaseSolver` 层次结构（统一评估接口/日志/输出格式）；但工具函数（`load_instance`, `decode`, `swap_move`）和初始化生成器（`init_*`, `generate_*_population`）应保持平级函数。详见 `modules/algorithms.md §10`
+27. **C++ basic 元启发式使用统一 solver 接口**：SA/IG/TS/GA/MA 共享 C++ 生命周期、评估入口、日志和输出格式；工具、decoder、checker 和初始化组件保持小而明确的函数/类。Python 工具只能分析产物，详见 `modules/algorithms.md`
 28. **不要为算法变体分支强制使用继承**：study / branch 变体推荐使用组合、装饰器、或配置驱动模式（见 `modules/algorithms.md §10.6`），不强制继承 `BaseSolver`

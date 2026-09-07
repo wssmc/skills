@@ -1,90 +1,60 @@
-"""对生成的基础 HFSP 项目执行可重复审计并生成 PROJECT_AUDIT.md。"""
+"""Audit the generated project; never repair or rewrite solver results."""
 from __future__ import annotations
 
 import ast
+import os
 import py_compile
 import subprocess
-import sys
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-REQUIRED_PATHS = [
-    "configs/problem_statement.md",
-    "configs/problem_fingerprint.json",
-    "data/generate.py",
-    "data/loader.py",
-    "src/core/domain.py",
-    "src/metaheuristics/registry.py",
-    "src/metaheuristics/decoding/list_decoder.py",
-    "src/metaheuristics/decoding/feasibility_checker.py",
-    "src/metaheuristics/decoding/eval_cache.py",
-    "scripts/run_baselines.py",
-    "tests/smoke_test.py",
+ROOT = Path(__file__).resolve().parents[1]
+REQUIRED = [
+    "CMakeLists.txt",
+    "cpp/include/hfsp/core/domain.hpp",
+    "cpp/include/hfsp/registry.hpp",
+    "cpp/apps/hfsp_run.cpp",
+    "cpp/tests/smoke_test.cpp",
+    "python/analysis/analyze_results.py",
     "AGENTS.md",
     "README.md",
 ]
-FORBIDDEN_DIRS = [
-    "src/algorithms",
-    "src/solvers",
-    "src/io",
-    "src/evaluation",
-]
+FORBIDDEN = ["src", "gurobipy", "python/metaheuristics", "python/solvers"]
 
 
-def find_silent_handlers(path: Path) -> list[str]:
-    findings = []
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    for node in ast.walk(tree):
-        if isinstance(node, ast.ExceptHandler) and len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
-            findings.append(f"{path.relative_to(PROJECT_ROOT)}:{node.lineno}")
-    return findings
-
-
-def run_audit() -> tuple[bool, list[tuple[str, bool, str]]]:
-    checks = []
-    missing = [path for path in REQUIRED_PATHS if not (PROJECT_ROOT / path).exists()]
+def audit() -> tuple[bool, list[tuple[str, bool, str]]]:
+    checks: list[tuple[str, bool, str]] = []
+    missing = [path for path in REQUIRED if not (ROOT / path).exists()]
     checks.append(("Required paths", not missing, ", ".join(missing) or "all present"))
-
-    forbidden = [path for path in FORBIDDEN_DIRS if (PROJECT_ROOT / path).exists()]
-    checks.append(("Forbidden directories", not forbidden, ", ".join(forbidden) or "none"))
-
-    syntax_errors = []
-    silent_handlers = []
-    for path in sorted(PROJECT_ROOT.rglob("*.py")):
-        if "outputs" in path.parts:
-            continue
+    forbidden = [path for path in FORBIDDEN if (ROOT / path).exists()]
+    checks.append(("Forbidden paths", not forbidden, ", ".join(forbidden) or "none"))
+    py_errors: list[str] = []
+    silent: list[str] = []
+    for path in sorted((ROOT / "python").rglob("*.py")):
         try:
             py_compile.compile(str(path), doraise=True)
-            silent_handlers.extend(find_silent_handlers(path))
-        except Exception as exc:
-            syntax_errors.append(f"{path.relative_to(PROJECT_ROOT)}: {exc}")
-    checks.append(("Python syntax", not syntax_errors, "; ".join(syntax_errors) or "compiled"))
-    checks.append(("Silent exception handlers", not silent_handlers, ", ".join(silent_handlers) or "none"))
-
-    smoke = subprocess.run(
-        [sys.executable, str(PROJECT_ROOT / "tests" / "smoke_test.py")],
-        cwd=PROJECT_ROOT,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    smoke_notes = smoke.stdout.strip().splitlines()[-1] if smoke.returncode == 0 else smoke.stderr.strip()
-    checks.append(("Smoke test", smoke.returncode == 0, smoke_notes or f"exit={smoke.returncode}"))
-
-    sys.path[:0] = [str(PROJECT_ROOT), str(PROJECT_ROOT / "src")]
-    try:
-        from metaheuristics.registry import ALGORITHM_REGISTRY, ALGORITHM_STATUS
-        registry_ok = set(ALGORITHM_REGISTRY) == set(ALGORITHM_STATUS)
-        registry_notes = f"registered={sorted(ALGORITHM_REGISTRY)}"
-    except Exception as exc:
-        registry_ok = False
-        registry_notes = str(exc)
-    checks.append(("Algorithm registry", registry_ok, registry_notes))
-    return all(passed for _, passed, _ in checks), checks
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ExceptHandler) and len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+                    silent.append(str(path.relative_to(ROOT)))
+        except (OSError, SyntaxError) as exc:
+            py_errors.append(f"{path}: {exc}")
+    checks.append(("Python auxiliary syntax", not py_errors, "; ".join(py_errors) or "compiled"))
+    checks.append(("Silent exception handlers", not silent, ", ".join(silent) or "none"))
+    build = ROOT / "build"
+    configure_command = ["cmake", "-S", str(ROOT), "-B", str(build)]
+    if os.name == "nt":
+        configure_command[1:1] = ["-G", "MinGW Makefiles"]
+    configure = subprocess.run(configure_command, cwd=ROOT, capture_output=True, text=True)
+    compile_result = subprocess.run(["cmake", "--build", str(build), "--config", "Release"], cwd=ROOT, capture_output=True, text=True) if configure.returncode == 0 else configure
+    checks.append(("CMake/C++ build", compile_result.returncode == 0, compile_result.stdout.strip()[-300:] or compile_result.stderr.strip()[-300:]))
+    ctest = subprocess.run(["ctest", "--test-dir", str(build), "--output-on-failure"], cwd=ROOT, capture_output=True, text=True) if compile_result.returncode == 0 else compile_result
+    checks.append(("C++ smoke / CTest", ctest.returncode == 0, ctest.stdout.strip()[-300:] or ctest.stderr.strip()[-300:]))
+    return all(result for _, result, _ in checks), checks
 
 
-def write_report(passed: bool, checks: list[tuple[str, bool, str]]) -> None:
+def main() -> None:
+    passed, checks = audit()
     lines = [
         "# Project Audit",
         "",
@@ -96,13 +66,7 @@ def write_report(passed: bool, checks: list[tuple[str, bool, str]]) -> None:
     for name, result, notes in checks:
         safe_notes = notes.replace("|", "\\|").replace("\n", " ")
         lines.append(f"| {name} | {'PASS' if result else 'FAIL'} | {safe_notes} |")
-    lines.append("")
-    (PROJECT_ROOT / "PROJECT_AUDIT.md").write_text("\n".join(lines), encoding="utf-8")
-
-
-def main() -> None:
-    passed, checks = run_audit()
-    write_report(passed, checks)
+    (ROOT / "PROJECT_AUDIT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     for name, result, notes in checks:
         print(f"{'PASS' if result else 'FAIL'} {name}: {notes}")
     raise SystemExit(0 if passed else 1)

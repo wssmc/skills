@@ -54,8 +54,10 @@ Use these files to define:
 
 - Do not ignore `assumption_log.md`; assumptions should appear in README and `configs/` docs.
 - If `problem_feature_table.md` marks a feature as central to this study, implement it or create a clearly named extension stub.
-- If `recommended_baselines.md` is present, create corresponding files under `src/metaheuristics/baselines/`.
-- If `method_design_hints.md` is present, create corresponding modules under the appropriate `src/metaheuristics/{algo}/` directory.
-- Default solver is **Gurobi** (`gurobipy`), not CPLEX/docplex.
-- All algorithms must be registered to `scripts/run_baselines.py` (5-step registration).
+- If `recommended_baselines.md` is present, create corresponding C++ files under `cpp/src/metaheuristics/baselines/`.
+- If `method_design_hints.md` is present, create corresponding C++ modules under `cpp/src/metaheuristics/{algo}/`.
+- Default solver is **Gurobi C++ API**, not CPLEX/docplex; Python `gurobipy` is not a core fallback.
+- All algorithms must be registered to `cpp/include/hfsp/registry.hpp` and `cpp/src/registry.cpp`.
+- Python is limited to `python/tools/`, `python/analysis/`, `python/statistics/` and `python/visualization/`; it must not implement a second solver or decoder.
+- The generated root `AGENTS.md` is the project-level system prompt and must be read before generation, edits or audits.
 - Algorithm naming follows basic → study → branch three-tier convention.

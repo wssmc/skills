@@ -1,68 +1,40 @@
 project_name/
-├── configs/
-│   ├── problem_statement.md
-│   ├── constraints_spec.md
-│   ├── algorithm_requirements.md
-│   ├── experiment_plan.md
-│   ├── conventions.md
-│   └── problem_fingerprint.json
+├── CMakeLists.txt
+├── cmake/
+├── cpp/
+│   ├── include/hfsp/
+│   │   ├── core/domain.hpp
+│   │   ├── io/instance_loader.hpp
+│   │   ├── encoding/
+│   │   ├── decoding/eval_cache.hpp
+│   │   ├── metaheuristics/algorithms.hpp
+│   │   ├── math_models/gurobi_model.hpp
+│   │   └── registry.hpp
+│   ├── src/
+│   │   ├── io/instance_loader.cpp
+│   │   ├── metaheuristics/algorithms.cpp
+│   │   └── registry.cpp
+│   ├── apps/hfsp_run.cpp
+│   └── tests/smoke_test.cpp
+├── python/
+│   ├── tools/generate_instances.py
+│   ├── analysis/analyze_results.py
+│   ├── statistics/
+│   └── visualization/
+├── scripts/
+│   ├── build.sh
+│   ├── run_single.sh
+│   ├── run_batch.sh
+│   └── audit_project.py
 ├── data/
-│   ├── generate.py
-│   ├── loader.py
 │   ├── demo/
 │   ├── small/
 │   ├── large/
 │   └── batch_seeds/
+├── configs/
 ├── docs/
-├── src/
-│   ├── core/domain.py
-│   ├── math_models/
-│   │   ├── gurobi_model.py
-│   │   └── lower_bound.py
-│   ├── metaheuristics/
-│   │   ├── base_solver/base_solver.py
-│   │   ├── initial/
-│   │   │   ├── single/{dispatching.py,neh.py,random_init.py}
-│   │   │   └── population/{random_pop.py,neh_pop.py}
-│   │   ├── encoding/sequence_encoding.py
-│   │   ├── decoding/
-│   │   │   ├── list_decoder.py
-│   │   │   ├── eval_cache.py
-│   │   │   ├── feasibility_checker.py
-│   │   │   ├── metrics.py
-│   │   │   └── result_reproducer.py
-│   │   ├── neighborhood/{operators.py,frameworks.py}
-│   │   ├── baselines/baseline_template.py
-│   │   ├── sa/sa_basic.py
-│   │   ├── ma/ma_basic.py
-│   │   ├── ig/ig_basic.py
-│   │   ├── ga/ga_basic.py
-│   │   ├── ts/ts_basic.py
-│   │   └── registry.py
-│   └── visualization/
-│       ├── plot_utils.py
-│       ├── gantt.py
-│       ├── convergence.py
-│       └── comparison.py
-├── scripts/
-│   ├── run_baselines.py
-│   ├── audit_project.py
-│   ├── sh_single_instance.sh
-│   ├── sh_bench_instance.sh
-│   ├── sh_batch_instances_algorithms.sh
-│   ├── sh_analysis.sh
-│   ├── mip/run_gurobi_mip.py
-│   ├── doe/{run_doe.py,sh_doe.sh}
-│   ├── ablation/quick_test_config.py
-│   └── statistics/run_statistics.py
-├── tests/smoke_test.py
 ├── outputs/
 ├── latex/
-│   ├── paper/
-│   │   ├── main.tex
-│   │   ├── sections/{01_introduction.tex,02_related_work.tex,03_problem_formulation.tex,04_solution_approaches.tex,05_computational_experiments.tex,06_conclusion.tex}
-│   │   └── bib/references.bib
-│   └── README.md
 ├── requirements.txt
 ├── AGENTS.md
 ├── IMPLEMENTATION_STATUS.md

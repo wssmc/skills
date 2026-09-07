@@ -1,135 +1,45 @@
 # 输出质量检查清单
 
-生成项目后必须检查：
+## 架构边界
 
-## 数据
+- [ ] `cpp/` 是唯一的 solver、decoder、checker、objective、EvalCache 和 registry 实现
+- [ ] `python/` 只包含算例生成、结果分析、统计和可视化
+- [ ] Python 没有第二套算法或 makespan 计算
+- [ ] 根目录 `AGENTS.md` 已先读取，并写明语言边界、CMake 命令、输出和质量红线
 
-- [ ] 主体数据保存为 txt
-- [ ] index.json 能正确索引 txt，并记录用于复现实例内容的 `instance_seed`
-- [ ] demo 算例可人工检查（命名 `demo_0x_n_m`）
-- [ ] small / large 算例可复现（命名 `inst_xxx_n_m_yy`）
-- [ ] `data/generate.py` 使用 master seed 派生各算例独立 seed；算法 seed 单独管理
-- [ ] `data/loader.py` 统一 `load_instance(dir) -> Instance` 接口
-- [ ] `data/batch_seeds/` 种子文件存在（seed_table.json + round{r}.json）
+## 数据与 MIP
 
-## MIP (Gurobi)
+- [ ] 主体数据为 txt，`index.json` 只做索引并记录 instance seed
+- [ ] Python 生成数据，C++ loader 读取同一格式
+- [ ] MIP 使用 Gurobi C++ API；缺少环境时标 `NOT_RUN`
+- [ ] 结果包含 status、objective、LB、gap、runtime（不可用值为 JSON null）
 
-- [ ] 默认使用 Gurobi (`gurobipy`)，不使用 CPLEX/docplex
-- [ ] 可设置 time_limit（默认 3600s 正式 / 60s 测试）
-- [ ] 可设置 MIPGap
-- [ ] 输出 LB（下界）和最优可行解
-- [ ] 输出 status、objective、LB、gap、runtime
-- [ ] 结果经过 `check_feasibility` 校核
-- [ ] 输出 result.json + schedule.csv + gantt.png
-- [ ] 独立入口 `scripts/mip/run_gurobi_mip.py`，不走 run_baselines.py
+## C++ 解码、评估与算法
 
-## 解码与评估
+- [ ] Instance、Schedule、Result、Operation 在 `cpp/include/hfsp/core/` 定义
+- [ ] Stage precedence、machine no-overlap、加工时长和目标由 C++ checker 校核
+- [ ] 资源键包含 `(stage_id, machine_id)`
+- [ ] 每个算法通过独立 `EvalCache(500)`，FIFO，键含实例/序列/机器分配
+- [ ] SA/MA/IG/GA/TS 与 baseline 通过 C++ registry 注册，状态与注册键一致
+- [ ] `best_sequence` 由 solver 直接保存，能够重放同一 objective
+- [ ] 单解初始化与种群初始化在 C++ 类型和组件上严格分离
+- [ ] 论文算法适配记录来源、差异、初始化、邻域、参数和消融
 
-- [ ] 满足 Stage precedence
-- [ ] 满足 machine no-overlap
-- [ ] 满足 release time
-- [ ] `check_feasibility(instance, schedule) -> violations` 存在
-- [ ] `metrics.py` 计算 makespan / total_tardiness / average_flow_time
-- [ ] `eval_cache.py` FIFO 队列大小限制 500
-- [ ] **所有元启发式算法（SA/MA/IG/GA/TS）都实际通过 EvalCache 评估**
-- [ ] **EvalCache 上限固定为 500，弹出策略为 FIFO**
-- [ ] **算法内部通过 `evaluate(seq)` 函数统一调用缓存**，而非直接 decode+evaluate_schedule
-- [ ] **算法适配（如有）：原算法的初始化已按用途提取——单解算法用 `src/metaheuristics/initial/single/`，种群算法用 `src/metaheuristics/initial/population/`**
-- [ ] **`initial/single/` 与 `initial/population/` 严格分离**：单解生成器返回 `list[int]`，种群生成器返回 `list[list[int]]`
-- [ ] **GA/MA 使用 `generate_xxx_population()` 生成种群**，不循环调用单解生成器
-- [ ] **种群生成器保证 pop_size 个体互不相同**（ensure_diversity=True）
-- [ ] **`sh_batch_instances_algorithms.sh` 支持 `--unified-init`，且单解/种群初始化分别统一**
-- [ ] **算法接受 `cache` 测试注入点和初始化策略 kwargs**
-- [ ] **每个算法运行使用独立缓存；不存在跨算法/跨算例共享缓存**
-- [ ] **`docs/YYYY-M-D_algorithm_design.md` 明确记录 EvalCache 强制约定 + 算法适配 + 批量一致性约定**
-- [ ] `result_reproducer.py` 能从 txt 的 best_seq 复现目标值
-- [ ] 未把全量重解码包装成“增量评估”；若声明增量能力，必须有等价性与性能回归测试
-- [ ] 输出统一 Schedule 格式
-- [ ] **相似解码器输入输出一致**；不同编码类型（seq vs seq_machine）不强制一致
+## 构建、测试与输出
 
-## 算法
+- [ ] `cmake -S . -B build` 配置成功
+- [ ] `cmake --build build` 编译成功
+- [ ] `ctest --test-dir build --output-on-failure` 通过
+- [ ] `scripts/audit_project.py` 真实运行并更新 `PROJECT_AUDIT.md`
+- [ ] 输出四件套：`result.json` / `schedule.csv` / `trace.csv` / `best_seq.json`
+- [ ] 所有输出仅在 `outputs/`，路径穿越被拒绝
+- [ ] Python 分析脚本能读取结果并对缺失/非法输入返回非零状态
 
-- [ ] 默认实现 SA, MA, IG, GA, TS 五个 basic 算法
-- [ ] 算法签名: `solve_xxx(...) -> (Schedule, trace_list, best_seq)`
-- [ ] **best_seq 是算法返回的最优编码序列**，不从 schedule 反推
-- [ ] 所有算法只在 `src/metaheuristics/registry.py` 注册，名称与状态一一对应
-- [ ] `run_baselines.py` 不设算法内部开关参数
-- [ ] 邻域算子集中在 `metaheuristics/neighborhood/`
-- [ ] 论文对比算法在 `metaheuristics/baselines/`
-- [ ] **算法分支命名带父算法前缀**（如 `sa_basic_study_conditioned`）
-- [ ] **算法打印遵循规范**（`[algo_name]` 前缀，verbose 分级）
+## 文档与红线
 
-## 脚本与输出
-
-- [ ] `scripts/run_baselines.py` 中央调度枢纽存在
-- [ ] `sh_single_instance.sh` 输出 schedule.json + gantt.png
-- [ ] `sh_bench_instance.sh` 多算法对比
-- [ ] `sh_batch_instances_algorithms.sh` 7 轮 + 断点续跑
-- [ ] `sh_analysis.sh` 通用结果分析
-- [ ] `scripts/mip/run_gurobi_mip.py` 独立 MIP 入口
-- [ ] `scripts/ablation/quick_test_config.py` 固化小实验配置
-- [ ] 所有 bash 脚本含默认参数和注释
-- [ ] 输出四件套: result.json / schedule.json|csv / trace.csv / gantt.png
-- [ ] **txt 输出保存 best_seq**（算法返回的编码序列）
-- [ ] **trace.csv 格式**: iteration, time, objective
-- [ ] **消融实验原始结果**存 `outputs/ablation/{algo}/{name}/raw/`
-- [ ] 输出仅在 `outputs/` 目录内
-
-## Smoke 测试
-
-- [ ] `tests/smoke_test.py` 存在
-- [ ] 生成项目后**立即运行** `python tests/smoke_test.py` 通过
-- [ ] 验证链路: 读取 → 编码 → 解码 → 评估 → 可行性 → 算法运行 → 产物写入
-
-## 收敛曲线
-
-- [ ] trace.csv 含 iteration, time, objective 三列
-- [ ] convergence.png 支持 PNG（300 DPI）和 PDF 矢量
-- [ ] 多算法对比时附图例，标注最终目标值
-
-## 论文写作
-
-- [ ] `latex/` 目录含期刊模板和项目工作目录
-- [ ] `templates/thirdPartSkills.md` 定义写作 Skill 调用
-- [ ] 使用 `literature-matrix-review-skill-v2.1` 生成两类文献矩阵
-- [ ] 引言、相关工作、问题描述初稿由写作 Skill 辅助生成
-
-## 代码质量红线（严禁打补丁 + 严禁兼容层）
-
-> 详见 SKILL.md §8。以下项目**任何一项失败都必须重写代码，不得交付**。
-
-### §8.1 严禁打补丁
-- [ ] **无特殊值特判**：代码中无 `if inst_name == "..."` / `if job_id == N` 类根因外的硬编码分支
-- [ ] **无异常静默**：无 `except Exception: pass` / `except: pass` / `except: return None`
-- [ ] **无临时注释关键字**：核心代码（`src/`、`data/`）中无"临时/暂时/绕过/待重构/先这样/TODO 后修"
-- [ ] **无被注释掉的失败代码**：不允许 `# xxx = decode(...)  # 有 bug` 加 mock 替代
-- [ ] **无 `@pytest.mark.skip("暂时通不过")`**：只允许因缺少外部依赖（如 Gurobi）的 `pytest.importorskip`
-- [ ] **异常不会被静默吞掉**：边界审计代码允许捕获 `Exception` 以生成 FAIL 报告，其余位置使用具体异常并传播失败
-- [ ] **占位使用 NotImplementedError**：占位函数明确 raise，禁止 `def f(): pass` 或返回伪值
-
-### §8.2 严禁兼容层
-- [ ] **无旧接口 shim**：无 `def old_name(*args, **kw): return new_name(*args, **kw)` 模式
-- [ ] **无 DeprecationWarning 包装**：无 `warnings.warn("use new_api")` 保留旧接口
-- [ ] **无旧参数/新参数并存**：函数签名不含 `old_name=None, new_name=None` 二选一
-- [ ] **无双格式支持分支**：无 `if isinstance(seq, list): ... elif isinstance(seq, dict): ...` 支持新旧数据格式
-- [ ] **无版本判断分支**：无 `if data.get("version") == "v1": ...` 类多版本共存
-- [ ] **无模块级 alias**：无 `OldClass = NewClass` / `from new_mod import X as OldX`
-- [ ] **无旧路径 fallback**：无 `if not new_path.exists(): return read(old_path)`
-- [ ] **无兼容注释关键字**：无"兼容/legacy/deprecated/保留旧接口/过渡期/两版本共存"
-
-### §8.4 补丁例外（须显式声明 + 文档登记）
-- [ ] **补丁例外有明确注释**：`# UPSTREAM BUG:` 类注释必须解释原因并在 `docs/root_cause_fix_log.md` 记录
-- [ ] 例外总数受控（建议 < 5 处，每处均需 docs 登记）
-
-## 工程
-
-- [ ] `src/metaheuristics/` 组织算法（不用 `algorithms/`）
-- [ ] `src/math_models/` 存放 Gurobi MIP（不用 `solvers/`）
-- [ ] 评估逻辑在 `decoding/` 下（不用 `evaluation/`）
-- [ ] `configs/` 存放自然语言文档，唯一结构化例外为 `problem_fingerprint.json`
-- [ ] `AGENTS.md` 项目记忆索引存在
-- [ ] `requirements.txt` 含 gurobipy
-- [ ] `tests/smoke_test.py` 覆盖加载、Stage-aware 解码、校验、缓存、六个注册算法、复现和产物；问题扩展另加专项测试
-- [ ] README 含运行命令和 7 阶段执行步骤
-- [ ] 输出目录自动创建
-- [ ] `docs/` 文件前缀加日期 `YYYY-M-D`
+- [ ] `IMPLEMENTATION_STATUS.md` 初始为 `not_verified`，未运行项不写 PASS
+- [ ] `PROJECT_AUDIT.md` 初始为 `Overall: NOT_RUN`
+- [ ] 用户约定持久化到 `AGENTS.md`、`configs/conventions.md` 或 `docs/`
+- [ ] 无特殊值补丁、静默异常、跳过失败测试、旧接口 shim、旧路径 fallback 或双格式迁移层
+- [ ] 未实现功能显式抛错，不返回伪结果
+- [ ] `README.md` 包含 CMake、C++ runner 和 Python 分析命令

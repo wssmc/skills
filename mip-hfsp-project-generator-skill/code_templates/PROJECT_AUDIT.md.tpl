@@ -8,7 +8,9 @@ Overall: NOT_RUN
 |---|---|---|
 | Required paths | NOT_RUN | |
 | Forbidden directories | NOT_RUN | |
-| Python syntax | NOT_RUN | |
+| CMake/C++ build | NOT_RUN | |
+| C++ smoke / CTest | NOT_RUN | |
+| Python auxiliary syntax | NOT_RUN | |
 | Silent exception handlers | NOT_RUN | |
-| Smoke test | NOT_RUN | |
 | Algorithm registry | NOT_RUN | |
+| AGENTS.md language-boundary check | NOT_RUN | |

@@ -1,4 +1,6 @@
-# AGENTS.md - 项目记忆索引
+# AGENTS.md - 项目级系统提示词
+
+> 本文件不是普通 README。每次生成、修改、审计或运行项目前，先读取本文件以及当前目录适用的 AGENTS.md。它记录本项目的可执行规则，架构变化必须同步更新。
 
 ## 项目目的
 {project_purpose}
@@ -6,117 +8,71 @@
 ## 问题类型
 {problem_type}
 
-## 核心假设
-{core_assumptions}
+## 核心语言边界
 
-## 实例设计
-{instance_design}
+- **C++17（主体）**：`cpp/` 负责 Instance、编码/解码、checker、metrics、EvalCache、SA/MA/IG/GA/TS、注册表和 Gurobi C++ MIP。
+- **Python 3（辅助）**：`python/tools/` 负责 txt 算例，`python/analysis/`、`python/statistics/`、`python/visualization/` 负责结果分析、统计和绘图。
+- Python 不得重新实现 C++ solver、decoder、feasibility checker 或 objective，不得建立第二个算法注册表。
 
-## 资源映射
-{resource_mapping}
+## 构建与运行
+
+```text
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+ctest --test-dir build --output-on-failure
+```
+
+Windows 运行 `build/Release/hfsp_run.exe`；Unix 运行 `build/hfsp_run`。所有结果写入项目内 `outputs/`。
 
 ## 脚本约定
 
-| 关键词 | 脚本 | 用途 |
-|--------|------|------|
-| batch | scripts/sh_batch_instances_algorithms.sh | 总批量测试 |
-| single | scripts/sh_single_instance.sh | 单算例测试 |
-| bench | scripts/sh_bench_instance.sh | 单算例多算法比较 |
-| analysis | scripts/sh_analysis.sh | 通用结果分析 |
-| mip | scripts/mip/run_gurobi_mip.py | Gurobi MIP 精确求解 |
+| 关键词 | 入口 | 用途 |
+|---|---|---|
+| build | CMake | 构建 C++ 核心 |
+| single | `scripts/run_single.sh` | 单算例单算法 |
+| batch | `scripts/run_batch.sh` | 多算例、多轮顺序运行 |
+| analysis | `python/analysis/analyze_results.py` | 汇总 C++ JSON/CSV |
+| mip | C++ MIP app | Gurobi C++ API 精确求解 |
 
-### 规则
-1. 使用前必须将算法注册到 `src/metaheuristics/registry.py`
-2. 禁止随意生成脚本，优先复用上述脚本
-3. 所有 bash 脚本的传参要在脚本中包含默认参数，并且有注释
-4. 所有实验输出仅限项目内 `outputs/` 目录
+脚本只传递参数并传播非零状态，不复制算法逻辑。预计超过一小时的任务必须后台运行并记录日志。
 
 ## 算法注册表
-注册入口：`src/metaheuristics/registry.py`
-- `ALGORITHM_REGISTRY`：算法名称 → solver 函数映射
-- `ALGORITHM_STATUS`：算法状态（not_verified / runnable_mvp / complete / placeholder / not_applicable）
-- 占位算法不注册，若注册则运行时必须报错
+
+唯一入口：`cpp/include/hfsp/registry.hpp` + `cpp/src/registry.cpp`。
+
+- 默认注册名：`random_search`、`sa_basic`、`ma_basic`、`ig_basic`、`ga_basic`、`ts_basic`
+- 只有通过 C++ smoke、checker 和 `best_sequence` 重放的实现才能标 `runnable_mvp`
+- 占位或未验证算法必须明确标记，不能被批处理悄悄运行
+
+## 评估与缓存
+
+- 每个“算例 × 算法 × 轮次”独立创建 `EvalCache(500)`，FIFO 淘汰
+- 键必须包含算例身份、作业序列和机器分配
+- `best_sequence` 必须由 C++ solver 直接保存，禁止从 schedule 反推
+- C++ 输出 `result.json`、`schedule.csv`、`trace.csv`、`best_seq.json`
+
+## 数据与适配门禁
+
+- 主体数据使用 txt，`index.json` 只做索引；Python 生成，C++ loader 读取
+- 基础 HFSP 以外的 FJSP/JSP/重入/额外资源特征，必须同步更新 C++ Instance、编码、解码、checker、MIP 和回归测试，并在 fingerprint 中标记状态
 
 ## 占位策略
+
 - 占位模块必须有 `PLACEHOLDER.md`
-- 占位代码必须 `raise NotImplementedError`
-- 占位模块默认不注册到算法注册表
+- 占位入口必须显式 `raise`/抛出明确错误
+- 未验证功能不能写 PASS，不能静默返回伪结果
 
-## 禁止的旧版路径
-以下路径不得出现在项目中：
-```
-src/algorithms/  src/solvers/  src/io/  src/evaluation/
-src/problems/  src/constraints/  src/resources/  src/utils/
-```
+## 禁止路径和红线
 
-## 项目结构约定
-- **默认求解器**: Gurobi (`gurobipy`)
-- **数据层**: `data/generate.py` + `data/loader.py` (`load_instance`)
-- **源代码**: `src/metaheuristics/`（不用 `algorithms/`）
-- **MIP建模**: `src/math_models/`（不用 `solvers/`）
-- **评估层**: `src/metaheuristics/decoding/`（feasibility_checker, metrics, eval_cache, result_reproducer）
-- **邻域算子**: `src/metaheuristics/neighborhood/`（集中管理，含问题特性邻域）
-- **算法命名**: basic → basic_study → basic_study_xxx 三级；子算法带父算法前缀
-- **默认算法**: SA, MA, IG, GA, TS + 问题特性启发式
-- **消融实验**: 每次改进必须消融，使用 `scripts/ablation/quick_test_config.py`
-- **计算缓存**: 每次算法运行独立创建 FIFO 缓存，大小限制 500；键包含算例、序列和机器分配
-- **时间公式**: `time = N_jobs * M_stages * factor`，factor 默认 0.05（单）/ 0.1（批量）
-- **批处理**: 默认顺序执行；只有在实现进程隔离、失败传播和独立缓存后才可扩展并行
-- **断点续跑**: batch 脚本按单个 `{algorithm}_result.json` 是否存在且非空判断，不按整轮目录跳过
+以下旧路径不得生成：`src/algorithms/`、`src/solvers/`、`src/io/`、`src/evaluation/`、Python 元启发式核心目录。
 
-## 代码质量红线（严禁打补丁 + 严禁兼容层）
+- 不按算例名、job ID 或阶段数打补丁
+- 不用裸 `catch`、静默异常、跳过失败测试
+- 不保留旧接口 shim、模块 alias、旧路径 fallback 或双格式迁移层
+- Python 分析失败必须返回非零状态，不得修改 C++ 结果
 
-### §8.1 严禁打补丁
-- 遇到 bug 必须分析根因并修复设计/逻辑本身
-- 禁止用法：特殊值特判、`except: pass`、`pytest.skip`、注释掉失败代码、临时 workaround
-- 禁止注释关键字：临时/暂时/绕过/待重构/先这样/TODO 后修
+## 约定持久化与维护
 
-### §8.2 严禁兼容层
-- **接口/格式变更必须一次性迁移全部调用点**，禁止保留旧接口
-- 禁止用法：
-  - 旧名 shim：`def old(): return new()`
-  - `DeprecationWarning` 包装
-  - 旧参数/新参数并存
-  - 双格式/版本判断分支
-  - 模块 alias（`OldClass = NewClass`）
-  - 旧路径 fallback
-- 禁止注释关键字：兼容/legacy/deprecated/保留旧接口/过渡期/两版本共存
-
-### 遇到问题时的流程
-5-Why 根因分析 → 修复根因 → 同步调用方（若接口变了，全项目一次性替换）→ 添加回归测试 → 记录到 `docs/root_cause_fix_log.md`
-
-### 允许的例外
-- 上游库 bug：`# UPSTREAM BUG: <link>`
-- 数值稳定性护栏（< 1e-6）
-- 明确不支持：`raise NotImplementedError(...)`
-- **不再允许 "backward-compat" 例外**
-
-详见 SKILL.md §8
-
-## 输出策略
-- 所有实验输出在 `outputs/` 内
-- 生成 zip 前必须运行 `PROJECT_AUDIT.md` 审计
-- 交付时必须给出审计摘要（测试、占位、可运行算法、旧版目录）
-
-## 算法适配与批量一致性
-- **算法适配 — 初始化按用途分类**：
-  - 单解生成器 → `src/metaheuristics/initial/single/`（返回 `list[int]`，供 SA/IG/TS 用）
-  - 种群生成器 → `src/metaheuristics/initial/population/`（返回 `list[list[int]]`，供 GA/MA 用）
-  - **严禁混用**：单解生成器直接用于种群会导致个体相同，种群丧失多样性
-- **批量对比默认统一初始化**：`sh_batch_instances_algorithms.sh` 默认 `--unified-init y`
-- **缓存隔离**：每个“算例 × 算法 × 轮次”任务使用独立缓存；不存在 `--unified-cache` 开关
-- 命令行开关：`--unified-init [y|n] --init-method-single NAME --init-method-pop NAME`
-- 非默认设置需在 `configs/conventions.md` 记录理由
-
-## 约定持久化
-- **所有对话中产生的自然语言约定必须写入项目文件**，不得停留在对话上下文
-- 用户澄清与建模决策：`docs/YYYY-M-D_*.md`
-- 用户交互约定（求解器偏好、输出格式、命名调整等）：`configs/conventions.md`
-- 问题特征结构化：`configs/problem_fingerprint.json` + `configs/problem_statement.md`
-- 每次新约定 → 立即写入；生成结束前 → 汇总检查
-- 详见 `modules/quality.md` §3
-
-## 维护规则
-- 新增约定时同步更新本文件
-- 删除过时条目
-- 更新 `IMPLEMENTATION_STATUS.md` 记录模块状态变更
+- 用户澄清、假设、算法选择和实验设置写入 `docs/` 或 `configs/conventions.md`
+- 新约定立即同步本文件；架构变化同步 `README.md`、`IMPLEMENTATION_STATUS.md`、`PROJECT_AUDIT.md` 和项目树
+- 交付前必须运行 C++ smoke、Python 分析检查和项目审计

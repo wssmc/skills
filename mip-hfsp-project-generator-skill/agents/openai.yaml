@@ -1,7 +1,7 @@
 interface:
   display_name: "HFSP Research Project Generator"
-  short_description: "生成并验证可复现的 Gurobi HFSP 研究工程"
-  default_prompt: "Use $mip-hfsp-project-generator-skill to generate and validate a runnable basic HFSP research project from my problem definition."
+  short_description: "生成并验证 C++ 核心、Python 分析的可复现 Gurobi HFSP 工程"
+  default_prompt: "Use $mip-hfsp-project-generator-skill to generate and validate a C++17-core, Python-analysis basic HFSP research project from my problem definition."
 
 policy:
   allow_implicit_invocation: true

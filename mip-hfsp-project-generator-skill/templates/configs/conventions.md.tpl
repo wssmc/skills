@@ -12,6 +12,16 @@ Skill: `mip-hfsp-project-generator-skill` v{{version}}
 
 ---
 
+## 强制架构边界
+
+- **主体实现**：C++17 + CMake，负责 solver、Instance、编码/解码、checker、objective、EvalCache、registry 和 Gurobi C++ MIP
+- **辅助实现**：Python 3，负责 txt 算例生成、结果 JSON/CSV 分析、统计和可视化
+- Python 不得建立第二套求解器、decoder、checker、objective 或 registry
+- 项目根目录 `AGENTS.md` 是项目级系统提示词；生成、修改、审计和运行前先读取
+- C++ 产物：`result.json`、`schedule.csv`、`trace.csv`、`best_seq.json`；Python 只消费这些产物
+
+---
+
 ## 用户明确要求
 
 ### 求解器与依赖
