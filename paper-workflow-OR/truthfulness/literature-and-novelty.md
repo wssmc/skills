@@ -94,7 +94,38 @@ For `Feature A + Feature B`, explain whether interaction changes:
 
 If the features are merely additive, novelty strength should be lower.
 
-## 7. Method novelty requires behavior-level delta
+## 7. Feature-combination audit
+
+Before claiming novelty for `A + B + C`, classify each feature as a primary scientific structure, secondary structural feature, application boundary, or parameter characteristic. Then determine whether their interaction changes the feasible set, decision coupling, representation, decoder, formulation, complexity, or search behavior. Mere coexistence is not a new scientific problem and requires weaker novelty wording.
+
+## 8. Audit-language firewall
+
+Novelty-audit language belongs to internal analysis. Convert it before drafting:
+
+```text
+existing study scope
+→ explicit structural difference
+→ present research position
+```
+
+Do not write manuscript statements such as `We cannot claim ...`, `The contribution does not lie in ...`, `Existing studies prevent us from claiming ...`, or `This is not novel because ...`. State positively what the study does and how its structure differs.
+
+## 9. Reference Eligibility Contract
+
+When the user specifies eligibility requirements, apply them before admitting a source to the bibliography:
+
+```text
+language
+→ publication type
+→ journal
+→ indexing requirement
+→ primary-source relevance
+→ technical verification
+```
+
+Exclude non-compliant sources rather than substituting weaker evidence. A requested reference count never overrides eligibility.
+
+## 10. Method novelty requires behavior-level delta
 
 A new name, new code, or standard algorithm on new data does not establish method novelty.
 
@@ -109,7 +140,7 @@ Verify changes in:
 - acceleration;
 - search-control architecture.
 
-## 8. Wording by verification strength
+## 11. Wording by verification strength
 
 Strong coverage:
 
@@ -125,6 +156,6 @@ Limited coverage:
 
 without a literature-wide absence claim.
 
-## 9. Attribution
+## 12. Attribution
 
 Correctly attribute standard mechanisms, benchmarks, tests, and inherited components. Use `adapted from` when appropriate.

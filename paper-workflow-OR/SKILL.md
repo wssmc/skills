@@ -74,6 +74,16 @@ writing-specification/
 
 These files explain difficult **How** problems. They do not redefine the structure.
 
+### Mandatory trigger-based routing
+
+The following routes override discretionary progressive loading:
+
+- For an Introduction, Related Work, literature positioning, research gap, novelty, or contributions task, MUST load `element-guidance/citations.md`, `truthfulness/literature-and-novelty.md`, and the relevant chapter Writing Specification.
+- For an industrial problem description, problem framing/naming, or generalization decision, MUST load `checks/problem-abstraction-check.md` and apply the Problem Abstraction Gate before drafting.
+- For notation, MIP/MILP, mathematical formulation, equations, or constraints, MUST load `writing-specification/problem-and-model.md` and `element-guidance/equations-and-notation.md`.
+- For pseudocode, an algorithm, a procedure, or executable search logic, MUST load `element-guidance/pseudocode.md` and `checks/pseudocode-maturity-check.md`, then apply the Pseudocode Maturity Gate before producing publication-level pseudocode.
+- For contribution statements, novelty positioning, `first`/`new`/`novel` claims, or closest-study comparisons, MUST load `truthfulness/literature-and-novelty.md`; contribution drafting also MUST apply `checks/contribution-check.md`.
+
 ### Scientific elements
 Load relevant files under:
 
@@ -140,6 +150,22 @@ Load:
 3. relevant Element Guidance;
 4. relevant Truthfulness rules;
 5. a template only when a fixed shell is useful.
+
+For an industrial scheduling manuscript, use this evidence-aware sequence when the covered sections are in scope:
+
+```text
+industrial description
+→ Problem Abstraction Gate and check
+→ closest-study verification
+→ Introduction architecture and Contribution Check
+→ Chapter 3 notation and complete formulation
+→ Chapter 4 method architecture
+→ implementation or frozen executable specification
+→ Pseudocode Maturity Gate
+→ publication pseudocode, when permitted
+→ contribution–technical–evidence mapping
+→ section/full-manuscript checks
+```
 
 ### Revision
 Compare the draft against the Structure Specification and relevant Writing Specification. Preserve all verified research content unless the user explicitly requests a scientific change.
@@ -279,7 +305,7 @@ When the user supplies a terminology glossary, it governs drafting, polishing, t
 - Do not create a competing chapter topology. The Structure Specification defines where content belongs.
 - Truthfulness does not require excessive hedging. When evidence is verified, state the supported conclusion directly.
 - Do not run a full-manuscript check after every local task.
-- Do not create a contribution ledger unless explicitly requested.
+- Run required contribution checks internally, but do not insert internal worksheets or audit language into manuscript prose. Do not deliver a standalone contribution ledger unless explicitly requested.
 - Names and captions identify objects; they must not contain the analysis that belongs in the manuscript body.
 
 ## 8. Current scope boundary

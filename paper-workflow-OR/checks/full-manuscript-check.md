@@ -126,6 +126,16 @@ Introduction claim
 ↔ Conclusion finding
 ```
 
+Internally verify the contribution–technical–evidence mapping:
+
+| Contribution | Technical landing | Experimental evidence |
+|---|---|---|
+| C1 | Section 3 | MIP / feasibility / exact validation |
+| C2 | Section 4.x | decoder validation / component analysis |
+| C3 | Section 4.x | ablation / comparison / statistics |
+
+Do not retain an Introduction contribution without corresponding technical content and a feasible Chapter 5 evidence plan. This table is an internal audit artifact, not manuscript content.
+
 ### Method
 
 ```text

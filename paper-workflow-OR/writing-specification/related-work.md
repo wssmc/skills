@@ -47,11 +47,13 @@ When several studies serve the same role in the current paragraph, synthesize th
 
 Do not over-merge when differences matter to the current research gap.
 
-## 4. Separate description from synthesis
+## 4. Subsection synthesis
 
 Description answers what a paper did. Synthesis answers what the literature stream collectively establishes.
 
-Every subsection should contain synthesis, preferably near the end:
+Every subsection should contain synthesis, but synthesis is a rhetorical function rather than a mandatory standalone paragraph. Prefer integrating it into the final one or two sentences of the last literature paragraph. Do not mechanically end every subsection with `In summary`, `Overall`, or `Taken together`. Use a separate concluding paragraph only when genuinely distinct streams require explicit integration.
+
+Synthesis should establish:
 - what is well studied;
 - what modeling/method patterns are mature;
 - under what settings results hold;
@@ -72,7 +74,7 @@ Write the exact difference, not `our problem is more complex`.
 
 ## 6. Derive the final research gap
 
-The final gap should summarize accumulated contrasts rather than start a new literature review.
+The final Research Gap subsection has the paper-level synthesis responsibility. Earlier subsections establish local contrasts; the final gap accumulates them, identifies the unresolved structural interaction, and derives the present problem position. Do not repeat the same literature inventory.
 
 For a combined problem, explain why the combination is not merely additive. Show whether interaction changes:
 - feasible set;

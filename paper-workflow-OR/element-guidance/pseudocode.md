@@ -4,7 +4,33 @@
 
 This file does not decide how many pseudocodes a paper must contain. The user may specify them; otherwise suggest pseudocode only when execution logic would otherwise be difficult to reproduce.
 
-# 1. Two-step conversion
+# 1. Pseudocode Maturity Gate
+
+Before producing publication-level pseudocode, determine method maturity.
+
+### Case 1 — Source code exists
+
+```text
+source code
+→ implementation-to-algorithm skeleton
+→ publication pseudocode
+→ code/pseudocode/prose consistency check
+```
+
+### Case 2 — Executable specification is frozen
+
+```text
+explicit executable logic
+→ algorithm skeleton
+→ publication pseudocode
+→ prose consistency check
+```
+
+### Case 3 — Method is exploratory or still being designed
+
+Do not produce publication-level pseudocode. Provide method architecture, component responsibilities, equations, operator definitions, and an illustrative control-flow description instead. Do not present exploratory design as a finalized algorithm.
+
+# 2. Two-step conversion
 
 ```text
 source code / explicit method logic
@@ -16,7 +42,7 @@ Step 2 — Skeleton-to-Publication Pseudocode
 code ↔ pseudocode ↔ method-text consistency check
 ```
 
-# 2. Step 1 — Implementation-to-Algorithm Skeleton
+# 3. Step 1 — Implementation-to-Algorithm Skeleton
 
 ## Recover Input/Output
 
@@ -81,7 +107,7 @@ if the expert solution is no worse than the candidate
 
 Do not add search-effect explanations during Step 1.
 
-# 3. Step 2 — Skeleton-to-Publication Pseudocode
+# 4. Step 2 — Skeleton-to-Publication Pseudocode
 
 ## Scientific naming
 
@@ -144,24 +170,36 @@ Line numbers are useful for long algorithms when the manuscript refers to specif
 
 ## Overall vs component pseudocode
 
-A paper may include:
-- an overall algorithm;
-- initialization;
-- decoder;
-- local search;
-- transformation;
-- adaptive/guidance mechanism;
-- expert generation.
+Overall pseudocode should primarily invoke already-defined scientific components:
+
+```text
+s ← Initialize(...)
+while ...
+    d ← SelectDestroy(...)
+    r ← SelectRepair(...)
+    s' ← Destroy(s, d)
+    s' ← Repair(s', r)
+    s' ← Decode(s')
+    s' ← LocalSearch(s')
+    s, s* ← AcceptAndUpdate(s, s', s*)
+    UpdateWeights(...)
+end while
+return s*
+```
+
+Do not embed mechanism explanations already defined in dedicated subsections.
+
+Use separate component pseudocode only when precise executable logic is required for reproducibility, such as a decoder, adaptive controller, transformation, nontrivial repair, or critical-resource identification procedure.
 
 Simple swap/insertion moves usually need prose + illustration, not separate pseudocode.
 
-# 4. Pseudocode-to-text integration
+# 5. Pseudocode-to-text integration
 
 Prose explains **why and scientific meaning**. Pseudocode shows **exact execution order, conditions, and updates**.
 
 Do not repeat pseudocode line-by-line in prose.
 
-# 5. Final consistency check
+# 6. Final consistency check
 
 Verify:
 - Input/Output;

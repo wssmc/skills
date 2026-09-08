@@ -6,6 +6,9 @@ Files:
 - `section-check.md`
 - `full-manuscript-check.md`
 - `peer-review-criteria.md`
+- `problem-abstraction-check.md`
+- `contribution-check.md`
+- `pseudocode-maturity-check.md`
 
 ## Section Check
 

@@ -1,6 +1,16 @@
 # Problem and Model Writing Specification
 
-## 1. Separate operational narrative from mathematical formulation
+## 1. Application Generalization Check
+
+Do not silently generalize a restricted industrial fact into a broader scientific problem. For example:
+
+- two actual product types do not automatically justify an arbitrary multi-family claim;
+- one machine revisited once does not automatically imply arbitrary multi-machine re-entry;
+- routes fixed by product type do not automatically imply arbitrary missing-operation patterns.
+
+If a generalized model is deliberately studied, state that the application is a restricted case of the generalized formulation, and ensure that experiments cover the generalized dimensions.
+
+## 2. Separate operational narrative from mathematical formulation
 
 Problem Description should let a reader understand the system without equations:
 - what is scheduled;
@@ -12,7 +22,7 @@ Problem Description should let a reader understand the system without equations:
 
 Mathematical Formulation then maps these rules into variables and constraints.
 
-## 2. Introduce special features by contrast with the base problem
+## 3. Introduce special features by contrast with the base problem
 
 Use:
 
@@ -25,7 +35,7 @@ base environment
 
 A parameter difference is not automatically a structural difference. Explain what the feature changes in the feasible schedule.
 
-## 3. Write assumptions as model boundaries
+## 4. Write assumptions as model boundaries
 
 Assumptions define what the model includes/excludes. Prioritize assumptions that change feasible-set interpretation:
 - identical/uniform/unrelated machines;
@@ -37,7 +47,9 @@ Assumptions define what the model includes/excludes. Prioritize assumptions that
 
 Avoid boilerplate assumptions that simply restate the already-defined model.
 
-## 4. Design the illustrative example to expose the hard part
+Assumptions and illustrative examples are content responsibilities of Section 3.1, not mandatory visible subsections. Default to a single `3.1 Problem Description` containing narrative, assumptions, and example. Create separate `3.1.1 Assumptions` or `3.1.2 Illustrative Example` headings only when the content is long enough, the journal benefits from that hierarchy, or the user requests it.
+
+## 5. Design the illustrative example to expose the hard part
 
 A useful example is small but still activates the distinctive constraint.
 
@@ -52,7 +64,23 @@ minimal instance table
 
 The example explains the problem; it does not prove algorithm performance.
 
-## 5. Design notation before equations
+## 6. Default MIP presentation contract
+
+Unless journal style or formulation complexity requires otherwise, use:
+
+```text
+problem narrative
+→ compact assumptions
+→ illustrative example
+→ one consolidated notation table
+→ complete formulation in one continuous block
+→ grouped operational explanation
+→ optional complexity/properties
+```
+
+Do not default to alternating each variable or equation with a separate explanatory paragraph.
+
+## 7. Design notation before equations
 
 Use conventional scheduling notation where possible. Keep:
 - one symbol = one semantic meaning;
@@ -60,7 +88,7 @@ Use conventional scheduling notation where possible. Keep:
 - clear distinction between parameters and variables;
 - auxiliary variables only when they are genuinely needed.
 
-## 6. Order constraints by operational logic
+## 8. Order constraints by operational logic
 
 A common order is:
 
@@ -74,7 +102,7 @@ objective
 → domains
 ```
 
-## 7. Explain constraints as operational rules
+## 9. Explain constraints as operational rules
 
 Do not write only `Constraint (7) ensures precedence.`
 
@@ -84,7 +112,7 @@ Explain:
 - why it excludes illegal schedules;
 - how it interacts with neighboring constraints when non-obvious.
 
-## 8. Connect problem properties to later method design
+## 10. Connect problem properties to later method design
 
 Complexity, bounds, dominance, or structural properties should have a role:
 - justify heuristic search;

@@ -42,9 +42,14 @@ base problem
 Check:
 - background not overly broad;
 - practical feature translated into OR structure;
+- industrial facts classified into primary and secondary scientific features;
+- the opening centers the primary scientific structure rather than an easy-to-name secondary feature;
 - gap derived from literature;
 - problem defined before method;
-- contributions not an activity list;
+- the problem/model paragraph states decisions, distinctive constraints, and objective;
+- contributions are compact scientific deltas rather than activities;
+- internal novelty-audit language is absent from manuscript prose;
+- citation clusters are not excessive;
 - organization paragraph concise.
 
 ## Related Work
@@ -53,9 +58,11 @@ Check:
 - research streams;
 - comparison dimensions;
 - absence of author-by-author stacking;
+- no citation dumping or repeated large citation clusters;
 - closest studies;
-- subsection synthesis;
-- final gap derived from prior discussion;
+- closest studies compared on explicit dimensions;
+- synthesis without mechanically repeated concluding paragraphs;
+- final gap derived from prior discussion without repeating the full inventory;
 - literature-matrix cells verified when relevant.
 
 ## Problem Description and Model
@@ -66,10 +73,14 @@ Check:
 - decisions/objective;
 - assumptions;
 - illustrative example when needed;
-- notation;
+- industrial restrictions not silently generalized;
+- assumptions/example not over-sectioned;
+- consolidated notation;
+- complete formulation before grouped explanation;
 - objective;
 - constraints/domains;
 - operational interpretation;
+- machine/worker/precedence semantics match the application;
 - problem/model consistency.
 
 ## Solution Method
@@ -82,7 +93,10 @@ Check:
 - method-specific mechanism causality;
 - algorithm integration;
 - stopping/output;
-- pseudocode where scientifically useful;
+- publication pseudocode only after the Pseudocode Maturity Gate;
+- exploratory design not presented as finalized executable logic;
+- overall pseudocode uses defined scientific component calls;
+- component pseudocode only when reproducibility requires it;
 - no function-by-function section topology.
 
 If source code is available for internal audit, additionally load `truthfulness/code-method-consistency.md`.

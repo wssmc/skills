@@ -29,6 +29,8 @@ Rules:
 
 ## Notation table
 
+For an MIP/MILP model, consolidate sets, indices, parameters, decision variables, and auxiliary variables into one notation table unless journal style strongly prefers otherwise. Recommended caption: `Notation for the MIP model`.
+
 Order:
 1. sets and indices;
 2. parameters;
@@ -42,6 +44,10 @@ Symbol | Definition | Domain/Unit (optional)
 ```
 
 Do not repeat every notation-table definition in the prose.
+
+## Formulation-first presentation
+
+After the notation table, present the objective and all constraints as one continuous mathematical formulation. Then explain constraint groups in operational order. Do not alternate every equation with a paragraph unless an unusually complex equation requires immediate interpretation.
 
 ## Objective function
 
