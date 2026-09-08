@@ -1,6 +1,0 @@
-StageID	MachineCount
-Stage_0	2
-Stage_1	2
-Stage_2	3
-Stage_3	2
-Stage_4	1

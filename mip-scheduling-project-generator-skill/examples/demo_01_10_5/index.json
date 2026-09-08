@@ -1,0 +1,17 @@
+{
+  "problem_family": "flow_shop_reference",
+  "problem_type": "parallel-stage flow shop demo",
+  "data_format": "txt",
+  "instance_name": "demo_01_10_5",
+  "instance_seed": 42,
+  "files": {
+    "processing_times.txt": "processing_times.txt",
+    "stage_machines.txt": "stage_machines.txt",
+    "due_dates.txt": "due_dates.txt",
+    "release_times.txt": "release_times.txt",
+    "instance_seed.txt": "instance_seed.txt"
+  },
+  "objective": {
+    "primary": "makespan"
+  }
+}

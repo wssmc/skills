@@ -11,7 +11,7 @@
 ```text
 problem-decomposition-skill
 → literature-matrix-review-skill
-→ mip-hfsp-project-generator-skill
+→ mip-scheduling-project-generator-skill
 ```
 
 ---
@@ -90,7 +90,7 @@ problem-decomposition-skill
 - 是否用 json 作为索引；
 - demo / small / large 的规模；
 - 是否需要 MIP；
-- 默认求解器是否为 CPLEX / docplex；
+- MIP 是否使用 IBM 官方 `cplex` Python API；
 - 是否需要 baseline；
 - 是否需要本文算法 proposed；
 - 是否需要甘特图、收敛图、统计检验。

@@ -33,7 +33,7 @@
     "index": "index.json",
     "processing_times": "JobID x Stage table"
   },
-  "solver_preference": "CPLEX/docplex",
+  "solver_preference": "IBM ILOG CPLEX Python API (cplex)",
   "expected_outputs": [
     "literature matrix",
     "MIP",

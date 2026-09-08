@@ -7,7 +7,7 @@
 ```text
 problem-decomposition-skill
 → literature-matrix-review-skill
-→ mip-hfsp-project-generator-skill
+→ mip-scheduling-project-generator-skill
 ```
 
 适用场景：

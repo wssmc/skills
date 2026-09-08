@@ -94,7 +94,7 @@ open_questions.md
 本 Skill 输出可交给：
 
 ```text
-mip-hfsp-project-generator-skill
+mip-scheduling-project-generator-skill
 algorithm-design-skill
 experiment-design-skill
 paper-writing-skill
@@ -1045,7 +1045,7 @@ assumption_log.md
 open_questions.md
 ```
 
-### 输出给 mip-hfsp-project-generator-skill
+### 输出给 mip-scheduling-project-generator-skill
 
 ```text
 problem_fingerprint.json

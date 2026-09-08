@@ -15,7 +15,7 @@
   "upstream_skills": [],
   "downstream_skills": [
     "literature-matrix-review-skill",
-    "mip-hfsp-project-generator-skill"
+    "mip-scheduling-project-generator-skill"
   ],
   "outputs": [
     "refined_problem_description.md",

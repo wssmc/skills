@@ -1,0 +1,50 @@
+project_name/
+├── CMakeLists.txt
+├── cmake/
+├── cpp/
+│   ├── include/scheduling/
+│   │   ├── core/domain.hpp
+│   │   ├── io/instance_loader.hpp
+│   │   ├── io/result_writer.hpp
+│   │   ├── representation/
+│   │   ├── evaluation/
+│   │   ├── algorithms/algorithms.hpp
+│   │   └── registry.hpp
+│   ├── src/
+│   │   ├── io/instance_loader.cpp
+│   │   ├── io/result_writer.cpp
+│   │   ├── algorithms/algorithms.cpp
+│   │   └── registry.cpp
+│   ├── apps/solver_run.cpp
+│   └── tests/smoke_test.cpp
+├── python/
+│   ├── tools/generate_instances.py
+│   ├── math_models/solve_cplex.py
+│   ├── analysis/analyze_results.py
+│   ├── statistics/
+│   └── visualization/
+├── scripts/
+│   ├── build.sh
+│   ├── generate_instances.sh
+│   ├── run_single.sh
+│   ├── run_batch.sh
+│   ├── run_all.sh
+│   ├── run_mip.sh
+│   ├── analyze.sh
+│   ├── lib/allocate_result_root.sh
+│   ├── audit.sh
+│   └── audit_project.py
+├── data/
+├── configs/
+│   └── seeds/
+│       └── solve_seeds.txt
+├── docs/
+│   └── convergence_protocol.md
+├── outputs/
+│   ├── tmp/
+│   └── formal/
+├── latex/
+├── AGENTS.md
+├── IMPLEMENTATION_STATUS.md
+├── PROJECT_AUDIT.md
+└── README.md

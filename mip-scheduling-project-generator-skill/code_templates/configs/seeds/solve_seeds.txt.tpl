@@ -1,0 +1,11 @@
+# Exactly ten fixed solve seeds: one seed per round.
+104729
+130363
+155921
+181081
+205759
+230693
+255709
+280537
+305419
+330287

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Scheduling Research Project Generator"
+  short_description: "生成 C++ 核心、CPLEX Python MIP、固定种子与 Bash 批处理研究工程"
+  default_prompt: "Use $mip-scheduling-project-generator-skill to turn my scheduling or OR problem into a reproducible C++17-core research project with IBM's cplex Python API for MIP, one recorded generation seed per instance, and fixed-seed Bash experiments."
+
+policy:
+  allow_implicit_invocation: true

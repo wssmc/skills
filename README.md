@@ -5,7 +5,7 @@
 ```text
 problem-decomposition-skill
 → literature-matrix-review-skill-v2.1
-→ mip-hfsp-project-generator-skill
+→ mip-scheduling-project-generator-skill
 ```
 
 ## 1. problem-decomposition-skill
@@ -16,9 +16,9 @@ problem-decomposition-skill
 
 基于高质量问题描述检索相似文献，输出问题特征表、方法矩阵表、研究缺口、baseline 建议和方法设计提示。
 
-## 3. mip-hfsp-project-generator-skill
+## 3. mip-scheduling-project-generator-skill
 
-基于问题描述和文献矩阵，生成 HFSP 研究工程，包括 CPLEX/docplex MIP、txt 数据、编码解码、baseline、本文算法、实验和可视化。
+基于问题描述和文献矩阵，生成通用调度与运筹研究工程：C++17 实现问题模型与启发式算法，IBM `cplex` Python API 实现 MIP，Python 还负责算例和分析，Bash 负责固定种子批量实验。当前参考实现主要面向流水车间问题族。
 
 ## 推荐使用方式
 

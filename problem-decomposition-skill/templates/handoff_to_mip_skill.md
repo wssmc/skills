@@ -1,4 +1,4 @@
-# Handoff to mip-hfsp-project-generator-skill
+# Handoff to mip-scheduling-project-generator-skill
 
 ## Problem Type
 
@@ -19,7 +19,7 @@ Main data in txt, connected by index.json.
 
 ## Modeling Requirements
 
-- CPLEX/docplex MIP model;
+- IBM ILOG CPLEX Python API (`cplex`) MIP model;
 - HFSP decoder;
 - baseline algorithms;
 - proposed algorithm module;
