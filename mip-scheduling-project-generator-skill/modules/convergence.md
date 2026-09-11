@@ -1,6 +1,6 @@
 # 模块：CPU 收敛曲线与实验目录
 
-生成项目时把完整协议写入 `docs/convergence_protocol.md`，并在项目 `AGENTS.md` 保留不可违背的摘要。
+生成项目时把完整协议写入 `docs/convergence_protocol.md`，并由 `scripts/render_agents.py` 完整嵌入项目 `AGENTS.md`，不得用摘要或链接替代条款。
 
 ## 目录契约
 

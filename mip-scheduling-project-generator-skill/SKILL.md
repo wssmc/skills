@@ -27,6 +27,8 @@ problem-decomposition-skill
 - **不使用 EvalCache**：候选解由 C++ 评价入口直接计算。不得生成 EvalCache、eval_cache.* 或隐藏的跨运行缓存。
 - **Bash 统一编排**：构建、单次运行、多轮批量实验、分析和审计由 scripts/*.sh 组织；脚本只传参、校验种子并传播非零退出码，不复制算法逻辑。
 - **AGENTS.md 是项目级系统提示词**：生成、修改、运行和审计前读取；架构或实验约定变化后同步更新。
+- **完整规则落盘**：生成时必须读取 `code_templates/AGENTS.md.tpl` 与 `code_templates/docs/convergence_protocol.md.tpl`，执行本 skill 的 `scripts/render_agents.py <项目根目录>`，将完整规则嵌入 AGENTS.md 并生成逐节基线；禁止自行摘要、漏掉条款或只链接 docs。填写项目背景占位符，项目补充规则写在管理块外。既有项目先运行 `--check`，明确合并缺项并保留用户规则。
+- **C++ 可维护性**：每算法一个独立 `.cpp` 主文件；评价/checker、公共算子、运行支持、I/O、registry 和 runner 按职责拆分。一条语句一行，函数/分支/循环/lambda 体展开；`for` 头部及字符串中的分号除外。提供 `.clang-format` 与 `scripts/format.sh`，生成完成必须格式化并检查。
 
 详细规范按任务读取：
 
@@ -120,6 +122,7 @@ scripts/run_all.sh
 scripts/run_mip.sh
 scripts/analyze.sh
 scripts/audit.sh
+scripts/format.sh
 ~~~
 
 所有脚本使用 set -euo pipefail，解析项目根目录，引用参数，拒绝缺失或重复种子。批量输出按 instance/algorithm/round_seed 隔离，单次失败必须使批任务返回非零状态。烟测统一写入 outputs/tmp/；正式测试脚本与 outputs/formal/ 下的结果目录一一对应，参数变化写入目录标签，配置未变的重复运行追加 `_1`、`_2`，不得覆盖。
@@ -182,10 +185,14 @@ README.md
 
 ## 交付门禁
 
+先运行 skill 侧 `scripts/render_agents.py <项目根目录> --check` 对照源规则，再运行项目 `scripts/format.sh --check` 与 `scripts/audit.sh`。审计必须逐节检查 AGENTS 正文并检查算法主文件和 C++ 格式；不能通过只检查关键词、删除基线或改写基线使缺失条款通过。静态结构检查不能替代按职责审阅；明确报告 NOT_RUN。
+
 最终交付必须报告真实状态：
 
 ~~~text
 CMake/C++ build: PASS/FAIL/NOT_RUN
+AGENTS rule coverage: PASS/FAIL/NOT_RUN
+C++ module separation / formatting: PASS/FAIL/NOT_RUN
 C++ tests: PASS/FAIL/NOT_RUN
 Bash batch seed validation: PASS/FAIL/NOT_RUN
 Python auxiliary / CPLEX syntax checks: PASS/FAIL/NOT_RUN

@@ -14,6 +14,8 @@
 
 项目根目录的 AGENTS.md 是项目级系统提示词。生成、修改、运行和审计前必须先读取。
 
+生成规则必须执行 `scripts/render_agents.py <项目根目录>`：完整嵌入规则与收敛协议，生成逐节审计基线；不能自行缩写。C++ 每算法一个主文件，公共评价与运行支持独立；用 .clang-format、scripts/format.sh 和审计检查换行与拆分。
+
 验证 Skill：
 
 ~~~bash

@@ -11,6 +11,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from check_project_contracts import check_contracts
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = [
@@ -26,6 +28,9 @@ REQUIRED = [
     "configs/seeds/solve_seeds.txt",
     "docs/convergence_protocol.md",
     "AGENTS.md",
+    "configs/required_agent_rules.json",
+    ".clang-format",
+    "scripts/check_project_contracts.py",
     "README.md",
 ]
 BASH_SCRIPTS = [
@@ -37,6 +42,7 @@ BASH_SCRIPTS = [
     "scripts/run_mip.sh",
     "scripts/analyze.sh",
     "scripts/audit.sh",
+    "scripts/format.sh",
     "scripts/lib/allocate_result_root.sh",
 ]
 FORBIDDEN_PATHS = [
@@ -93,7 +99,7 @@ def bash_syntax(script: Path) -> tuple[str, str]:
 
 
 def audit() -> list[tuple[str, str, str]]:
-    checks: list[tuple[str, str, str]] = []
+    checks = check_contracts(ROOT)
     missing = [path for path in REQUIRED + BASH_SCRIPTS if not (ROOT / path).is_file()]
     checks.append(("Required paths", "PASS" if not missing else "FAIL", ", ".join(missing) or "all present"))
 

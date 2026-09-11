@@ -6,6 +6,6 @@
 
 namespace scheduling {
 
-FlowShopInstance load_instance(const std::filesystem::path& instance_directory);
+FlowShopInstance load_instance(const std::filesystem::path &instance_directory);
 
 } // namespace scheduling

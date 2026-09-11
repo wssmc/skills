@@ -1,8 +1,8 @@
 {
   "name": "mip-scheduling-project-generator-skill",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "created_at": "2026-05-31T02:26:42.234080Z",
-  "updated_at": "2026-09-08T00:00:00.000000Z",
+  "updated_at": "2026-09-11T00:00:00.000000Z",
   "description": "Generate and validate reproducible C++17-core scheduling and OR research projects with IBM's cplex Python API for MIP, fixed seeds, script-mapped formal outputs, CPU-time convergence protocols, Bash orchestration, audits, and paper-ready outputs.",
   "default_solver": "IBM ILOG CPLEX Python API (cplex)",
   "core_language": "C++17",

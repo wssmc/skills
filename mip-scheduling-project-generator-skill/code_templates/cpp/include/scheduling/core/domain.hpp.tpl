@@ -20,8 +20,12 @@ struct FlowShopInstance {
     std::vector<std::vector<double>> processing_times; // [job][stage]
     std::vector<std::size_t> machines_per_stage;
 
-    std::size_t jobs() const noexcept { return processing_times.size(); }
-    std::size_t stages() const noexcept { return machines_per_stage.size(); }
+    std::size_t jobs() const noexcept {
+        return processing_times.size();
+    }
+    std::size_t stages() const noexcept {
+        return machines_per_stage.size();
+    }
 
     void validate() const {
         if (id.empty()) {
@@ -35,7 +39,7 @@ struct FlowShopInstance {
                 throw std::invalid_argument("each stage must have at least one machine");
             }
         }
-        for (const auto& row : processing_times) {
+        for (const auto &row : processing_times) {
             if (row.size() != stages()) {
                 throw std::invalid_argument("processing-time matrix shape does not match stages");
             }

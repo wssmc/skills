@@ -8,6 +8,9 @@
 - [ ] Python 只做算例、分析、统计、绘图、报告，以及 CPLEX MIP 这一明确例外
 - [ ] Bash 是统一构建、运行、批量、分析和审计入口
 - [ ] AGENTS.md 已读取并同步
+- [ ] AGENTS.md 包含完整管理规则与收敛协议，已与生成源逐节比对；没有用摘要或链接替代条款
+- [ ] 每个算法主流程独立 .cpp；评价/checker、共享算子、I/O、registry、runner 按职责拆分，CMake 同步
+- [ ] 一条语句一行、代码块展开；.clang-format 和 scripts/format.sh --check 已验证，缺工具不能记 PASS
 
 ## CPLEX 与评价
 

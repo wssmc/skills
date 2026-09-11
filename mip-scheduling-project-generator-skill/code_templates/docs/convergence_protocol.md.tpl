@@ -2,6 +2,7 @@
 
 ## 1. 预算与初始化
 
+- 所有算法使用统一定义；不得因算法、阶段或表示空间改变收敛含义，或为改善图形外观移动日志边界。
 - 单次运行使用项目正式进程 CPU budget，且预算包含初始化；Nest-Lot 项目未另行规定时可用 `T_lim=factor*J*M` 秒，其他问题不得套用该公式。
 - 同一运行只使用一个进程 CPU 计时器。初始化边界必须在算法设计中预先定义，只包含明确的构造、多启动或种群建立，不得临时纳入主循环、局部搜索或搜索阶段。
 - 原始元数据记录 `T_init`、`E_init`、`C_init`。令 `T_search=max(T_lim-T_init,0)`，初始化结束为 `t_search=0`，归一化横轴为 `x=t_search/T_search`。若 `T_search=0`，输出 `C_init` 水平线并标记 `initialization_exhausted_budget`。
@@ -26,5 +27,8 @@
 
 - 使用右连续阶梯图，例如 `step(...,where="post")`；横轴 `Normalized time`、范围 `[0,1]`，纵轴统一使用 `Objective value` 或 `Makespan`，同面板内共享尺度。
 - 每条曲线必须恰好 100 点、前 20% 恰好 50 点、目标单调不增、首点等于 `C_init`、末点等于返回 Cmax。
-- 新事件、采样表和图片先写 `outputs/tmp/convergence/`；检查完成后才复制到与正式脚本对应的 `outputs/formal/...`。
+- 每条曲线可追溯到实例、算法、seed、factor、T_lim、T_init、T_search、总评价次数、原始事件路径和可执行文件校验值；T_init 必须保留在原始元数据。
+- 水平曲线先核验原始事件、初始化预算占比和最终返回值；真实无改善可以保留，采集缺失、阶段重置或返回值不一致必须先修复。
+- 新事件、采样表和图片先写 `outputs/tmp/convergence/`；只有用户明确同意后，才能复制到对应正式测试目录或替换论文正文、正式图片及正式实验数据。
 - 论文总体结论以正式多 seed 的 ARPD、排名和配对检验为准；单条曲线只称为 illustrative/representative profile，不据此声称总体或所有面板最优。
+- 代表性曲线可采用不同 seed，不因此继续提出公平性质疑；随机轨迹变化属正常现象，正文明确其展示用途，正式性能比较仍遵循配对重复实验。

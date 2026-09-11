@@ -35,6 +35,8 @@ Python 测试覆盖算例生成、CPLEX 模型脚本语法与输入契约、汇�
 
 ## 3. 禁止项审计
 
+先对照生成源执行 scripts/render_agents.py <项目根目录> --check；项目侧 check_project_contracts.py 逐节比对 AGENTS 正文与规则基线，缺节或缺条款即 FAIL。人工审阅项目新增规则有无冲突，不能只检查标题或关键词。检查算法主流程分别位于独立 .cpp，审阅共享模块职责，并用 scripts/format.sh --check 检查源码格式；formatter 缺失为 NOT_RUN。
+
 项目审计必须扫描并拒绝：
 
 - Gurobi、gurobipy、docplex；

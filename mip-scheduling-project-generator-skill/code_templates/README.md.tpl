@@ -11,6 +11,8 @@
 ## 核心规则
 
 - C++ 负责启发式求解、评价、checker 和 registry。
+- 每算法独立 .cpp，共享评价与运行支持按职责拆分；一条语句一行，使用 .clang-format 统一格式。
+- AGENTS.md 内嵌完整规则；configs/required_agent_rules.json 用于逐节完整性审计，规则补充写在管理块外。
 - Python 只做算例、CPLEX MIP、汇总、统计、绘图和报告。
 - 不使用 EvalCache。
 - 每个算例记录 instance_seed。
@@ -29,6 +31,8 @@ scripts/run_batch.sh data/demo configs/seeds/solve_seeds.txt
 RESULT_VARIANT=time-limit-600 scripts/run_batch.sh data/demo configs/seeds/solve_seeds.txt
 scripts/run_mip.sh data/demo/demo_01 104729 1
 scripts/analyze.sh
+scripts/format.sh
+scripts/format.sh --check
 scripts/audit.sh
 ~~~
 

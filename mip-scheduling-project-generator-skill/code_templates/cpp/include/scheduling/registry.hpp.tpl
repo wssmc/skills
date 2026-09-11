@@ -1,7 +1,7 @@
 #pragma once
 
-#include "scheduling/core/domain.hpp"
 #include "scheduling/algorithms/algorithms.hpp"
+#include "scheduling/core/domain.hpp"
 
 #include <functional>
 #include <map>
@@ -10,9 +10,9 @@
 
 namespace scheduling {
 
-using SolverFunction = std::function<SolveResult(const FlowShopInstance&, const SolveConfig&)>;
+using SolverFunction = std::function<SolveResult(const FlowShopInstance &, const SolveConfig &)>;
 
-const std::map<std::string, SolverFunction>& algorithm_registry();
+const std::map<std::string, SolverFunction> &algorithm_registry();
 std::vector<std::string> runnable_algorithms();
 
 } // namespace scheduling

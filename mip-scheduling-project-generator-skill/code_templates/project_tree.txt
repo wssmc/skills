@@ -1,5 +1,6 @@
 project_name/
 ├── CMakeLists.txt
+├── .clang-format
 ├── cmake/
 ├── cpp/
 │   ├── include/scheduling/
@@ -13,7 +14,14 @@ project_name/
 │   ├── src/
 │   │   ├── io/instance_loader.cpp
 │   │   ├── io/result_writer.cpp
-│   │   ├── algorithms/algorithms.cpp
+│   │   ├── evaluation/evaluator.cpp
+│   │   ├── algorithms/search_support.cpp
+│   │   ├── algorithms/random_search.cpp
+│   │   ├── algorithms/sa_basic.cpp
+│   │   ├── algorithms/ig_basic.cpp
+│   │   ├── algorithms/ts_basic.cpp
+│   │   ├── algorithms/ga_basic.cpp
+│   │   ├── algorithms/ma_basic.cpp
 │   │   └── registry.cpp
 │   ├── apps/solver_run.cpp
 │   └── tests/smoke_test.cpp
@@ -33,9 +41,12 @@ project_name/
 │   ├── analyze.sh
 │   ├── lib/allocate_result_root.sh
 │   ├── audit.sh
+│   ├── format.sh
+│   ├── check_project_contracts.py
 │   └── audit_project.py
 ├── data/
 ├── configs/
+│   ├── required_agent_rules.json
 │   └── seeds/
 │       └── solve_seeds.txt
 ├── docs/

@@ -115,7 +115,7 @@ outputs/formal/{test_id}[__changed-params][_N]/ # 与正式测试脚本一一对
 
 ## 7. AGENTS.md
 
-每个生成项目都必须有 AGENTS.md。它负责记录：
+每个生成项目都必须有完整、自包含的 AGENTS.md。唯一规则源是 code_templates/AGENTS.md.tpl，收敛协议由 scripts/render_agents.py 从 docs 模板完整嵌入；templates/agents_md_template.md 仅作导航，不再维护摘要副本。逐节规则基线保存于 configs/required_agent_rules.json，用于检查遗漏。它负责记录：
 
 - 当前问题类型和问题数据模型；
 - C++、Python、Bash 边界；
@@ -125,3 +125,9 @@ outputs/formal/{test_id}[__changed-params][_N]/ # 与正式测试脚本一一对
 - 状态语义、禁止事项和验证命令。
 
 新约定出现时立即同步 AGENTS.md、configs/conventions.md 或 docs/。架构变更时同步 README、IMPLEMENTATION_STATUS、PROJECT_AUDIT 和项目树。
+
+## 8. C++ 物理拆分
+
+每算法独立 cpp/src/algorithms/<algorithm>.cpp；评价/checker 放 evaluation/，共享算子/运行支持独立实现，I/O 放 io/，registry 只注册，apps/solver_run.cpp 只分派。头文件声明接口，避免把非模板算法塞进头文件。同步维护 CMake 清单与 docs/algorithm_design.md 文件职责表；实际参考目录见 code_templates/project_tree.txt。
+
+一条语句一行，函数/循环/分支/lambda 体展开，for 头部、字符串及注释中的分号不能机械切分；用生成的 .clang-format 统一 4 空格缩进和 100 列建议行宽。执行 scripts/format.sh 后执行 scripts/format.sh --check。

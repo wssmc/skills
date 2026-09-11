@@ -10,6 +10,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from render_agents import render, write_project
+
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE_ROOT = SKILL_ROOT / "code_templates"
@@ -24,7 +26,12 @@ CPP_REQUIRED = [
     "cpp/include/scheduling/registry.hpp.tpl",
     "cpp/src/io/instance_loader.cpp.tpl",
     "cpp/src/io/result_writer.cpp.tpl",
-    "cpp/src/algorithms/algorithms.cpp.tpl",
+    "cpp/include/scheduling/evaluation/evaluator.hpp.tpl",
+    "cpp/include/scheduling/algorithms/search_support.hpp.tpl",
+    "cpp/src/evaluation/evaluator.cpp.tpl",
+    "cpp/src/algorithms/search_support.cpp.tpl",
+    *[f"cpp/src/algorithms/{name}.cpp.tpl" for name in
+      ("random_search", "sa_basic", "ig_basic", "ts_basic", "ga_basic", "ma_basic")],
     "cpp/src/registry.cpp.tpl",
     "cpp/apps/solver_run.cpp.tpl",
     "cpp/tests/smoke_test.cpp.tpl",
@@ -43,6 +50,9 @@ SCRIPT_REQUIRED = [
     "scripts/run_mip.sh.tpl",
     "scripts/analyze.sh.tpl",
     "scripts/audit.sh.tpl",
+    "scripts/format.sh.tpl",
+    "scripts/check_project_contracts.py.tpl",
+    ".clang-format.tpl",
     "scripts/audit_project.py.tpl",
     "scripts/lib/allocate_result_root.sh.tpl",
 ]
@@ -139,7 +149,8 @@ def validate_templates() -> None:
 
     domain = (TEMPLATE_ROOT / "cpp/include/scheduling/core/domain.hpp.tpl").read_text(encoding="utf-8")
     require("FlowShopInstance" in domain and "instance_seed" in domain, "reference problem model is incomplete")
-    algorithms = (TEMPLATE_ROOT / "cpp/src/algorithms/algorithms.cpp.tpl").read_text(encoding="utf-8")
+    algorithms = "\n".join(path.read_text(encoding="utf-8")
+                           for path in (TEMPLATE_ROOT / "cpp/src/algorithms").glob("*.cpp.tpl"))
     require("config.solve_seed" in algorithms, "algorithms must use the explicit solve seed")
     require(not any(token in algorithms.lower() for token in FORBIDDEN_CORE_TOKENS), "algorithm core contains forbidden cache/solver tokens")
 
@@ -170,7 +181,7 @@ def validate_templates() -> None:
     require('candidate="${base}_${rerun}"' in allocator, "unchanged reruns need numeric suffixes")
     runner = (TEMPLATE_ROOT / "cpp/apps/solver_run.cpp.tpl").read_text(encoding="utf-8")
     require("outputs/tmp/unclassified" in runner and "SCHED_OUTPUT_ROOT" in runner, "runner output fallback is unsafe")
-    agents = (TEMPLATE_ROOT / "AGENTS.md.tpl").read_text(encoding="utf-8")
+    agents, _ = render()
     for token in ("outputs/tmp/", "outputs/formal/", "每 2 小时", "T_init", "INIT", "IMPROVE", "100 点"):
         require(token in agents, f"generated AGENTS.md is missing rule: {token}")
     for relative in SCRIPT_REQUIRED:
@@ -192,14 +203,63 @@ def materialize(project_root: Path) -> None:
         shutil.copy2(template, destination)
         if destination.suffix == ".sh":
             destination.chmod(destination.stat().st_mode | 0o111)
+    write_project(project_root)
     demo = project_root / "data" / "demo" / "demo_01_10_5"
     shutil.copytree(SKILL_ROOT / "examples" / "demo_01_10_5", demo)
 
 
+def validate_contract_regressions(project_root: Path) -> None:
+    """Ensure real omissions/minified bodies fail, with valid C++ edge cases accepted."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "contract_check", project_root / "scripts/check_project_contracts.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    require(module.check_rules(project_root)[1] == "PASS", "full AGENTS rejected")
+    agents_path = project_root / "AGENTS.md"
+    original = agents_path.read_text(encoding="utf-8")
+    _, sections = render()
+    try:
+        # Remove individual substantive rules, not merely section headings.
+        for body in sections.values():
+            bullet = next(line for line in body.splitlines() if line.startswith("- ")) if any(
+                line.startswith("- ") for line in body.splitlines()) else body.splitlines()[0]
+            agents_path.write_text(original.replace(bullet, "", 1), encoding="utf-8")
+            require(module.check_rules(project_root)[1] == "FAIL", "omitted rule escaped audit")
+    finally:
+        agents_path.write_text(original, encoding="utf-8")
+
+    source = project_root / "cpp/src/algorithms/sa_basic.cpp"
+    content = source.read_text(encoding="utf-8")
+    try:
+        source.write_text(content + '\nSolveResult solve_extra(const X& x) { return {}; }\n', encoding="utf-8")
+        checks = module.check_cpp(project_root)
+        require(checks[0][1] == "FAIL", "multiple algorithm bodies escaped audit")
+    finally:
+        source.write_text(content, encoding="utf-8")
+
+    formatter = shutil.which(os.environ.get("CLANG_FORMAT", "clang-format"))
+    require(formatter is not None, "clang-format required to validate new formatting gate")
+    probe = project_root / "cpp/tests/format_probe.cpp"
+    try:
+        probe.write_text('void f(){int n=0;n++;for(int i=0;i<2;++i){n+=i;}const char* s="a;b";}\n', encoding="utf-8")
+        require(module.check_cpp(project_root)[1][1] == "FAIL", "minified statements escaped audit")
+        formatted = subprocess.run([formatter, "--style=file", "-i", str(probe)], capture_output=True)
+        require(formatted.returncode == 0, "format fixture failed")
+        require(module.check_cpp(project_root)[1][1] == "PASS", "valid for header/string semicolon rejected")
+    finally:
+        probe.unlink(missing_ok=True)
+    print("PASS regressions: each rule section, merged algorithms, minified statements, for/string semicolons")
+
+
 def validate_integration() -> None:
-    with tempfile.TemporaryDirectory(prefix="mip_scheduling_skill_validation_") as temporary:
+    smoke_parent = SKILL_ROOT / "outputs/tmp"
+    smoke_parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="skill_validation_", dir=smoke_parent) as temporary:
         project_root = Path(temporary)
         materialize(project_root)
+        validate_contract_regressions(project_root)
         build = project_root / "build"
         configure_command = [
             "cmake",
@@ -316,7 +376,7 @@ def validate_integration() -> None:
                 "--input",
                 str(smoke_root),
                 "--output",
-                str(project_root / "outputs" / "analysis_summary.csv"),
+                str(project_root / "outputs" / "tmp" / "analysis_summary.csv"),
             ],
             cwd=project_root,
             text=True,
@@ -324,7 +384,7 @@ def validate_integration() -> None:
             check=False,
         )
         require(analysis.returncode == 0, f"Python analysis failed:\n{analysis.stdout}\n{analysis.stderr}")
-        require((project_root / "outputs" / "analysis_summary.csv").is_file(), "analysis summary is missing")
+        require((project_root / "outputs" / "tmp" / "analysis_summary.csv").is_file(), "analysis summary is missing")
 
         audit = subprocess.run(
             [sys.executable, str(project_root / "scripts" / "audit_project.py")],

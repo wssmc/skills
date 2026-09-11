@@ -11,14 +11,14 @@
 namespace scheduling {
 namespace {
 
-bool parse_double(const std::string& token, double& value) {
-    char* end = nullptr;
+bool parse_double(const std::string &token, double &value) {
+    char *end = nullptr;
     errno = 0;
     value = std::strtod(token.c_str(), &end);
     return end != token.c_str() && *end == '\0' && errno != ERANGE;
 }
 
-std::vector<std::size_t> read_machine_counts(const std::filesystem::path& path) {
+std::vector<std::size_t> read_machine_counts(const std::filesystem::path &path) {
     std::ifstream input(path);
     if (!input) {
         throw std::runtime_error("cannot open " + path.string());
@@ -33,7 +33,8 @@ std::vector<std::size_t> read_machine_counts(const std::filesystem::path& path) 
             continue;
         }
         double count = 0.0;
-        if (!parse_double(count_token, count) || count < 1.0 || count != static_cast<double>(static_cast<std::size_t>(count))) {
+        if (!parse_double(count_token, count) || count < 1.0 ||
+            count != static_cast<double>(static_cast<std::size_t>(count))) {
             continue; // header row
         }
         counts.push_back(static_cast<std::size_t>(count));
@@ -44,7 +45,7 @@ std::vector<std::size_t> read_machine_counts(const std::filesystem::path& path) 
     return counts;
 }
 
-std::vector<std::vector<double>> read_processing_times(const std::filesystem::path& path) {
+std::vector<std::vector<double>> read_processing_times(const std::filesystem::path &path) {
     std::ifstream input(path);
     if (!input) {
         throw std::runtime_error("cannot open " + path.string());
@@ -82,7 +83,7 @@ std::vector<std::vector<double>> read_processing_times(const std::filesystem::pa
 
 } // namespace
 
-FlowShopInstance load_instance(const std::filesystem::path& directory) {
+FlowShopInstance load_instance(const std::filesystem::path &directory) {
     FlowShopInstance instance;
     instance.id = directory.filename().string();
     {

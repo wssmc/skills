@@ -4,3 +4,5 @@ mip-scheduling-project-generator-skill/mip_hfsp_project_generator_skill_revision
 
 # Local skill evaluation artifacts - not part of formal packages
 /temp/
+/mip-scheduling-project-generator-skill/outputs/tmp/
+/mip-scheduling-project-generator-skill/scripts/__pycache__/

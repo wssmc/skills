@@ -6,6 +6,6 @@
 
 namespace scheduling {
 
-void write_outputs(const SolveResult& solved, const std::filesystem::path& output_dir);
+void write_outputs(const SolveResult &solved, const std::filesystem::path &output_dir);
 
 } // namespace scheduling

@@ -18,6 +18,8 @@
 12. 当前流水车间参考只是适配示例，其他问题必须同步修改全链。
 13. 所有烟测写入 outputs/tmp/；正式测试脚本与 outputs/formal/{test_id}/ 一一对应，改参标在目录名，未改配置的重跑追加 `_1`、`_2`。
 14. 所有算法使用同一进程 CPU 收敛协议：初始化元数据、统一全局精英事件、每 seed 单次运行后离线采样 100 点、右连续阶梯图和首末值校验。
+15. 使用 skill 的 scripts/render_agents.py 完整生成 AGENTS.md 与规则基线；不缩写规定、不只引用 docs，交付前 --check 对照生成源。
+16. 每算法独立 .cpp，共享评价/checker、算子、I/O、registry 按职责拆分；一条语句一行（for 头部和字符串除外），代码块展开，执行 scripts/format.sh 与 --check。
 
 ## 问题描述
 
