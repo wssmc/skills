@@ -79,3 +79,17 @@ unless the evidence and context justify the specific claim.
 A scope limitation should appear where it changes interpretation. It does not need to be restated after every result.
 
 Overclaiming/underclaiming is audited in `checks/full-manuscript-check.md`.
+
+## 9. Avoid dash-heavy and AI-like prose
+
+In the final manuscript, do not use hyphens, em dashes, en dashes, or dash-based fragments as a substitute for ordinary syntax. Prefer complete clauses, conjunctions, commas, semicolons, or separate sentences. This is especially important for long chains that compress problem, method, evidence, and conclusion into a slogan-like expression.
+
+Do not mechanically remove symbols that carry technical meaning. Preserve:
+
+- established technical compounds whose hyphenation is conventional;
+- mathematical minus signs and operators;
+- numerical ranges and interval notation;
+- citations, identifiers, file names, and formal labels;
+- punctuation required by the target journal or language.
+
+During polishing, inspect repeated dash patterns and rewrite only gratuitous uses. The goal is natural academic syntax, not zero hyphens.

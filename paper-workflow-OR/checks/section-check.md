@@ -111,6 +111,16 @@ Check:
 - scale dependence;
 - no unnecessary extra second-level headings.
 
+## Figures and diagrams
+
+Check:
+- Python-generated figures follow a restrained publication style rather than a decorative AI-like style;
+- the background, palette, typography, line widths, and layout are consistent;
+- every node, arrow, color, marker, and annotation has a defined scientific or operational role;
+- no decorative 3D effects, neon gradients, glow, gloss, random icons, ornamental backgrounds, or unrelated illustrations are present;
+- labels, units, legends, experimental units, and metric directions are legible at the intended manuscript size;
+- unnecessary hyphenated or dash-based prose is not used in captions or figure discussion.
+
 ## Conclusion
 
 Check three responsibilities:

@@ -13,6 +13,28 @@ Before writing about a figure, confirm:
 
 If these semantics are unknown, do not produce a formal scientific interpretation.
 
+## Python-generated figure style gate
+
+Apply this gate whenever Python is used to draw a schematic, process diagram, flowchart, algorithm illustration, Gantt chart, or other manuscript figure.
+
+The figure should look like a deliberate scientific or engineering figure, not a decorative AI-generated illustration. Use:
+
+- a plain or restrained background;
+- a limited and semantically meaningful color palette;
+- consistent typography, line widths, markers, and arrow conventions;
+- explicit labels, units, legends, and annotations;
+- aligned objects, balanced spacing, and a reproducible layout;
+- clean two-dimensional geometry suitable for print and grayscale inspection.
+
+Avoid:
+
+- decorative three-dimensional effects, neon gradients, glow, gloss, or excessive shadows;
+- random icons, stock-style illustrations, ornamental backgrounds, or unrelated visual metaphors;
+- excessive rounded cards, pseudo-handwritten elements, dense decorative arrows, or text that is not tied to a defined object or relation;
+- visual variation that does not encode data, process, hierarchy, or a scientific distinction.
+
+For a schematic, every node, arrow, color, and label should have a defined semantic role. For a quantitative plot, styling must not obscure the experimental unit, metric direction, scale, or comparison. Prefer reproducible vector-like output and verify legibility at the intended manuscript size.
+
 ## Common figure types
 
 | Figure type | Main purpose | Main narrative focus |
@@ -198,3 +220,5 @@ Use:
 - material exception reported;
 - observation separated from explanation;
 - conclusion limited to plotted data.
+- publication style is restrained and free of decorative AI-like visual treatment;
+- every visual element has a defined scientific or operational role.
