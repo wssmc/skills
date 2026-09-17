@@ -27,6 +27,20 @@ Rules:
 - introduce auxiliaries only when necessary;
 - avoid redefining standard symbols without reason.
 
+## Notation-role convention
+
+Do not apply a blanket rule such as “prefer uppercase.” Assign letter case by mathematical role and use it consistently across the manuscript. Unless a field convention or target journal requires otherwise, prefer:
+
+| Role | Default convention | Examples |
+|---|---|---|
+| Sets | uppercase calligraphic or uppercase Roman | `\mathcal{J}`, `\mathcal{M}`, `J` |
+| Indices | lowercase italic | `i`, `j`, `k`, `m` |
+| Parameters | lowercase Greek or Roman | `p_{ij}`, `r_j`, `d_j` |
+| Continuous/integer variables | uppercase Roman | `S_{ij}`, `C_{ij}`, `T_j` |
+| Binary variables | lowercase Roman | `x_{ij}`, `y_{ijk}`, `z_{jm}` |
+
+Established exceptions such as a big-`M` constant are permitted. If the manuscript adopts another valid convention, preserve it, but keep the roles visually distinguishable and internally uniform.
+
 ## Notation table
 
 For an MIP/MILP model, consolidate sets, indices, parameters, decision variables, and auxiliary variables into one notation table unless journal style strongly prefers otherwise. Recommended caption: `Notation for the MIP model`.
@@ -47,7 +61,7 @@ Do not repeat every notation-table definition in the prose.
 
 ## Formulation-first presentation
 
-After the notation table, present the objective and all constraints as one continuous mathematical formulation. Then explain constraint groups in operational order. Do not alternate every equation with a paragraph unless an unusually complex equation requires immediate interpretation.
+After the notation table, present the objective and all constraints as one continuous mathematical formulation. For a standard MILP, follow the complete formulation with one compact paragraph that explains the objective and constraint groups in operational order. Add separate explanation paragraphs only for genuinely nonstandard or unusually complex logic. Do not alternate every equation with a paragraph.
 
 ## Objective function
 
@@ -97,3 +111,5 @@ Do not write only `M is a large number.`
 ## Problem properties
 
 A complexity proof should follow a valid reduction/special-case argument. The number of binary variables is not evidence of NP-hardness.
+
+Keep problem complexity distinct from algorithmic complexity and empirical computational cost; use `writing-specification/solution-method.md` for the full distinction.

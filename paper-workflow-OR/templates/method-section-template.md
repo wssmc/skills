@@ -1,6 +1,8 @@
 # Solution Method Section Template
 
-## 4.1 Overall Framework
+Do not copy the headings below verbatim. First recover the algorithmic states, transitions, mechanism attribution, and dependencies; then assign algorithm specific titles and merge responsibility blocks when they form one causal mechanism.
+
+## 4.x [Title for the overall framework responsibility]
 
 ```text
 [Baseline/metaheuristic idea and suitability.]
@@ -9,7 +11,7 @@
 [Real control/information flow.]
 ```
 
-## 4.2 Solution Representation and Decoding
+## 4.x [Title for representation and decoding responsibilities]
 
 ```text
 [What a searched solution contains.]
@@ -20,7 +22,7 @@
 [Small example if useful.]
 ```
 
-## 4.3 Initialization
+## 4.x [Title for initialization responsibilities]
 
 ```text
 [How initial state(s) are generated.]
@@ -29,7 +31,7 @@
 [How later-stage states are inherited/transformed, if applicable.]
 ```
 
-## 4.4 Neighborhood Structures
+## 4.x [Title for neighborhood responsibilities]
 
 ```text
 [Portfolio overview.]
@@ -39,7 +41,7 @@
 [Search-scale/complementarity/control summary.]
 ```
 
-## 4.5+ [Method-Specific Mechanism]
+## 4.x [Title for an independent proposed or adapted mechanism]
 
 ```text
 [Baseline deficiency.]
@@ -51,7 +53,7 @@
 [Intended effect.]
 ```
 
-## 4.x [Overall Search / Algorithm Integration]
+## 4.x [Title for overall search integration]
 
 ```text
 [Connect all components in real execution order.]
@@ -60,3 +62,5 @@
 [Returned solution.]
 [Overall or component pseudocode only when useful.]
 ```
+
+Before finalizing the section, assign one primary carrier to each scientific fact: prose for motivation and causality, a flowchart for macro control, pseudocode for exact execution and state updates, equations for irreducible mathematical mechanisms, and operation diagrams for state transformations and restrictions.

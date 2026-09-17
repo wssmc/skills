@@ -22,6 +22,7 @@ REQUIRED = [
     ROOT / "checks/problem-abstraction-check.md",
     ROOT / "checks/contribution-check.md",
     ROOT / "checks/pseudocode-maturity-check.md",
+    ROOT / "checks/formal-manuscript-deployment-check.md",
     ROOT / "element-guidance/figures.md",
     ROOT / "element-guidance/tables.md",
     ROOT / "element-guidance/pseudocode.md",

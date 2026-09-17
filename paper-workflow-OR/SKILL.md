@@ -1,6 +1,6 @@
 ---
 name: paper-workflow-or
-description: "Use this skill to plan, draft, revise, translate, audit, peer-review, and prepare submission materials for scheduling-oriented operations-research manuscripts centered on problem formulation, heuristic/metaheuristic solution methods, and computational experiments. It enforces a fixed manuscript structure, evidence fidelity, code-to-method mapping, pseudocode conversion, figure/table narrative, multi-reviewer workflows, revision-response analysis, concise naming, and terminology consistency."
+description: "Use this skill to plan, draft, revise, translate, audit, peer-review, and prepare submission materials for scheduling-oriented operations-research manuscripts centered on problem formulation, heuristic/metaheuristic solution methods, and computational experiments. It enforces responsibility-based manuscript architecture, evidence fidelity, code-to-method mapping, pseudocode conversion, figure/table narrative, multi-reviewer workflows, revision-response analysis, concise naming, and terminology consistency."
 ---
 
 # Paper Workflow for Scheduling-Oriented Operations Research
@@ -81,8 +81,10 @@ The following routes override discretionary progressive loading:
 - For an Introduction, Related Work, literature positioning, research gap, novelty, or contributions task, MUST load `element-guidance/citations.md`, `truthfulness/literature-and-novelty.md`, and the relevant chapter Writing Specification.
 - For an industrial problem description, problem framing/naming, or generalization decision, MUST load `checks/problem-abstraction-check.md` and apply the Problem Abstraction Gate before drafting.
 - For notation, MIP/MILP, mathematical formulation, equations, or constraints, MUST load `writing-specification/problem-and-model.md` and `element-guidance/equations-and-notation.md`.
+- For complexity or computational-cost claims, MUST first classify the claim as problem complexity, algorithmic complexity, or empirical computational cost, then load the corresponding Problem/Model, Solution Method, or Experiments guidance. Algorithmic complexity may be stated only from source code or a frozen executable specification.
 - For pseudocode, an algorithm, a procedure, or executable search logic, MUST load `element-guidance/pseudocode.md` and `checks/pseudocode-maturity-check.md`, then apply the Pseudocode Maturity Gate before producing publication-level pseudocode.
 - For contribution statements, novelty positioning, `first`/`new`/`novel` claims, or closest-study comparisons, MUST load `truthfulness/literature-and-novelty.md`; contribution drafting also MUST apply `checks/contribution-check.md`.
+- For transferring approved review material into a journal template or formal submission source, MUST load `checks/formal-manuscript-deployment-check.md`, compile the authoritative main file, and inspect the rendered pages.
 
 ### Scientific elements
 Load relevant files under:
@@ -131,6 +133,14 @@ checks/full-manuscript-check.md
 ```
 
 for complete-paper consistency.
+
+Use:
+
+```text
+checks/formal-manuscript-deployment-check.md
+```
+
+when moving approved sections, figures, tables, or references from review artifacts into the formal manuscript source.
 
 ### Roles and task prompts
 

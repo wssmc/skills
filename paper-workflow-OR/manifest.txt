@@ -5,6 +5,7 @@ checks/contribution-check.md
 checks/peer-review-criteria.md
 checks/problem-abstraction-check.md
 checks/pseudocode-maturity-check.md
+checks/formal-manuscript-deployment-check.md
 checks/section-check.md
 element-guidance/README.md
 element-guidance/citations.md

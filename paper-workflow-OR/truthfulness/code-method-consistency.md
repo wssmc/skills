@@ -2,6 +2,25 @@
 
 Use this file only when source code is available for internal audit or code-to-manuscript work. External peer reviewers do not assume source-code access.
 
+## Establish implementation lineage before interpreting mechanics
+
+When several source versions exist, identify:
+
+- the declared formal algorithm entry point;
+- the experiment script and the source path it actually invokes;
+- the origin of any executable or generated source;
+- the version, revision, configuration, or checksum associated with reported results;
+- whether each artifact is the current formal implementation, a frozen experimental copy, a historical archive, or a temporary calibration build.
+
+Evidence priority depends on the claim:
+
+- use the approved formal source or frozen executable specification for the method definition;
+- use the artifact actually invoked by the experiment for claims about reported runs;
+- use runtime arguments, configuration records, and logs for the parameter values actually applied;
+- use version history and archives only to explain lineage unless they are explicitly designated as the formal evidence source.
+
+Do not infer the current algorithm from historical field names, inactive code, archived copies, or temporary generated files. When artifacts appear inconsistent, complete the lineage check before requesting new experiments. Recalculation is necessary only when the unresolved inconsistency can change the algorithm definition, reported results, or fairness of a comparison.
+
 ## Representation
 
 Check:
@@ -92,6 +111,8 @@ Distinguish:
 - calibration values;
 - runtime overrides;
 - final experimental values.
+
+Trace the final value through the actual invocation path. A default that is overridden at runtime is not the experimental setting, and a value tested during calibration is not automatically the retained setting.
 
 ## Baseline reproduction and adaptation consistency
 

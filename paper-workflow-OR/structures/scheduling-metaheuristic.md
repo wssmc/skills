@@ -132,7 +132,7 @@ Present:
 5. problem-specific constraints;
 6. objective-linking constraints;
 7. variable domains;
-8. explanation of each constraint group.
+8. one compact paragraph explaining the objective and constraint groups; expand only for nonstandard or unusually complex logic.
 
 ### 3.2.3 Problem Properties [Optional]
 
@@ -145,7 +145,11 @@ Use only when relevant and supported:
 
 # 4. Proposed Solution Method
 
-## 4.1 Overall Framework
+Before selecting visible subsection titles, recover the actual algorithmic states, complete state transition, mechanism attribution, and dependencies. The responsibility slots below define what Chapter 4 must explain; they are not mandatory subsection titles and may be combined when the algorithmic logic requires it.
+
+Do not reuse another algorithm's subsection structure by changing only the algorithm name.
+
+## Responsibility: overall framework
 
 Cover:
 
@@ -154,7 +158,7 @@ Cover:
 3. an overall flowchart when useful;
 4. the real information/control flow among components.
 
-## 4.2 Solution Representation and Decoding
+## Responsibility: solution representation and decoding
 
 Cover:
 
@@ -164,7 +168,7 @@ Cover:
 4. a small encoding–decoding example when useful;
 5. feasibility and search-space implications.
 
-## 4.3 Initialization
+## Responsibility: initialization
 
 Cover:
 
@@ -175,7 +179,7 @@ Cover:
 
 Numerical parameter values belong in Chapter 5 unless they define the algorithm semantics.
 
-## 4.4 Neighborhood Structures
+## Responsibility: neighborhood structures
 
 Do not mechanically create `4.4.1`, `4.4.2`, etc. for simple moves.
 
@@ -187,7 +191,7 @@ Cover:
 4. search scale/dimension and complementarity;
 5. the operator-selection/control rule.
 
-## 4.5+ Method-Specific Mechanism(s)
+## Responsibility: method specific mechanisms
 
 Create a separate subsection only for a genuinely independent scientific mechanism.
 
@@ -213,9 +217,9 @@ may be one mechanism section rather than three artificial subsections.
 
 If a mechanism has its own theorem, proposition, or structural analysis, it may receive a dedicated subsection and additional space.
 
-## 4.x [Overall Search / Algorithm Integration]
+## Responsibility: overall search and algorithm integration
 
-This is a **responsibility slot**, not a mandatory visible title. Use an algorithm-specific title such as `Overall Search Strategy`, `Two-Stage Search Strategy`, or `Search Process`.
+Use an algorithm specific visible title that reflects the actual search logic.
 
 Cover:
 
@@ -224,7 +228,7 @@ Cover:
 3. current/candidate/best/reference state transitions;
 4. stopping criterion;
 5. returned solution;
-6. feasibility or computational-complexity remarks when necessary.
+6. feasibility or algorithmic-complexity remarks when necessary and supported by source code or a frozen executable specification.
 
 Pseudocode is not forced into one overall algorithm. Use:
 
@@ -250,12 +254,12 @@ Cover:
 1. factors, ranges, distributions, special-feature generation, Small/Large grouping, counts;
 2. IDs, seeds, reproducibility, and summary table.
 
-### 5.1.2 Taguchi Calibration
+### 5.1.2 Parameter Calibration
 
 Cover:
 
 1. parameters/levels, design, calibration instances, runs, budget, response;
-2. main-effect / S/N analysis as applicable;
+2. the selected experimental design and analysis, such as main effects or S/N analysis when applicable;
 3. confirmation experiment;
 4. final settings and non-calibrated parameters.
 
@@ -324,6 +328,8 @@ Do not create a separate fixed `Search Behavior and Computational Efficiency` se
 
 ## 5.3 Component Analysis
 
+Organize this section around contribution claims and causal research questions. Its headings must describe scientific mechanisms or attribution questions, not code switches, source files, or individual tables.
+
 Cover:
 
 1. experimental design: remove / replace / alternative variants;
@@ -335,7 +341,7 @@ Cover:
 7. positive, neutral, negative, and scale-dependent effects;
 8. whether evidence supports the claimed role of each component.
 
-Use `5.3.x` headings named after actual components only when needed.
+Several variants and tables may jointly answer one mechanism question. A nonoriginal framework component may be included as an attribution control, but it does not become a contribution merely because it receives a separate comparison. When relevant, distinguish whether a mechanism is effective, how much of the overall advantage comes from inherited architecture, and whether mechanisms are complementary. Reduce the corresponding contribution wording when the evidence is neutral or negative.
 
 # 6. Conclusions
 

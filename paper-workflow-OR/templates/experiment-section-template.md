@@ -18,14 +18,16 @@
 [Counts/IDs/seeds/reproducibility.]
 ```
 
-### 5.1.2 Taguchi Calibration
+### 5.1.2 Parameter Calibration
 
 ```text
-[Parameters/levels/design.]
-[Calibration instances/budget/response.]
-[Main-effect/SN analysis.]
-[Confirmation experiment.]
-[Final settings.]
+[Parameters and classification as calibrated, fixed, or derived.]
+[Candidate levels or values and experimental design.]
+[Calibration instances, budget, response, and implementation identity.]
+[Screening result and analysis appropriate to the selected design.]
+[Independent confirmation.]
+[Retained settings and rationale.]
+[Evidence that later experiments use the retained settings.]
 ```
 
 ## 5.2 Computational Comparison
@@ -81,11 +83,15 @@ Opening:
 
 ## 5.3 Component Analysis
 
+Define `5.3.x` headings from contribution claims and scientific mechanism questions rather than code switches or individual tables.
+
 ```text
-[Controlled variant.]
-[Single changed mechanism.]
-[Quality effect.]
-[Cost effect.]
+[Contribution or attribution question.]
+[Controlled variants, including inherited-architecture controls when relevant.]
+[Conditions held constant and any justified retuning.]
+[Quality and cost effects.]
 [Statistical support.]
-[Positive/neutral/negative/scale-dependent interpretation.]
+[Effectiveness, attribution, and complementarity conclusion as applicable.]
+[Positive, neutral, negative, or scale-dependent interpretation.]
+[Required adjustment to the contribution wording.]
 ```

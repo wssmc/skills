@@ -35,6 +35,29 @@ Avoid:
 
 For a schematic, every node, arrow, color, and label should have a defined semantic role. For a quantitative plot, styling must not obscure the experimental unit, metric direction, scale, or comparison. Prefer reproducible vector-like output and verify legibility at the intended manuscript size.
 
+## Final scale and deployment inspection
+
+Do not approve an algorithm illustration from its standalone source alone. Inspect it at the final scale used in the manuscript.
+
+Verify that:
+
+- arrows do not pass through labels, formulas, job blocks, or other semantic objects;
+- arrow direction and relation endpoints are explicit when different entity types appear together;
+- the legend defines symbols but does not substitute for a key relation that must be visible in a panel;
+- the illustrative instance is large enough to demonstrate the mechanism without creating a misleading special case;
+- panels use consistent block dimensions, typography, colors, arrow conventions, spacing, and title treatment;
+- labels, formulas, and distinctions remain readable after final scaling and grayscale conversion when relevant.
+
+Inspect all three deployment levels when they exist:
+
+```text
+individual source figure
+→ assembled multipanel figure
+→ rendered page in the formal manuscript
+```
+
+A figure passes only when the scientific relation remains clear at every applicable level.
+
 ## Common figure types
 
 | Figure type | Main purpose | Main narrative focus |
@@ -222,3 +245,5 @@ Use:
 - conclusion limited to plotted data.
 - publication style is restrained and free of decorative AI-like visual treatment;
 - every visual element has a defined scientific or operational role.
+- arrows and relation endpoints remain unambiguous at final manuscript scale;
+- the source figure, assembled figure, and rendered manuscript page have been inspected when applicable.

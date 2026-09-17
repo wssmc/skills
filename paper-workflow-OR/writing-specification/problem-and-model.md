@@ -74,11 +74,11 @@ problem narrative
 → illustrative example
 → one consolidated notation table
 → complete formulation in one continuous block
-→ grouped operational explanation
+→ one compact operational explanation paragraph
 → optional complexity/properties
 ```
 
-Do not default to alternating each variable or equation with a separate explanatory paragraph.
+For a standard MILP, the compact paragraph should explain the objective and constraint groups in operational order. Use additional paragraphs only for genuinely nonstandard or unusually complex constraints. Do not default to alternating each variable or equation with a separate explanatory paragraph.
 
 ## 7. Design notation before equations
 
@@ -114,10 +114,10 @@ Explain:
 
 ## 10. Connect problem properties to later method design
 
-Complexity, bounds, dominance, or structural properties should have a role:
+Problem complexity, bounds, dominance, or structural properties should have a role:
 - justify heuristic search;
 - provide experimental reference;
 - support pruning;
 - motivate representation/decoder design.
 
-Do not add decorative complexity claims without proof or citation.
+Do not add decorative problem-complexity claims without proof or citation. Do not use algorithm runtime or implementation complexity as evidence that the optimization problem is hard.

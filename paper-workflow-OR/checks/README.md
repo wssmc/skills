@@ -9,6 +9,7 @@ Files:
 - `problem-abstraction-check.md`
 - `contribution-check.md`
 - `pseudocode-maturity-check.md`
+- `formal-manuscript-deployment-check.md`
 
 ## Section Check
 
@@ -23,6 +24,12 @@ Answers:
 > Does the full paper describe one coherent problem, method, and evidence chain?
 
 Multiple Section Checks do not replace a Full-Manuscript Check because cross-section consistency must also be tested.
+
+## Formal Manuscript Deployment Check
+
+Answers:
+
+> Was approved review material transferred into the authoritative formal source, compiled through the correct main file, and verified on the rendered pages?
 
 ## Severity
 

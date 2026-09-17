@@ -75,8 +75,9 @@ Check:
 - illustrative example when needed;
 - industrial restrictions not silently generalized;
 - assumptions/example not over-sectioned;
+- notation case follows a consistent role convention for sets, indices, parameters, continuous/integer variables, and binaries;
 - consolidated notation;
-- complete formulation before grouped explanation;
+- complete formulation followed by one compact explanation paragraph by default;
 - objective;
 - constraints/domains;
 - operational interpretation;
@@ -86,6 +87,8 @@ Check:
 ## Solution Method
 
 Check:
+- algorithmic states, complete transitions, mechanism attribution, and dependencies recovered before subsection titles are fixed;
+- subsection titles derived from scientific responsibilities rather than copied from another algorithm;
 - overall framework and component responsibilities;
 - representation and decoder;
 - initialization states;
@@ -97,7 +100,11 @@ Check:
 - exploratory design not presented as finalized executable logic;
 - overall pseudocode uses defined scientific component calls;
 - component pseudocode only when reproducibility requires it;
+- any algorithmic-complexity claim is derived from source code or a frozen executable specification;
+- problem complexity, algorithmic complexity, and empirical computational cost are not conflated;
 - no function-by-function section topology.
+- each major fact has one primary presentation carrier, without full duplication across prose, flowchart, pseudocode, equations, and operation diagrams;
+- `current`, `candidate`, `best`, `elite`, `reference`, and `archive` are used only for defined states and remain consistent across all carriers.
 
 If source code is available for internal audit, additionally load `truthfulness/code-method-consistency.md`.
 
@@ -105,10 +112,15 @@ If source code is available for internal audit, additionally load `truthfulness/
 
 Check:
 - 5.1 environment/protocol/metrics/instance generation/calibration;
+- parameter decisions trace candidate values, design, screening, independent confirmation, retained settings, and consistent downstream use;
+- source defaults, calibrated values, fixed values, derived values, runtime overrides, and final settings are distinguished;
 - 5.2 baseline relevance/source/fairness/MIP/Small/Large/statistics;
 - 5.3 controlled component analysis;
+- component analysis is organized by contribution claims and causal mechanism questions rather than switches, files, or table count;
+- inherited architecture, mechanism effectiveness, and complementarity are distinguished when the design permits;
 - positive/neutral/negative evidence;
 - scale dependence;
+- runtime/evaluation evidence is labeled as empirical computational cost rather than Big-O or problem hardness;
 - no unnecessary extra second-level headings.
 
 ## Figures and diagrams
@@ -119,6 +131,8 @@ Check:
 - every node, arrow, color, marker, and annotation has a defined scientific or operational role;
 - no decorative 3D effects, neon gradients, glow, gloss, random icons, ornamental backgrounds, or unrelated illustrations are present;
 - labels, units, legends, experimental units, and metric directions are legible at the intended manuscript size;
+- arrows do not cross semantic objects, and relation direction and endpoints remain explicit at final scale;
+- multipanel consistency and the source, assembled, and rendered-page versions have been inspected when applicable;
 - unnecessary hyphenated or dash-based prose is not used in captions or figure discussion.
 
 ## Conclusion

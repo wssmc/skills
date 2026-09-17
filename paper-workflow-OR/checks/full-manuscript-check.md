@@ -38,7 +38,9 @@ Check:
 - special feature semantics;
 - objective consistency across Abstract/Introduction/Model/Experiments/Conclusion;
 - notation;
+- role-based case consistency across sets, indices, parameters, continuous/integer variables, and binaries;
 - formulation completeness;
+- complete formulation followed by one compact explanation paragraph for a standard MILP;
 - Big-M logic;
 - illustrative example;
 - complexity/property evidence.
@@ -46,6 +48,8 @@ Check:
 ## 4. Method audit
 
 For manuscript-only audit, check internal scientific consistency:
+- algorithmic states and complete transitions recovered before subsection structure;
+- visible subsection titles reflect scientific responsibilities rather than a reused algorithm template;
 - representation;
 - decoder description;
 - initialization;
@@ -55,6 +59,10 @@ For manuscript-only audit, check internal scientific consistency:
 - flowchart;
 - search integration;
 - stopping/output.
+- complexity claims correctly classified as problem complexity, algorithmic complexity, or empirical computational cost;
+- algorithmic complexity derived only from source code or a frozen executable specification.
+- primary presentation carriers are assigned without full repetition of the same fact;
+- state terms remain one-to-one and consistent across prose, figures, equations, and pseudocode.
 
 When source code is supplied for internal audit, additionally use:
 - `writing-specification/code-to-method-narrative.md`;
@@ -85,6 +93,9 @@ Check:
 - statistical analysis unit/pairing/correction;
 - component causality;
 - neutral/negative evidence.
+- parameter calibration lineage from candidate values through confirmation and retained settings;
+- agreement between retained settings and the values actually used in later experiments;
+- component analysis organized by contribution evidence and causal questions rather than implementation files or table count.
 
 ## 6. Literature/novelty audit
 
@@ -106,6 +117,10 @@ Check:
 - title/caption concision;
 - figure/table names do not contain result analysis;
 - cross-artifact consistency.
+- final-scale legibility and unambiguous arrow routing;
+- consistency across individual source figures, assembled figures, and rendered manuscript pages.
+
+When approved review material has been transferred into the formal source, also apply `checks/formal-manuscript-deployment-check.md`.
 
 ## 8. Cross-section consistency
 
