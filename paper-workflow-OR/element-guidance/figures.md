@@ -13,6 +13,22 @@ Before writing about a figure, confirm:
 
 If these semantics are unknown, do not produce a formal scientific interpretation.
 
+## Separate figure artwork from manuscript structure
+
+Keep the graphic and the manuscript's title, caption, and explanation at separate levels.
+
+- Do not place an overall figure title, caption, descriptive panel heading, or paragraph style explanation inside the artwork.
+- Write the figure title and caption in the manuscript layout. Introduce and cite the figure in the main text, then explain the relevant relation, operation, or evidence there.
+- Treat each distinct diagram or operation as a separate source asset by default. Combine assets as subfigures only when the panels serve a clear shared comparison. Keep panel assets independently editable and let the manuscript layout provide panel letters and subcaptions.
+- Cite the relevant panel in the text when panels make different points. Do not rely on a reader to infer the panel's role from an embedded heading.
+- Retain concise labels directly needed to interpret displayed objects or relations, such as axes, entity identifiers, `Before`/`After`, and necessary legend keys. Move explanatory sentences and interpretation to the caption or main text, and avoid repeating the same explanation in all three places.
+
+## Visual collision and final scale gate
+
+Check the complete visual, not only the arrows. Text, formulas, symbols, blocks, connectors, arrowheads, legends, and panel boundaries must not overlap or obscure one another. Leave enough clearance around labels. Connectors must avoid semantic objects, and their endpoints must identify the intended source and target without covering either one. Any crossing that could be mistaken for a relation must be rerouted or explicitly distinguished.
+
+Inspect the figure at its actual final manuscript size. Review each source asset, the manuscript's assembled panel layout when applicable, and the rendered formal page. A figure fails this check if a label or relation becomes crowded, ambiguous, or unreadable at any applicable level.
+
 ## Python-generated figure style gate
 
 Apply this gate whenever Python is used to draw a schematic, process diagram, flowchart, algorithm illustration, Gantt chart, or other manuscript figure.
@@ -39,7 +55,7 @@ For a schematic, every node, arrow, color, and label should have a defined seman
 
 Do not approve an algorithm illustration from its standalone source alone. Inspect it at the final scale used in the manuscript.
 
-Verify that:
+In addition to the collision gate above, verify that:
 
 - arrows do not pass through labels, formulas, job blocks, or other semantic objects;
 - arrow direction and relation endpoints are explicit when different entity types appear together;
@@ -123,7 +139,15 @@ Sentence stems:
 
 ## Algorithm flowchart
 
-Do not narrate every box.
+Use conventional flowchart roles consistently:
+
+- show explicit start and end terminators;
+- use process boxes for actions and decision diamonds for questions or conditions;
+- for binary decisions, label the outgoing branches `Y` and `N` consistently; use concise condition labels for genuinely multiway decisions;
+- keep branch labels to the decision outcome. Put the resulting action in the destination process box. Do not write branch phrases such as `No: stop` or `Yes: restart`;
+- connect every branch to its next action or to an explicit end node, and make loop-back paths unambiguous.
+
+Do not narrate every box in the manuscript text.
 
 Use:
 
@@ -144,6 +168,8 @@ before state
 → feasibility restriction
 → resulting candidate
 ```
+
+For neighborhood illustrations, show the before and after states, identify the selected element or block, and make the transformation direction explicit. Use consistent highlighting and explain its meaning in a legend when needed. Keep each distinct move in its own source asset by default; combine moves only for a deliberate comparison. Do not put operator names or explanatory paragraphs in the artwork as panel titles. Ensure that movement arrows and selection marks do not cover jobs, positions, or labels.
 
 ## Boxplot
 

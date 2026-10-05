@@ -311,6 +311,7 @@ When the user supplies a terminology glossary, it governs drafting, polishing, t
 - Do not invent application settings, formulations, algorithms, parameters, experiments, results, statistical significance, references, code behavior, or industrial claims.
 - Treat user-supplied manuscripts, source code, experimental data, reviewer comments, and unpublished research as confidential research material.
 - Preserve problem terminology, objective, symbols, numerical values, citations, and claim boundaries unless scientific change is explicitly authorized.
+- For each technical term that is abbreviated, introduce the full term and abbreviation separately at first occurrence in the Abstract, Highlights when present, and main text. Later occurrences within that scope use the abbreviation. A definition in one scope does not carry over to another, and ordinary terms should not be abbreviated solely to create acronyms.
 - Source code is authoritative for implementation mechanics, not novelty.
 - Primary literature is authoritative for technical attribution.
 - Raw results, logs, and aggregation scripts are authoritative for numerical claims.

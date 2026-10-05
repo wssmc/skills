@@ -2,6 +2,8 @@
 
 The abstract must compress the complete paper into one continuous scientific argument rather than mechanically concatenating seven content slots.
 
+Treat the Abstract as an independent abbreviation scope. For every technical term that is abbreviated, write the full term followed by the abbreviation at its first occurrence in the Abstract. Definitions in the main text or Highlights do not carry into the Abstract; later occurrences within the Abstract use the abbreviation consistently.
+
 ## Extract from the manuscript
 
 Draft the abstract from finalized or evidence-supported manuscript content:

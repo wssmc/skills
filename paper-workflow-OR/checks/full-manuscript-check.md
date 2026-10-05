@@ -119,6 +119,11 @@ Check:
 - cross-artifact consistency.
 - final-scale legibility and unambiguous arrow routing;
 - consistency across individual source figures, assembled figures, and rendered manuscript pages.
+- titles, panel headings, and explanatory prose are in the manuscript rather than baked into the figure artwork;
+- body citations identify the relevant figure or panel, and captions match the figure content;
+- visual elements do not overlap, and flowchart/neighborhood conventions are applied consistently.
+- abbreviation scope consistency: Abstract, Highlights when present, and main text each define a technical abbreviation at first occurrence;
+- later abbreviation use remains consistent within each scope, without requiring ordinary terms to be abbreviated.
 
 When approved review material has been transferred into the formal source, also apply `checks/formal-manuscript-deployment-check.md`.
 

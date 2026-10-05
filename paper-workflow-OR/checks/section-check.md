@@ -25,6 +25,16 @@ Check:
 - bounded conclusion;
 - no citations/formulas/hardware/detail overload;
 - result claims supported.
+- technical abbreviations are defined as full term plus abbreviation at first occurrence within the Abstract;
+- later occurrences within the Abstract use the abbreviation consistently.
+
+## Highlights
+
+When Highlights are provided, check:
+- the Highlights block is treated as an independent abbreviation scope;
+- every technical abbreviation is introduced as full term plus abbreviation at first occurrence within Highlights;
+- later occurrences within Highlights use the abbreviation consistently;
+- definitions from the Abstract and main text are not incorrectly treated as available in Highlights.
 
 ## Introduction
 
@@ -126,13 +136,20 @@ Check:
 ## Figures and diagrams
 
 Check:
+- figure titles, captions, panel headings, and explanatory paragraphs are outside the artwork and placed in the manuscript;
+- the main text cites each figure and each distinct panel and explains its role;
+- distinct diagrams are separate assets by default; grouped panels have a clear comparison purpose and remain independently editable;
+- only concise semantic labels needed to interpret the graphic remain inside it;
 - Python-generated figures follow a restrained publication style rather than a decorative AI-like style;
 - the background, palette, typography, line widths, and layout are consistent;
 - every node, arrow, color, marker, and annotation has a defined scientific or operational role;
 - no decorative 3D effects, neon gradients, glow, gloss, random icons, ornamental backgrounds, or unrelated illustrations are present;
 - labels, units, legends, experimental units, and metric directions are legible at the intended manuscript size;
-- arrows do not cross semantic objects, and relation direction and endpoints remain explicit at final scale;
+- text, formulas, symbols, blocks, connectors, arrowheads, legends, and panel boundaries do not overlap or obscure one another;
+- relation direction and endpoints remain explicit at final scale;
 - multipanel consistency and the source, assembled, and rendered-page versions have been inspected when applicable;
+- flowcharts have explicit start/end terminators, use process boxes and decision diamonds consistently, label binary branches `Y`/`N`, and place actions in destination nodes rather than branch text;
+- neighborhood diagrams show before/after states, selected elements, and transformation direction without obscuring jobs, positions, or labels;
 - unnecessary hyphenated or dash-based prose is not used in captions or figure discussion.
 
 ## Conclusion

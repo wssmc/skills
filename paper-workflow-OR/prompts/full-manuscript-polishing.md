@@ -7,6 +7,8 @@ Polishing is the final harmonization stage. It does not replace the Writing Spec
 Check:
 - terminology consistency;
 - abbreviation consistency;
+- independent first occurrence of full terms and abbreviations in the Abstract, Highlights when present, and main text;
+- consistent abbreviation use after definition within each scope;
 - problem/method/component naming;
 - tense consistency;
 - cross-section repetition;

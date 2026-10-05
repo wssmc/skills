@@ -76,6 +76,20 @@ A mechanism name should:
 
 Do not invent inflated names for standard swap/insertion moves.
 
+## Abbreviation scope and first occurrence
+
+For every technical term that is intentionally abbreviated, write the full term followed by the abbreviation in parentheses at its first occurrence, for example, `permutation flow shop problem (PFSP)`. After the definition, use the abbreviation consistently within the same text scope.
+
+Maintain three independent first occurrence scopes:
+
+1. the Abstract;
+2. the Highlights block, when Highlights are provided;
+3. the main text.
+
+An abbreviation introduced in one scope does not count as defined in another. Therefore, repeat the full term and abbreviation at its first occurrence in each applicable scope. The rule applies to technical terms that will actually be abbreviated; it does not require ordinary terms to be shortened merely to create an acronym. If a term appears only once or the target journal requires the full form, retain the full form.
+
+Keep the full term, abbreviation, capitalization, singular or plural form, and spelling consistent with the terminology glossary and the formal problem definition.
+
 ## Concision check
 
 For every title/caption ask:
