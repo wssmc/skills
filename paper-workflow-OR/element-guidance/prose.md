@@ -82,7 +82,7 @@ Overclaiming/underclaiming is audited in `checks/full-manuscript-check.md`.
 
 ## 9. Avoid dash-heavy and AI-like prose
 
-In the final manuscript, do not use hyphens, em dashes, en dashes, or dash-based fragments as a substitute for ordinary syntax. Prefer complete clauses, conjunctions, commas, semicolons, or separate sentences. This is especially important for long chains that compress problem, method, evidence, and conclusion into a slogan-like expression.
+In final manuscript prose, especially the main narrative, minimize nonessential hyphens, em dashes, en dashes, and sentence fragments built around dashes. Prefer complete clauses, conjunctions, commas, semicolons, or separate sentences. This is especially important when a sentence compresses the problem, method, evidence, and conclusion into a slogan.
 
 Do not mechanically remove symbols that carry technical meaning. Preserve:
 
@@ -92,4 +92,4 @@ Do not mechanically remove symbols that carry technical meaning. Preserve:
 - citations, identifiers, file names, and formal labels;
 - punctuation required by the target journal or language.
 
-During polishing, inspect repeated dash patterns and rewrite only gratuitous uses. The goal is natural academic syntax, not zero hyphens.
+During polishing, inspect repeated dash patterns and rewrite only unnecessary uses. The goal is natural academic syntax, not zero hyphens. Apply this as a style preference, not a ban: retain punctuation required by established technical terms, mathematical notation, numerical ranges, citations, formal labels, journal requirements, or meaning.

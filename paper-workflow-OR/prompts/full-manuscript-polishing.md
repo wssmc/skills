@@ -15,6 +15,7 @@ Check:
 - paragraph transitions;
 - figure/table/algorithm naming;
 - project terminology glossary.
+- unnecessary hyphens and sentence fragments built around dashes in manuscript prose, while preserving established terms, mathematical notation, ranges, citations, and formal labels.
 
 ## Pass 2 — Sentence-level polishing
 

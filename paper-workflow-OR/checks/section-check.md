@@ -155,8 +155,9 @@ Check:
 - relation direction and endpoints remain explicit at final scale;
 - multipanel consistency and the source, assembled, and rendered-page versions have been inspected when applicable;
 - flowcharts have explicit start/end terminators, use process boxes and decision diamonds consistently, label binary branches `Y`/`N`, and place actions in destination nodes rather than branch text;
+- flowchart findings distinguish visible artwork violations from semantic questions requiring source verification and optional presentation improvements; an algorithm mismatch is not reported as confirmed without checking the relevant approved method, pseudocode, and implementation when available;
 - neighborhood diagrams show before/after states, selected elements, and transformation direction without obscuring jobs, positions, or labels;
-- unnecessary hyphenated or dash-based prose is not used in captions or figure discussion.
+- nonessential hyphens and sentence fragments built around dashes are minimized throughout the section's narrative prose, captions, and figure discussion; necessary technical terms, notation, ranges, citations, and formal labels remain intact.
 
 ## Conclusion
 

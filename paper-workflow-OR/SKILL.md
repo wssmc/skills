@@ -322,7 +322,7 @@ When the user supplies a terminology glossary, it governs intended usage in draf
 - Raw results, logs, and aggregation scripts are authoritative for numerical claims.
 - Do not create a competing chapter topology. The Structure Specification defines where content belongs.
 - Truthfulness does not require excessive hedging. When evidence is verified, state the supported conclusion directly.
-- Avoid gratuitous hyphenated compounds, em dashes, en dashes, and dash-based fragments in manuscript prose. Prefer ordinary sentence syntax and explicit clauses. Retain hyphens or dash symbols when they are required by standard terminology, mathematical notation, numerical ranges, citations, or meaning.
+- In manuscript prose, especially the main narrative, minimize nonessential hyphens, em dashes, en dashes, and sentence fragments built around dashes. Prefer ordinary sentence syntax and explicit clauses. Retain hyphens or dash symbols when required by established terminology, mathematical notation, numerical ranges, citations, formal labels, journal style, or meaning.
 - Python-generated figures and diagrams must use a restrained publication style rather than decorative or AI-like visual aesthetics. Prefer clear structure, consistent typography, explicit labels, deliberate colors, clean lines, and reproducible layouts. Avoid decorative 3D effects, neon gradients, glows, glossy cards, random icons, ornamental backgrounds, and unrelated illustrations.
 - Do not run a full-manuscript check after every local task.
 - Run required contribution checks internally, but do not insert internal worksheets or audit language into manuscript prose. Do not deliver a standalone contribution ledger unless explicitly requested.

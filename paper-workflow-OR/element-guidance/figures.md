@@ -168,6 +168,15 @@ Prefer a vertical main path, side branches for secondary paths, and return loops
 
 Shorten or semantically wrap long labels before reducing font size. Stage headings may span two lines when this keeps the main entry connector clear. Use a white background and black text, arrows, and connectors by default. Use color only to encode a meaningful distinction; avoid decorative gradients, shadows, and unnecessary legends. Check legibility in the final manuscript scale and in grayscale when relevant.
 
+### Flowchart review gate
+
+Before release, complete two complementary reviews:
+
+- **Algorithm and evidence review:** Trace the main path and every decision outcome, merge, loop, state update, and stopping condition against the approved method description and Algorithm 1; compare the executable implementation when available. Confirm operation order, updated object, comparison target, and the meaning and reset rule of any counter or event. If a source is unavailable or a definition is ambiguous, mark the point as requiring source verification rather than silently resolving it.
+- **Publication review:** Check that figure titles, panel headings, captions, and explanatory prose are outside the artwork; distinct diagrams are separate assets unless they form a purposeful comparison; and the figure follows the conventions above for `Start`/`End`, binary `Y`/`N` branches, outcome-only branch labels, node wording, notation, and punctuation. Inspect the source asset and, when applicable, the assembled figure and rendered manuscript page at final size.
+
+When reporting findings, distinguish directly observable artwork violations, semantic questions that require checking the manuscript or implementation, and optional presentation improvements. Do not report a question requiring source verification as a confirmed algorithm error without inspecting the relevant source.
+
 ### Verification and source preservation
 
 Compare the finished diagram against the prose, pseudocode, and implementation in execution order. Verify labels, symbols, conditions, updated states, branch destinations, and arrows; then inspect spelling, capitalization, spacing, punctuation, line breaks, clipping, and overlap. Preserve the drawing source so the figure can be reproduced or edited. Use vector PDF as the default manuscript export when compatible with the workflow and venue. Keep unapproved revisions in the project's temporary area and replace the formal figure only after review.

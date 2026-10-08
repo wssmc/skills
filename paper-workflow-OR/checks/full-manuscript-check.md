@@ -187,6 +187,10 @@ Check whether the manuscript provides enough information about:
 
 ## 10. Defensive Writing and Claim Calibration
 
+### Prose style
+
+Check that manuscript narrative minimizes nonessential hyphens and sentence fragments built around dashes. Prefer ordinary sentence syntax while preserving established technical terms, mathematical notation, ranges, citations, formal labels, and journal requirements.
+
 For major result/contribution statements classify:
 
 ```text
