@@ -66,7 +66,8 @@ For manuscript-only audit, check internal scientific consistency:
 
 When source code is supplied for internal audit, additionally use:
 - `writing-specification/code-to-method-narrative.md`;
-- `truthfulness/code-method-consistency.md`.
+- `truthfulness/code-method-consistency.md`;
+- `truthfulness/term-definition-consistency.md` when key terms are overloaded or operationally defined.
 
 Do not assume source-code access in normal manuscript audit.
 
@@ -122,6 +123,9 @@ Check:
 - titles, panel headings, and explanatory prose are in the manuscript rather than baked into the figure artwork;
 - body citations identify the relevant figure or panel, and captions match the figure content;
 - visual elements do not overlap, and flowchart/neighborhood conventions are applied consistently.
+- algorithm flowcharts preserve the execution order and use the same terms, symbols, conditions, and update targets as the prose, pseudocode, and implementation;
+- key operational terms have a consistent referent, unit or event, criterion, and reset or update rule, with discrepancies across the user definition, paper, and implementation disclosed;
+- global best stagnation, member level lack of progress, operator failure, rounds, generations, and evaluation counts are not treated as synonyms without an explicit supported definition.
 - abbreviation scope consistency: Abstract, Highlights when present, and main text each define a technical abbreviation at first occurrence;
 - later abbreviation use remains consistent within each scope, without requiring ordinary terms to be abbreviated.
 

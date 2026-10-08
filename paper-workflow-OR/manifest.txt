@@ -64,6 +64,7 @@ templates/table-description-template.md
 templates/terminology-glossary.md
 truthfulness/README.md
 truthfulness/code-method-consistency.md
+truthfulness/term-definition-consistency.md
 truthfulness/evidence-status.md
 truthfulness/experimental-results.md
 truthfulness/literature-and-novelty.md

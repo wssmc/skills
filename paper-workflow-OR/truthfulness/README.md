@@ -19,6 +19,7 @@ Files:
 - `evidence-status.md`
 - `literature-and-novelty.md`
 - `code-method-consistency.md`
+- `term-definition-consistency.md`
 - `experimental-results.md`
 
 Non-negotiable rule:

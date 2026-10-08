@@ -139,13 +139,40 @@ Sentence stems:
 
 ## Algorithm flowchart
 
-Use conventional flowchart roles consistently:
+The core principle is: **simplify the presentation, not the algorithm. Establish logical and terminological accuracy before optimizing the layout.**
 
-- show explicit start and end terminators;
-- use process boxes for actions and decision diamonds for questions or conditions;
-- for binary decisions, label the outgoing branches `Y` and `N` consistently; use concise condition labels for genuinely multiway decisions;
-- keep branch labels to the decision outcome. Put the resulting action in the destination process box. Do not write branch phrases such as `No: stop` or `Yes: restart`;
-- connect every branch to its next action or to an explicit end node, and make loop-back paths unambiguous.
+### Source fidelity and information granularity
+
+Before drawing, reconstruct the control flow from the approved method description, pseudocode, and executable implementation when available. Node labels, objects, symbols, conditions, update targets, and execution order must be supported by these sources. If they disagree, verify and disclose the discrepancy; do not invent terminology or alter the algorithm to make the diagram easier to draw.
+
+Show the main stages, search loops, acceptance logic, trigger branches, and stopping condition. Keep initialization concise unless it is a central mechanism. Related evaluation, update, and acceptance actions may share a node only when their actual order remains clear. Do not merge steps in a way that hides a branch, changes serial execution into parallel execution, or obscures which state is updated. Omit bookkeeping details that do not affect the communicated algorithm. Use the stopping condition and budget notation already defined; do not add unsupported resource labels.
+
+### Node wording and notation
+
+- Use a consistent grammatical form for nodes of the same type within one diagram. Process labels may use an action verb followed by its object or use noun phrases; choose a style and apply it consistently. Use questions for decision nodes and `Start` and `End` for the terminators.
+- Keep labels concise but identify the object and action clearly. Prefer terminology already defined in the manuscript. Do not introduce an undefined abbreviation merely to shorten a label, and do not concatenate English words. Preserve spaces and wrap at semantic boundaries without splitting words, symbols, or mathematical expressions.
+- When one process node contains multiple actions, separate them with semicolons and end the final action with a period.
+- Match mathematical notation to the manuscript, including symbols, boldface, subscripts, and superscripts. State the operands for comparisons and distinguish coexisting solution states, such as a current solution, an elite associated with a member or search direction, and a shared or global best. Avoid isolated comparison fragments. Detailed update conditions may remain in the prose and pseudocode when the diagram would become overloaded, but the diagram must not imply a different condition.
+- Use the exact stopping condition and resource terminology defined for the algorithm. Do not substitute a different limit or add an unsupported resource qualifier.
+
+### Shapes and control flow conventions
+
+- Use process rectangles for actions, decision diamonds for conditions, and rounded terminators for `Start` and `End`.
+- For binary decisions, label outgoing branches `Y` and `N` consistently. Use concise outcome labels for genuinely multiway decisions.
+- Put only the decision outcome on a branch. Put the resulting action in its destination node; do not write branch phrases such as `No: stop` or `Yes: restart`.
+- Connect every branch to its next action or to `End`. Make merge points and loop returns unambiguous.
+
+### Layout and visual style
+
+Prefer a vertical main path, side branches for secondary paths, and return loops routed around the main nodes. Align peer nodes and use coordinated box widths, spacing, and internal margins. Keep arrows attached to node boundaries; they must not cross text or pass through node interiors. Avoid unnecessary crossings, overlaps, and long detours.
+
+Shorten or semantically wrap long labels before reducing font size. Stage headings may span two lines when this keeps the main entry connector clear. Use a white background and black text, arrows, and connectors by default. Use color only to encode a meaningful distinction; avoid decorative gradients, shadows, and unnecessary legends. Check legibility in the final manuscript scale and in grayscale when relevant.
+
+### Verification and source preservation
+
+Compare the finished diagram against the prose, pseudocode, and implementation in execution order. Verify labels, symbols, conditions, updated states, branch destinations, and arrows; then inspect spelling, capitalization, spacing, punctuation, line breaks, clipping, and overlap. Preserve the drawing source so the figure can be reproduced or edited. Use vector PDF as the default manuscript export when compatible with the workflow and venue. Keep unapproved revisions in the project's temporary area and replace the formal figure only after review.
+
+Labels and orderings supplied for one figure are local conventions, not universal defaults. Apply them only to that figure; do not promote them to general algorithm rules.
 
 Do not narrate every box in the manuscript text.
 
@@ -273,3 +300,6 @@ Use:
 - every visual element has a defined scientific or operational role.
 - arrows and relation endpoints remain unambiguous at final manuscript scale;
 - the source figure, assembled figure, and rendered manuscript page have been inspected when applicable.
+- algorithm flowcharts preserve the actual execution order and match the method prose, pseudocode, and implementation in terminology, conditions, and update targets;
+- flowchart branches, start and end nodes, stopping condition, and connectors follow the conventions above without adding bookkeeping or unsupported stages;
+- node grammar, mathematical notation, punctuation for nodes with multiple actions, source preservation, and final scale readability have been checked.

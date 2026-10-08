@@ -28,6 +28,8 @@ Check:
 - technical abbreviations are defined as full term plus abbreviation at first occurrence within the Abstract;
 - later occurrences within the Abstract use the abbreviation consistently.
 
+For ambiguous or operationally defined terms, also apply `truthfulness/term-definition-consistency.md`. Confirm that the first use identifies the intended meaning and does not silently import another scope's definition.
+
 ## Highlights
 
 When Highlights are provided, check:
@@ -35,6 +37,8 @@ When Highlights are provided, check:
 - every technical abbreviation is introduced as full term plus abbreviation at first occurrence within Highlights;
 - later occurrences within Highlights use the abbreviation consistently;
 - definitions from the Abstract and main text are not incorrectly treated as available in Highlights.
+
+Apply the same terminology check independently within Highlights when a key term is overloaded or has an operational definition.
 
 ## Introduction
 
@@ -117,6 +121,8 @@ Check:
 - `current`, `candidate`, `best`, `elite`, `reference`, and `archive` are used only for defined states and remain consistent across all carriers.
 
 If source code is available for internal audit, additionally load `truthfulness/code-method-consistency.md`.
+
+When key operational terms are overloaded or have counters/state transitions, also load `truthfulness/term-definition-consistency.md`. Verify the referent, unit or event, criterion, and reset or update rule across prose, pseudocode, figures, and code. In particular, do not conflate global best stagnation, member level lack of progress, operator failure, rounds, generations, or evaluation counts unless the project explicitly defines an equivalence and the implementation supports it.
 
 ## Computational Experiments
 

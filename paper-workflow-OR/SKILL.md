@@ -83,6 +83,8 @@ The following routes override discretionary progressive loading:
 - For notation, MIP/MILP, mathematical formulation, equations, or constraints, MUST load `writing-specification/problem-and-model.md` and `element-guidance/equations-and-notation.md`.
 - For complexity or computational-cost claims, MUST first classify the claim as problem complexity, algorithmic complexity, or empirical computational cost, then load the corresponding Problem/Model, Solution Method, or Experiments guidance. Algorithmic complexity may be stated only from source code or a frozen executable specification.
 - For pseudocode, an algorithm, a procedure, or executable search logic, MUST load `element-guidance/pseudocode.md` and `checks/pseudocode-maturity-check.md`, then apply the Pseudocode Maturity Gate before producing publication-level pseudocode.
+- For a flowchart, MUST load `element-guidance/figures.md`; when it depicts an algorithm, also cross-check the approved method description, Algorithm 1, and implementation when available, preserving their execution order and terminology.
+- When the user supplies terminology definitions, or a task involves ambiguous or operational state, event, counter, stagnation, failure, or stopping terms, MUST load `truthfulness/term-definition-consistency.md` and apply its discrepancy and operational-definition rules.
 - For contribution statements, novelty positioning, `first`/`new`/`novel` claims, or closest-study comparisons, MUST load `truthfulness/literature-and-novelty.md`; contribution drafting also MUST apply `checks/contribution-check.md`.
 - For transferring approved review material into a journal template or formal submission source, MUST load `checks/formal-manuscript-deployment-check.md`, compile the authoritative main file, and inspect the rendered pages.
 
@@ -300,17 +302,20 @@ verified evidence and truthfulness
 > role/prompt preferences
 ```
 
+For terminology, the user's explicit definition governs the intended project usage. Truthfulness governs what may be claimed about a supplied paper, formal model, or implementation. If the intended definition and source usage differ, report both and their evidence; do not silently replace either. Ask only when the remaining ambiguity would materially change the work.
+
 ## 6. Minimal intake
 
 Inspect supplied materials before asking questions. Ask only for information that blocks the current task.
 
-When the user supplies a terminology glossary, it governs drafting, polishing, translation, and language-consistency review unless it conflicts with a formal problem/model definition.
+When the user supplies a terminology glossary, it governs intended usage in drafting, polishing, translation, and language-consistency review. If it differs from a formal problem/model definition or the implementation, preserve the user's intended term while explicitly identifying the source discrepancy; do not state that the source uses the user's meaning unless supported.
 
 ## 7. Global non-negotiable rules
 
 - Do not invent application settings, formulations, algorithms, parameters, experiments, results, statistical significance, references, code behavior, or industrial claims.
 - Treat user-supplied manuscripts, source code, experimental data, reviewer comments, and unpublished research as confidential research material.
 - Preserve problem terminology, objective, symbols, numerical values, citations, and claim boundaries unless scientific change is explicitly authorized.
+- At first use of a key operational term, or when its meaning changes, identify its referent and scope, unit or counted event, operational criterion, reset or update timing when applicable, and mapping to the implementation when code is available. Distinguish global best stagnation, member level lack of progress, operator failure, rounds, generations, and evaluation counts; do not infer equivalence from labels alone. Explain discrepancies established by the supplied sources directly and ask a concise clarification only when an unresolved ambiguity materially affects implementation, experiments, or interpretation. Carry confirmed definitions forward without repeated questions or silent redefinition.
 - For each technical term that is abbreviated, introduce the full term and abbreviation separately at first occurrence in the Abstract, Highlights when present, and main text. Later occurrences within that scope use the abbreviation. A definition in one scope does not carry over to another, and ordinary terms should not be abbreviated solely to create acronyms.
 - Source code is authoritative for implementation mechanics, not novelty.
 - Primary literature is authoritative for technical attribution.
