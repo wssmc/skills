@@ -113,6 +113,14 @@ Retune only when structural fairness requires it and disclose the rule.
 
 Report neutral, negative, and scale-dependent findings.
 
+## Internal Evaluation and Manuscript Reporting
+
+Maintain an internal record of positive, neutral, negative, failed, and scale dependent results. Classify each result by whether it is exploratory or part of the declared formal experiment protocol.
+
+The manuscript may select representative results with sufficiently complete evidence and does not need to list every exploratory failure. It must not silently remove or soften a formal result that materially changes the main conclusion, the validity of a comparison, or the scope of a claim. A concise report is acceptable only when it remains faithful to the evidence and cannot mislead the reader about the study's outcome.
+
+Do not launch failure diagnosis or decide the next algorithm modification during ordinary writing or reporting. Those actions belong to Algorithm Iteration and require an explicit user request. When requested, retain the relevant internal evidence and make the proposed validation capable of supporting or refuting the working hypothesis.
+
 ## 12. Cross-artifact reconciliation
 
 When the same experiment appears in multiple artifacts, verify consistent:

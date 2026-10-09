@@ -2,6 +2,28 @@
 
 This file does not restate the six structural paragraphs. It addresses the difficult parts of writing them well.
 
+## 0. Goal Driven Research Check
+
+Before drafting the six paragraphs, perform the following internal check:
+
+```text
+Research Goal
+→ Scientific Challenge
+→ Research Hypothesis
+→ Technical Contribution
+→ Supporting Evidence
+```
+
+This is an internal reasoning chain. It does not add a visible subsection or change the six paragraph Introduction structure.
+
+- **Research Goal:** state what scientific, decision, or algorithmic outcome the study seeks.
+- **Scientific Challenge:** identify the structural reason why the goal is nontrivial for the studied problem.
+- **Research Hypothesis:** record the explicit claim or testable expectation that links the challenge to the proposed approach. If the study does not use a formal hypothesis, do not invent one; record the supplied research expectation or leave this item open.
+- **Technical Contribution:** identify the confirmed model, mechanism, or method element that addresses the challenge.
+- **Supporting Evidence:** identify the experiment, analysis, proof, or comparison that can support or challenge the contribution.
+
+Do not derive a research hypothesis or technical contribution solely from favorable results after the experiments are completed. Post hoc interpretations must remain labeled as exploratory until independently supported. Every retained contribution should have a plausible technical landing and an evidence landing.
+
 ## 1. Problem Abstraction Gate
 
 Before drafting, classify supplied industrial features as:

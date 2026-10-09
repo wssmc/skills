@@ -29,6 +29,18 @@ Identify:
 - Chapter 5 topology drift;
 - Conclusion claims not established earlier.
 
+For the Introduction, also verify the internal reasoning chain:
+
+```text
+Research Goal
+→ Scientific Challenge
+→ Research Hypothesis
+→ Technical Contribution
+→ Supporting Evidence
+```
+
+This chain is an audit aid only. It must not create an additional visible Introduction subsection or justify a hypothesis inferred solely from favorable results.
+
 ## 3. Problem/model audit
 
 Check:
@@ -48,6 +60,11 @@ Check:
 ## 4. Method audit
 
 For manuscript-only audit, check internal scientific consistency:
+- Process, Design, Discussion, and Implementation quality dimensions are all covered;
+- these dimensions are not mistaken for mandatory visible subsection titles;
+- Method Writing is distinguished from Algorithm Iteration;
+- exploratory iteration hypotheses are not written as validated contributions;
+- when iteration is explicitly requested, relevant internal evidence and a support or refutation test are recorded;
 - algorithmic states and complete transitions recovered before subsection structure;
 - visible subsection titles reflect scientific responsibilities rather than a reused algorithm template;
 - representation;
@@ -94,6 +111,11 @@ Check:
 - statistical analysis unit/pairing/correction;
 - component causality;
 - neutral/negative evidence.
+- internal evaluation retains positive, neutral, negative, failed, and scale dependent results;
+- manuscript selection of representative evidence does not omit formal results that materially change the main conclusion, comparison validity, or claim scope;
+- exploratory failures are not required to be listed when their omission cannot mislead the reader;
+- failure diagnosis and next iteration decisions are not triggered by ordinary writing or reporting without an explicit user request;
+- if an iteration diagnosis is requested, its internal evidence and proposed support or refutation experiment are complete;
 - parameter calibration lineage from candidate values through confirmation and retained settings;
 - agreement between retained settings and the values actually used in later experiments;
 - component analysis organized by contribution evidence and causal questions rather than implementation files or table count.

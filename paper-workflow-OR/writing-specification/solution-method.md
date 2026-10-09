@@ -12,6 +12,28 @@ Recover the scientific algorithm before deciding how Chapter 4 is divided:
 
 Do not reuse the subsection structure of a previous algorithm by replacing only the algorithm name. Different algorithms may share Chapter 4 responsibilities, but their visible subsection titles and grouping should follow their actual logic.
 
+### Four Element Method Writing Check
+
+Check the method description along four dimensions:
+
+- **Process:** the actual execution order, control flow, state transitions, and returned solution are complete.
+- **Design:** each decision, trigger, operation, and interaction is connected to the computational difficulty it addresses. Design rationale must be distinguished from an observed result.
+- **Discussion:** the intended search effect is separated from the effect supported by experiments. Causal language must not exceed the evidence.
+- **Implementation:** the prose maps to the confirmed pseudocode, flowchart, source code, or frozen executable specification, including conditions, update targets, and evaluation order.
+
+These are quality dimensions for reviewing a method description, not a mandatory visible subsection structure.
+
+### Method Writing and Algorithm Iteration
+
+Keep two activities separate:
+
+- **Method Writing** starts from a confirmed method and available evidence, then explains the implemented process, design rationale, supported effects, and implementation mapping.
+- **Algorithm Iteration** starts from an unresolved experimental or scientific problem. It formulates a hypothesis, designs a validation experiment, evaluates the evidence, and decides whether the algorithm should be modified.
+
+Algorithm iteration may use exploratory hypotheses and incomplete evidence. Do not rewrite such a hypothesis as an established method mechanism or validated paper contribution. An ordinary method writing task does not trigger algorithm diagnosis, redesign, or a new experiment unless the user explicitly requests algorithm iteration.
+
+When algorithm iteration is explicitly requested, the diagnostic record should preserve all relevant internal evidence, including positive, neutral, negative, failed, and scale dependent findings. It should state a subsequent experiment whose outcome could support or refute the working hypothesis; a planned validation is not evidence of a validated contribution.
+
 ## 2. Start from the computational difficulty, not the algorithm name
 
 Explain what the problem requires the solver to handle, for example:

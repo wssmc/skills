@@ -42,6 +42,18 @@ Apply the same terminology check independently within Highlights when a key term
 
 ## Introduction
 
+Before drafting or auditing the six paragraph Introduction, check the internal chain:
+
+```text
+Research Goal
+→ Scientific Challenge
+→ Research Hypothesis
+→ Technical Contribution
+→ Supporting Evidence
+```
+
+The chain is an internal consistency check. Do not add a visible subsection, change the six paragraph structure, or invent a hypothesis that is not supported by the supplied research question, expectation, or evidence.
+
 Check the forward chain:
 
 ```text
@@ -65,6 +77,8 @@ Check:
 - internal novelty-audit language is absent from manuscript prose;
 - citation clusters are not excessive;
 - organization paragraph concise.
+- each retained contribution has a technical landing and an evidence landing;
+- favorable results have not been used retrospectively to invent the research hypothesis or contribution rationale.
 
 ## Related Work
 
@@ -101,6 +115,14 @@ Check:
 ## Solution Method
 
 Check:
+- Process: execution order, state transitions, control flow, and returned solution are complete;
+- Design: decisions and mechanisms are connected to the computational difficulty they address;
+- Discussion: intended effects are separated from effects supported by evidence;
+- Implementation: prose, pseudocode, flowchart, and source or frozen executable logic agree on conditions, update targets, and evaluation order;
+- the four dimensions are used as quality checks, not imposed as visible subsection titles;
+- Method Writing is distinguished from Algorithm Iteration;
+- exploratory iteration hypotheses are not presented as validated contributions;
+- when iteration is explicitly requested, relevant internal evidence is complete and the proposed validation could support or refute the working hypothesis;
 - algorithmic states, complete transitions, mechanism attribution, and dependencies recovered before subsection titles are fixed;
 - subsection titles derived from scientific responsibilities rather than copied from another algorithm;
 - overall framework and component responsibilities;
@@ -135,6 +157,11 @@ Check:
 - component analysis is organized by contribution claims and causal mechanism questions rather than switches, files, or table count;
 - inherited architecture, mechanism effectiveness, and complementarity are distinguished when the design permits;
 - positive/neutral/negative evidence;
+- internal evaluation retains positive, neutral, negative, failed, and scale dependent results;
+- manuscript reporting may omit exploratory failures only when they do not materially change the main conclusion, comparison validity, or claim scope;
+- formal results that materially change the main conclusion are not omitted or reframed;
+- failure diagnosis and next iteration decisions are not triggered by ordinary writing or reporting without an explicit user request;
+- when iteration is explicitly requested, the diagnostic record includes relevant internal evidence and a support or refutation test;
 - scale dependence;
 - runtime/evaluation evidence is labeled as empirical computational cost rather than Big-O or problem hardness;
 - no unnecessary extra second-level headings.

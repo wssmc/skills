@@ -149,6 +149,8 @@ Before selecting visible subsection titles, recover the actual algorithmic state
 
 Do not reuse another algorithm's subsection structure by changing only the algorithm name.
 
+Method writing should be checked through four dimensions: Process, Design, Discussion, and Implementation. These dimensions assess completeness, rationale, evidence calibrated interpretation, and correspondence with the confirmed executable logic. They are not mandatory visible subsection titles. Method writing starts from a confirmed method; algorithm iteration instead formulates a hypothesis, designs validation, evaluates evidence, and decides whether to modify the algorithm. When iteration is explicitly requested, its diagnostic record preserves relevant positive, neutral, negative, failed, and scale dependent evidence and proposes a subsequent experiment that could support or refute the hypothesis. Exploratory iteration hypotheses must not be presented as established contributions.
+
 ## Responsibility: overall framework
 
 Cover:
@@ -342,6 +344,8 @@ Cover:
 8. whether evidence supports the claimed role of each component.
 
 Several variants and tables may jointly answer one mechanism question. A nonoriginal framework component may be included as an attribution control, but it does not become a contribution merely because it receives a separate comparison. When relevant, distinguish whether a mechanism is effective, how much of the overall advantage comes from inherited architecture, and whether mechanisms are complementary. Reduce the corresponding contribution wording when the evidence is neutral or negative.
+
+Internal evaluation should retain positive, neutral, negative, failed, and scale dependent findings. The manuscript may focus on representative and sufficiently supported evidence, but must not omit formal results that materially change the main conclusion or its scope. Failure diagnosis and next iteration decisions are not implied by ordinary experiment writing and are activated only by an explicit request.
 
 # 6. Conclusions
 

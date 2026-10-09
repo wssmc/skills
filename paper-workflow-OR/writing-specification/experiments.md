@@ -140,6 +140,14 @@ Report:
 
 If a component lacks independent benefit, reduce its contribution wording instead of hiding the result.
 
+### Internal Evaluation and Manuscript Reporting Boundary
+
+Internal evaluation must retain and truthfully classify positive, neutral, negative, failed, and scale dependent results. The internal record is used to decide what is supported and what remains unresolved.
+
+The manuscript should emphasize representative results for which the evidence is sufficiently complete. It need not enumerate every exploratory failure, but it must not omit, conceal, or reframe a formal experiment result that materially changes the main conclusion, comparison fairness, methodological validity, or scope of a claim. Exploratory findings may be summarized or omitted only when doing so does not create a misleading account of the study.
+
+Failure diagnosis and decisions for the next algorithm iteration belong to the algorithm iteration workflow. Trigger that diagnosis only when the user explicitly asks for it. When triggered, preserve the relevant internal evidence and state a subsequent experiment that could support or refute the working hypothesis. A writing, revision, or ordinary experiment reporting task may document established evidence, but it must not silently start a new diagnostic cycle.
+
 ## 11. End each empirical subsection with an answer
 
 The last sentence should answer the subsection's experimental question within the tested scope.
